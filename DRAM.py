@@ -32,9 +32,9 @@ class DRAM_algorithm():
         self.MCMC[0,:] = self.initial_theta
         self.thetaj = self.initial_theta.T
 
-        self.MCMC_cov = np.array([])
-        self.MCMC_mean = np.array([])
-        self.ss = np.array([])
+        self.MCMC_cov = np.zeros_like(self.initial_cov)
+        self.MCMC_mean = np.zeros_like(self.initial_theta)
+        self.ss = np.array([0])
         self.ii = 0
 
         def update_cov(self, w, ind):
