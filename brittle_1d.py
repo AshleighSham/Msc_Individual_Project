@@ -1,5 +1,6 @@
 # Standard Libraries
 import numpy as np
+from MH import MH_mcmc
 import scipy.io
 reference = scipy.io.loadmat('reference.mat')
 
@@ -32,4 +33,4 @@ inp['Kalmans'] = 50
 #assumed measurement noise for Kalman
 inp['me'] = 1e-1
 
-#results = MH_mcmc(inp)
+results = MH_mcmc(inp)

@@ -6,6 +6,7 @@ class DRAM_algorithm():
     def __init__(self, inp):
 
         self.range = inp['range']
+
         self.nsamples = inp['samples']
         self.initial_cov = inp['icov']
         self.initial_theta = inp['theta0']
@@ -32,6 +33,7 @@ class DRAM_algorithm():
         self.MCMC[0,:] = self.initial_theta
         self.thetaj = self.initial_theta.T
 
+        #initiase Kalman features
         self.MCMC_cov = np.zeros_like(self.initial_cov)
         self.MCMC_mean = np.zeros_like(self.initial_theta)
         self.ss = np.array([0])
@@ -50,9 +52,9 @@ class DRAM_algorithm():
                 xi = x[i]
                 wsum = w[i]
                 xmeann = xi
-                xmean = self.MCMC_mean + (xmeann - self.MCMC_mean)@wsum/(wsum + self.ss)
 
-                xcov = self.MCMC_cov + np.divde(wsum, (wsum + self.MCMC_cov - 1))@(self.ss/(wsum + self.ss)@(xi-self.MCMC_mean).T@(xi - self.MCMC_mean) - self.MCMC_cov)
+                xmean = self.MCMC_mean + (xmeann - self.MCMC_mean)@(wsum/(wsum + self.ss))
+                xcov = self.MCMC_cov + (wsum/(wsum + self.MCMC_cov - 1))@((self.ss/(wsum + self.ss))@(xi-self.MCMC_mean).T@(xi - self.MCMC_mean) - self.MCMC_cov)
 
                 wsum += self.ss
                 self.MCMC_cov = xcov
