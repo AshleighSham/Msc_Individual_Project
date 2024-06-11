@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 import utilities
 
-class DRAM_algorithm():
+class DRAM_algorithm:
     def __init__(self, inp):
 
         self.range = inp['range']

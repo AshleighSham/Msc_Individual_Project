@@ -1,7 +1,7 @@
 import numpy as np
 from DRAM import DRAM_algorithm
 
-class EnKF_mcmc():
+class EnKF_mcmc:
     def __init__(self, inp):
 
         self.range = inp['range']
@@ -13,10 +13,6 @@ class EnKF_mcmc():
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
 
-        samples = self.
+        #samples = self.
         results = DRAM_algorithm(inp)
-
-
-
-    def 
 

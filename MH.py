@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 import utilities
 
-class MH_mcmc():
+class MH_mcmc:
     def __init__(self, inp):
 
         self.range = inp['range']

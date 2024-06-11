@@ -49,15 +49,11 @@ class Mesh:
             self.DOF[i,:] = [self.CON[i,0]*2, self.CON[i,1]*2-1, self.CON[i,1]*2, \
                              self.CON[i,1]*2+1, self.CON[i,2]*2, self.CON[i,2]*2+1, \
                              self.CON[i,3]*2, self.CON[i,3]*2+1]
-            
-    def plane_strain(self, E, nu):
-        """ calculates plane strain for an element. """   
-        ps = E/((1 + nu)*(1 - 2*nu))*np.array([[1-nu, nu, 0],[nu, 1-nu ,0],[0,0,0.5*(1-2*nu)]])
-
-        return ps
-
-    #for one element
-    def Jacobian(self, xyze, xi, eta):    
+                    
+    def plane_strain(self, E, nu): 
+        return E/((1 + nu)*(1 - 2*nu))*np.array([[1-nu, nu, 0],[nu, 1-nu ,0],[0,0,0.5*(1-2*nu)]])
+    
+    def Jacobian(self, xyze, xi, eta): 
         # natural nodal coordinates
         natcoord = np.array([c for c in xyze])
             
@@ -68,9 +64,7 @@ class Mesh:
 
         # element Jacobian matrix and determinant
         Jmat = dNdnat @ natcoord
-        Jdet = np.linalg.det(Jmat)
-        
-        return Jdet
+        return np.linalg.det(Jmat)
     
     def eff_el(self):
         # calculate the effective elasticity of the system
@@ -84,6 +78,7 @@ class Mesh:
         self.J_tot = 0
         self.CV_eff1 = 0
         self.CV_eff2 = 0
+
         for i in range(nel):
             # get the plane strain matrix for a given element
             C = plane_strain(self.youngs[i], self.poisson[i])
@@ -108,10 +103,10 @@ class Mesh:
         # this method terminates WITHOUT returning a value.
         # it's sole effect is to modify the state of the mesh object.
                                            
-    def voigt(self,):
+    def voigt(self):
         # use the formulae defined lecture notes
         return self.CV_eff1/self.J_tot
                                             
-    def reuss(self,):
+    def reuss(self):
         # use the formulae defined lecture notes
         return self.J_tot/self.CV_eff2

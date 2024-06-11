@@ -1,6 +1,6 @@
 import numpy as np
 
-def forward_model(x):
+#def forward_model(x):
 
 
 
