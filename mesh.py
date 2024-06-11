@@ -1,5 +1,5 @@
 import numpy as np
-import utilities
+import Elastcity_1D.utilities as utilities
 
 class Mesh:
     # the initialisation procedure

@@ -1,6 +1,6 @@
 import numpy as np
 import scipy as sp
-import utilities
+import Elastcity_1D.utilities as utilities
 
 class MH_mcmc:
     def __init__(self, inp):
