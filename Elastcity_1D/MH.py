@@ -1,12 +1,12 @@
 import numpy as np
 import scipy as sp
-import Elastcity_1D.utilities as utilities
+import utilities as utilities
 
 class MH_mcmc:
     def __init__(self, inp):
 
         self.range = inp['range']
-        self.nsamples = inp['samples']
+        self.nsamples = inp['nsamples']
         self.initial_cov = inp['icov']
         self.initial_theta = inp['theta0']
         self.sigma = inp['sigma']
@@ -15,20 +15,18 @@ class MH_mcmc:
         self.m0 = inp['me']
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
-        self.dim = len(self.range[0])
+        self.dim = np.size(self.range, 1)
 
-        self.MCMC = np.zeros(self.nsamples, self.dim)
+        self.MCMC = np.zeros([self.nsamples, self.dim])
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta)
         self.results = {}
 
-        self.results['values'] = [self.oldvalue]
+        self.results['values'] = [self.oldvalue*1]
 
         self.accepted = 0
         self.MCMC[0] = self.initial_theta
 
         self.thetaj = self.initial_theta.T
-
-        MH_go()
 
     def MH_go(self):
         j = 1
@@ -48,10 +46,6 @@ class MH_mcmc:
             self.results['values'].append(self.oldvalue)
 
             self.MCMC[j] = self.thetaj
-
-            if j % 500 == 0:
-                print('number of sample: %d\n', j)
-
             j += 1
 
         self.results['MCMC'] = self.MCMC.T

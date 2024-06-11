@@ -1,6 +1,5 @@
 # Standard Libraries
 import numpy as np
-from MH import MH_mcmc
 import scipy.io
 reference = scipy.io.loadmat('reference.mat')
 
@@ -15,7 +14,7 @@ inp['range'] = np.array([pmin, pmax])
 print(inp['range'])
 
 #number of MCMC iterations
-inp['samples'] = 1000
+inp['samples'] = 400
 
 ##inital covariance
 inp['icov'] = np.array([1e7, 1e-6]).T @ np.eye(len(inp['range'][0]))
@@ -25,7 +24,7 @@ inp['theta0'] = np.array([60000, 0.025])
 
 #measurement/refernce observations
 inp['sigma'] = 0.05
-inp['measurement'] = reference
+inp['measurement'] = reference['measurement']
 
 #starting point of Kalman MCMC
 inp['Kalmans'] = 50

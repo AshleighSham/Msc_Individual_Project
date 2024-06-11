@@ -66,11 +66,10 @@ def Jacobian(xyze, xi, eta):
     return Jmat, np.linalg.det(Jmat)
 
 def forward_model(x):
-    #e=4.259
-    a = 1
+    a = 1.0
     que = 14
     etr = 0.5
-    l = 1
+    l = 1.0
     nel = 1000
     d1,dl1,sig1,step1,nel1 = linelast(nel,x,a,que,etr,l)
     return d1
@@ -96,9 +95,9 @@ def linelast(nel,e,a,que,etr,l):
             for k in range(2):
                 kg[j+i, k+i] += ke[j, k]
             if j == 0:
-                q[i] = q[i] + (l*np.cos(2.0*np.pi*x1/l)/(2.0*np.pi) -l**2*np.sin(2.0*np.pi*x2/l)/(4.0*np.pi**2*dl) + l**2*np.sin(2.0*np.pi*x1/l)/(4.0*np.pi**2*dl))*que
+                q[i] += (l*np.cos(2.0*np.pi*x1/l)/(2.0*np.pi) -l**2*np.sin(2.0*np.pi*x2/l)/(4.0*np.pi**2*dl) + l**2*np.sin(2.0*np.pi*x1/l)/(4.0*np.pi**2*dl))*que
             elif j == 1:
-                q[i+1] = q[i+1] + (-l*np.cos(2.0*np.pi*x2/l)/(2.0*np.pi)+l**2*np.sin(2.0*np.pi*x2/l)/(4.0*np.pi**2*dl)-l**2*np.sin(2.0*np.pi*x1/l)/(4.0*np.pi**2*dl))*que
+                q[i+1] += (-l*np.cos(2.0*np.pi*x2/l)/(2.0*np.pi)+l**2*np.sin(2.0*np.pi*x2/l)/(4.0*np.pi**2*dl)-l**2*np.sin(2.0*np.pi*x1/l)/(4.0*np.pi**2*dl))*que
 
     kg[0,0] = 1
     kg[0,1:] = np.zeros(nel)
@@ -106,10 +105,9 @@ def linelast(nel,e,a,que,etr,l):
 
     q[0] = 0
     q[-1] += etr*a
-    d[:] = np.linalg.solve(kg, q)
+    d = np.linalg.solve(kg, q)
 
     sig = np.zeros([2*nel, nel])
-    #INDEXES ARE WRONG FIX LATER
     step = np.zeros(2*nel)
     for i in range(nel - 1):
         sig[2*i, :] = e/dl * (d[i+1] - d[i])

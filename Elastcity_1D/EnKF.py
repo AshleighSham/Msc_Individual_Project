@@ -14,9 +14,10 @@ class EnKF_mcmc():
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
 
-        samples = self.nsamples  #maybe need deepcopy
+        self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
-        results = DRAM_algorithm(inp)
+        A = DRAM_algorithm(inp)
+        results = A.DRAM_go()
 
         self.X = results['MCMC']
         self.Y = results['values']
@@ -26,11 +27,11 @@ class EnKF_mcmc():
 
     def Kalman_gain(self, j):
 
-        ss2 = self.m0*np.ones(len(self.observations), 1)
+        ss2 = self.m0*np.ones([np.size(self.observations, 0), 1])
         RR = np.diag(ss2)
 
-        mX = np.mean(self.X, 2)*np.ones(j-1)
-        mY = np.mean(self.Y, 2)*np.ones(j-1)
+        mX = np.mean(self.X, 1)*np.ones(j-1)
+        mY = np.mean(self.Y, 1)*np.ones(j-1)
 
         Ctm = (self.X - mX)*(self.Y - mY).T/(j-2)
         Cmm = (self.Y - mY)*(self.Y - mY).T/(j-2)
@@ -39,9 +40,9 @@ class EnKF_mcmc():
         
         return KK
 
-    def EnKF_go(self, samples):
+    def EnKF_go(self):
         j = self.K0
-        while j < samples:
+        while j < self.s:
             KK = self.Kalman_gain(j)
             
             XX = utilities.forward_model(self.thetaj)
@@ -71,6 +72,6 @@ class EnKF_mcmc():
             j += 1
         
         self.results['MCMC'] = self.X
-        self.results['accepted'] = (self.accepted/samples)*100
+        self.results['accepted'] = (self.accepted/self.s)*100
 
         return self.results

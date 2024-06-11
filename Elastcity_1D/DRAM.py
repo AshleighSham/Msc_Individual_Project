@@ -15,7 +15,7 @@ class DRAM_algorithm():
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
 
-        self.eps = 1e-6
+        self.eps = 1e-5
         self.adpt = 100
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
@@ -25,7 +25,7 @@ class DRAM_algorithm():
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta)
 
         self.results = {}
-        self.results['values'] = [self.oldvalue]
+        self.results['values'] = [self.oldvalue*1]
 
         self.R2 = np.divide(self.Rj, 5)
         self.invR = np.linalg.solve(self.Rj, np.eye(len(self.Rj[0])))
@@ -53,8 +53,7 @@ class DRAM_algorithm():
             xi = np.array([x[i]])
             wsum = np.array([w[i]])
             xmeann = xi*1
-            #print(wsum, self.ss, self.MCMC_mean, xmeann)
-    
+
             xmean = self.MCMC_mean + np.divide(wsum,(wsum + self.ss))@(xmeann - self.MCMC_mean)
             a = np.divide(wsum,(wsum + self.ss)) #-np.array([1])
             b = np.multiply(np.divide(self.ss,(wsum + self.ss)),(xi-self.MCMC_mean).T)
@@ -63,7 +62,7 @@ class DRAM_algorithm():
             wsum += self.ss
             self.MCMC_cov = xcov
             self.MCMC_mean = xmean
-            self.ss = wsum*1
+            self.ss = wsum
 
             i += 1
 
