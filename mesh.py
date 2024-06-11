@@ -1,4 +1,5 @@
 import numpy as np
+import utilities
 
 class Mesh:
     # the initialisation procedure
@@ -49,22 +50,6 @@ class Mesh:
             self.DOF[i,:] = [self.CON[i,0]*2, self.CON[i,1]*2-1, self.CON[i,1]*2, \
                              self.CON[i,1]*2+1, self.CON[i,2]*2, self.CON[i,2]*2+1, \
                              self.CON[i,3]*2, self.CON[i,3]*2+1]
-                    
-    def plane_strain(self, E, nu): 
-        return E/((1 + nu)*(1 - 2*nu))*np.array([[1-nu, nu, 0],[nu, 1-nu ,0],[0,0,0.5*(1-2*nu)]])
-    
-    def Jacobian(self, xyze, xi, eta): 
-        # natural nodal coordinates
-        natcoord = np.array([c for c in xyze])
-            
-        # derivatives of shape functions w.r.t. natural coordinates 
-        dNdnat = np.zeros((2,4))
-        dNdnat[0,:]= [0.25*(eta - 1), 0.25*(1 - eta), 0.25*(1 + eta), 0.25*(-eta-1)]
-        dNdnat[1,:]= [0.25*(xi - 1), 0.25*(-xi -1), 0.25*(1 + xi), 0.25*(1 - xi)]
-
-        # element Jacobian matrix and determinant
-        Jmat = dNdnat @ natcoord
-        return np.linalg.det(Jmat)
     
     def eff_el(self):
         # calculate the effective elasticity of the system
@@ -81,7 +66,7 @@ class Mesh:
 
         for i in range(nel):
             # get the plane strain matrix for a given element
-            C = plane_strain(self.youngs[i], self.poisson[i])
+            C = utilities.plane_strain(self.youngs[i], self.poisson[i])
             
             # get the nodal coordinates for a single element
             xyze = self.XYZ[self.CON[i,:],]
@@ -90,7 +75,7 @@ class Mesh:
             for j in range(4):                     # loop over each element integration points
                 xi  = Gauss[0,j]                   # natural coordinate - horizontal  
                 eta = Gauss[1,j]                   # natural coordinate - vertical           
-                J = Jacobian(xyze,xi,eta)           
+                J = utilities.Jacobian(xyze,xi,eta)           
                 J_sum = J_sum + J
 
             # effective elasticity matricx summation
@@ -102,6 +87,7 @@ class Mesh:
                                             
         # this method terminates WITHOUT returning a value.
         # it's sole effect is to modify the state of the mesh object.
+
                                            
     def voigt(self):
         # use the formulae defined lecture notes
