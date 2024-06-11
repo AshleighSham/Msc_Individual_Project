@@ -51,9 +51,8 @@ def plane_strain(E, nu):
 def Jacobian(xyze, xi, eta): 
     """Calculates Jacobian
 
-    Args:
+    Args: nodal coordinates for a single element, natural coordinate - horizontal, natural coordinate - vertical 
         
-
     Returns:
         element Jacobian matrix and determinant
     """
