@@ -39,7 +39,7 @@ class DRAM_algorithm:
         self.ss = np.array([0])
         self.ii = 0
 
-        DRAM_go(self)
+        DRAM_go()
 
         def update_cov(self, w, ind):
             x = self.MCMC[self.ii:ind]

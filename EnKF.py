@@ -24,7 +24,7 @@ class EnKF_mcmc:
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj)
         self.accepted = np.fix(results['accepted']*(self.K0 - 1)/100)
 
-        EnKF_go(self, samples)
+        EnKF_go(samples)
 
         def Kalman_gain(self, j):
             ss2 = self.m0*np.ones(len(self.observations), 1)

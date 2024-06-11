@@ -28,7 +28,9 @@ class MH_mcmc:
 
         self.thetaj = self.initial_theta.T
 
-    def Run(self):
+        MH_go()
+
+    def MH_go(self):
         j = 1
         while j < self.nsamples:
             thetas = self.thetaj + self.Rj * np.random.normal(self.dim, 1)
@@ -54,3 +56,5 @@ class MH_mcmc:
 
         self.results['MCMC'] = self.MCMC.T
         self.results['accepted'] = 100*self.accepted/self.nsamples
+
+        return self.results
