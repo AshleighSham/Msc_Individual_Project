@@ -56,10 +56,7 @@ class DRAM_algorithm():
             #print(wsum, self.ss, self.MCMC_mean, xmeann)
     
             xmean = self.MCMC_mean + np.divide(wsum,(wsum + self.ss))@(xmeann - self.MCMC_mean)
-            if self.ss == 0:
-                a = np.divide(wsum,(wsum + self.ss)) #-np.array([1])
-            else:
-                a = np.divide(wsum,(wsum + self.ss-np.array([1])))
+            a = np.divide(wsum,(wsum + self.ss)) #-np.array([1])
             b = np.multiply(np.divide(self.ss,(wsum + self.ss)),(xi-self.MCMC_mean).T)
             xcov = self.MCMC_cov + np.multiply(a,(b@(xi - self.MCMC_mean) - self.MCMC_cov))
 
