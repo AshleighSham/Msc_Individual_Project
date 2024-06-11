@@ -75,7 +75,7 @@ class Mesh:
             for j in range(4):                     # loop over each element integration points
                 xi  = Gauss[0,j]                   # natural coordinate - horizontal  
                 eta = Gauss[1,j]                   # natural coordinate - vertical           
-                J = utilities.Jacobian(xyze,xi,eta)           
+                J = utilities.Jacobian(xyze,xi,eta)[1]          
                 J_sum = J_sum + J
 
             # effective elasticity matricx summation

@@ -38,9 +38,25 @@ def ESS(measurements, e):
 
 
 def plane_strain(E, nu): 
+    """Calculates plane strain elasticity matrix
+
+    Args:
+        material properties: Youngs Modulus E, Poissons Ratio nu
+
+    Returns:
+        numpy.array: Plane strain elastcity matrix 3x3
+    """
     return E/((1 + nu)*(1 - 2*nu))*np.array([[1-nu, nu, 0],[nu, 1-nu ,0],[0,0,0.5*(1-2*nu)]])
 
 def Jacobian(xyze, xi, eta): 
+    """Calculates Jacobian
+
+    Args:
+        
+
+    Returns:
+        element Jacobian matrix and determinant
+    """
     # natural nodal coordinates
     natcoord = np.array([c for c in xyze])
         
@@ -51,4 +67,4 @@ def Jacobian(xyze, xi, eta):
 
     # element Jacobian matrix and determinant
     Jmat = dNdnat @ natcoord
-    return np.linalg.det(Jmat)
+    return Jmat, np.linalg.det(Jmat)
