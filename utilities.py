@@ -1,7 +1,7 @@
 import numpy as np
 
-#def forward_model(x):
-
+def forward_model(x):
+    return None
 
 
 def check_bounds(x, range):

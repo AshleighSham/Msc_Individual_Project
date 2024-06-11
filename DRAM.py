@@ -39,6 +39,8 @@ class DRAM_algorithm:
         self.ss = np.array([0])
         self.ii = 0
 
+        DRAM_go(self)
+
         def update_cov(self, w, ind):
             x = self.MCMC[self.ii:ind]
             n = np.size(x, 0) #num of rows
@@ -61,7 +63,7 @@ class DRAM_algorithm:
                 self.MCMC_mean = xmean
                 self.ss = wsum
 
-        def Run(self):
+        def DRAM_go(self):
             j = 1
             while j < self.nsamples:
                 thetas = self.thetaj + self.Rj*np.random.normal(self.dim, 1)
