@@ -5,7 +5,6 @@ from EnKF import EnKF_mcmc
 from DRAM import DRAM_algorithm
 from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
-import utilities
 import scipy.io
 reference = scipy.io.loadmat(r"C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elastcity_1D\reference.mat")
 #results = scipy.io.loadmat(r"C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elastcity_1D\results.mat")

@@ -29,17 +29,18 @@ class AMH_mcmc():
         self.MCMC[0,:] = self.initial_theta
         self.thetaj = self.initial_theta.T
 
-        #initialise Kalman features
+        #initiase Kalman features
         self.MCMC_cov = np.zeros_like(self.initial_cov)
         self.MCMC_mean = np.zeros_like(self.initial_theta)
-        self.ss = np.array([1])
+        self.ss = np.array([0])
         self.ii = 0
 
     def update_cov(self, w, ind):
         print(ind, self.MCMC_cov)
-        x = self.MCMC[self.ii+1:ind] #
+        x = self.MCMC[self.ii+1:ind] #100, 1
         n = np.size(x, 0) #num of rows
         p = np.size(x, 1) #num of cols
+        #print(x)
 
         if int(w) == w:
             w *= np.ones(n)
@@ -51,7 +52,7 @@ class AMH_mcmc():
             xmeann = xi*1
 
             xmean = self.MCMC_mean + np.divide(wsum,(wsum + self.ss))@(xmeann - self.MCMC_mean)
-            a = np.divide(wsum,(wsum + self.ss-np.array([1])))
+            a = np.divide(wsum,(wsum + self.ss)) #-np.array([1])
             b = np.multiply(np.divide(self.ss,(wsum + self.ss)),(xi-self.MCMC_mean).T)
             xcov = self.MCMC_cov + np.multiply(a,(b@(xi - self.MCMC_mean) - self.MCMC_cov))
 
