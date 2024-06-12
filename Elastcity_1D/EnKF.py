@@ -16,28 +16,28 @@ class EnKF_mcmc():
 
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
+        inp['nsamples'] = self.nsamples
         A = DRAM_algorithm(inp)
-        results = A.DRAM_go()
+        self.results = A.DRAM_go()
 
-        self.X = results['MCMC']
-        self.Y = results['values']
-        self.thetaj = self.X[:, self.nsamples]
+        self.X = self.results['MCMC'] #1 x nsamples
+        self.Y = np.squeeze(self.results['values']).T #nsamples x nel
+        self.thetaj = self.X[:, self.K0 - 2]
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj)
-        self.accepted = np.fix(results['accepted']*(self.K0 - 1)/100)
+        self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
     def Kalman_gain(self, j):
 
-        ss2 = self.m0*np.ones([np.size(self.observations, 0), 1])
-        RR = np.diag(ss2)
+        ss2 = self.m0*np.ones([np.size(self.observations, 0)])
+        RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
-        mX = np.mean(self.X, 1)*np.ones(j-1)
-        mY = np.mean(self.Y, 1)*np.ones(j-1)
+        mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
+        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
 
-        Ctm = (self.X - mX)*(self.Y - mY).T/(j-2)
-        Cmm = (self.Y - mY)*(self.Y - mY).T/(j-2)
+        Ctm = (self.X - mX)@(self.Y - mY).T/(j-2)
+        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
+        KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
-        KK = Ctm/(Cmm+RR)
-        
         return KK
 
     def EnKF_go(self):
@@ -46,9 +46,9 @@ class EnKF_mcmc():
             KK = self.Kalman_gain(j)
             
             XX = utilities.forward_model(self.thetaj)
+            dt = KK @ (self.observations + np.random.normal(np.size(self.observations, 1)*self.m0 - XX))
 
-            dt = KK * (self.observations + np.random.normal(len(self.observations)*self.M0 - XX))
-            thetas - self.thetaj + dt
+            thetas = self.thetaj + dt
 
             thetas = utilities.check_bounds(thetas, self.range)
 
@@ -62,12 +62,19 @@ class EnKF_mcmc():
                 self.oldpi = newpi
                 self.oldvalue = newvalue
 
-            self.X.append(self.thetaj)
-            self.Y.append(self.oldvalue)
-            #make thetaj double precision??
+            tempX = np.zeros([np.size(self.X,0), np.size(self.X,1) + 1])
+            tempY = np.zeros([np.size(self.Y,0), np.size(self.Y,1) + 1])
+            
+            tempX[:,:-1] = self.X*1
+            tempY[:,:-1] = self.Y*1
+            tempX[:,-1] = self.thetaj
+            tempY[:,-1] = np.squeeze(self.oldvalue) #keep an eye on this for more dims
+
+            self.X = tempX
+            self.Y = tempY
 
             if j % 100 == 0:
-                print('number of sample: %d\n', j)
+                print('number of sample: %d\n' % j)
 
             j += 1
         

@@ -34,25 +34,25 @@ inp['Kalmans']=100
 # assumed measurement error for Kalman MCMC
 inp['me']=1e-1                                 
 
-option = 1
+option = 2
 
 if option == 0:
     # The Metropolis-Hastings technique
     C = MH_mcmc(inp)
     results = C.MH_go()
     print(results['MCMC'])
-    print('The median of the posterior is: %f' % np.median(results['MCMC'][0,100:]))
+    print('The median of the posterior is: %f' % np.median(results['MCMC']))
 
 elif option == 1:
     # The DRAM algorithm 
     A = DRAM_algorithm(inp)
     results = A.DRAM_go()
     print(results['MCMC'])
-    print("The median of the posterior is: %f" % np.median(results['MCMC'][0,100:]))
+    print("The median of the posterior is: %f" % np.median(results['MCMC']))
 
 elif option == 2:
     #The EnKF algorithm 
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()
     print(results['MCMC'])
-    print("The median of the posterior is: %f" % np.median(results['MCMC'][0,50:]))
+    print("The median of the posterior is: %f" % np.median(results['MCMC']))
