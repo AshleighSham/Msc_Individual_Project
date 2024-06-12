@@ -42,6 +42,7 @@ if option == 0:
     C = MH_mcmc(inp)
     results = C.MH_go()
     print(results['MCMC'])
+    print(results['accepted'])
     print('The median of the posterior is: %f' % np.median(results['MCMC']))
 
 elif option == 1:
@@ -49,6 +50,7 @@ elif option == 1:
     A = AMH_mcmc(inp)
     results = A.AMH_go()
     print(results['MCMC'])
+    print(results['accepted'])
     print("The median of the posterior is: %f" % np.median(results['MCMC']))
 
 elif option == 2:
@@ -56,6 +58,7 @@ elif option == 2:
     A = DRAM_algorithm(inp)
     results = A.DRAM_go()
     print(results['MCMC'])
+    print(results['accepted'])
     print("The median of the posterior is: %f" % np.median(results['MCMC']))
 
 elif option == 3:
@@ -63,4 +66,5 @@ elif option == 3:
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()
     print(results['MCMC'])
+    print(results['accepted'])
     print("The median of the posterior is: %f" % np.median(results['MCMC']))

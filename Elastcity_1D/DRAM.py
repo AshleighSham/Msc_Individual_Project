@@ -27,7 +27,7 @@ class DRAM_algorithm():
         self.results = {}
         self.results['values'] = [self.oldvalue*1]
 
-        self.R2 = np.divide(self.Rj, 5)
+        self.R2 = self.Rj*0.2
         self.invR = np.linalg.solve(self.Rj, np.eye(len(self.Rj[0])))
         self.accepted = 0
         self.MCMC[0,:] = self.initial_theta
@@ -36,15 +36,13 @@ class DRAM_algorithm():
         #initiase Kalman features
         self.MCMC_cov = np.zeros_like(self.initial_cov)
         self.MCMC_mean = np.zeros_like(self.initial_theta)
-        self.ss = np.array([0])
+        self.ss = np.array([1])
         self.ii = 0
 
     def update_cov(self, w, ind):
-        print(ind, self.MCMC_cov)
         x = self.MCMC[self.ii+1:ind] #100, 1
         n = np.size(x, 0) #num of rows
         p = np.size(x, 1) #num of cols
-        #print(x)
 
         if int(w) == w:
             w *= np.ones(n)
@@ -56,7 +54,7 @@ class DRAM_algorithm():
             xmeann = xi*1
 
             xmean = self.MCMC_mean + np.divide(wsum,(wsum + self.ss))@(xmeann - self.MCMC_mean)
-            a = np.divide(wsum,(wsum + self.ss)) #-np.array([1])
+            a = np.divide(wsum,(wsum + self.ss-np.array([1])))
             b = np.multiply(np.divide(self.ss,(wsum + self.ss)),(xi-self.MCMC_mean).T)
             xcov = self.MCMC_cov + np.multiply(a,(b@(xi - self.MCMC_mean) - self.MCMC_cov))
 
@@ -66,12 +64,11 @@ class DRAM_algorithm():
             self.ss = wsum
 
             i += 1
-        print(ind, self.MCMC_cov)
 
     def DRAM_go(self):
         j = 1
         while j < self.nsamples:
-            thetas = self.thetaj + self.Rj*np.random.normal(self.dim, 1)
+            thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
             newpi, newvalue = utilities.ESS(self.observations, thetas)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
@@ -82,13 +79,13 @@ class DRAM_algorithm():
                 self.oldvalue = newvalue
 
             else:
-                thetass = self.thetaj + self.R2*np.random.normal(self.dim, 1)
+                thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
                 thetass = utilities.check_bounds(thetass, self.range)
 
                 newss2, newvalue2 = utilities.ESS(self.observations, thetass)
                 k1 = min(1, np.exp(-0.5*(newpi - newss2)/self.sigma))
                 k2 = np.exp(-0.5*(newss2-self.oldpi)/self.sigma)
-                k3 = np.exp(-0.5*(np.linalg.norm(self.invR*(thetass - thetas))**2))
+                k3 = np.exp(-0.5*(np.linalg.norm(self.invR@(thetass - thetas))**2))
                 lam2 = k2*k3*(1-k1)/(1-lam)
                 if np.random.uniform(0,1) < lam2:
                     self.accepted += 1
