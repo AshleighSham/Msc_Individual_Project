@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 import utilities as utilities
 
-class DRAM_algorithm():
+class AMH_mcmc():
     def __init__(self, inp):
 
         self.range = inp['range']
@@ -14,6 +14,7 @@ class DRAM_algorithm():
         self.observations = inp['measurement']
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
+        self.results ={}
 
         self.eps = 1e-5
         self.adpt = 100
@@ -22,13 +23,8 @@ class DRAM_algorithm():
         self.Kp = 2.4/np.sqrt(self.dim)
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
-        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta)
+        self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta)
 
-        self.results = {}
-        self.results['values'] = [self.oldvalue*1]
-
-        self.R2 = np.divide(self.Rj, 5)
-        self.invR = np.linalg.solve(self.Rj, np.eye(len(self.Rj[0])))
         self.accepted = 0
         self.MCMC[0,:] = self.initial_theta
         self.thetaj = self.initial_theta.T
@@ -68,35 +64,17 @@ class DRAM_algorithm():
             i += 1
         print(ind, self.MCMC_cov)
 
-    def DRAM_go(self):
+    def AMH_go(self):
         j = 1
         while j < self.nsamples:
             thetas = self.thetaj + self.Rj*np.random.normal(self.dim, 1)
             thetas = utilities.check_bounds(thetas, self.range)
-            newpi, newvalue = utilities.ESS(self.observations, thetas)
+            newpi, _ = utilities.ESS(self.observations, thetas)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
             if np.random.uniform(0,1) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi
-                self.oldvalue = newvalue
-
-            else:
-                thetass = self.thetaj + self.R2*np.random.normal(self.dim, 1)
-                thetass = utilities.check_bounds(thetass, self.range)
-
-                newss2, newvalue2 = utilities.ESS(self.observations, thetass)
-                k1 = min(1, np.exp(-0.5*(newpi - newss2)/self.sigma))
-                k2 = np.exp(-0.5*(newss2-self.oldpi)/self.sigma)
-                k3 = np.exp(-0.5*(np.linalg.norm(self.invR*(thetass - thetas))**2))
-                lam2 = k2*k3*(1-k1)/(1-lam)
-                if np.random.uniform(0,1) < lam2:
-                    self.accepted += 1
-                    self.thetaj = thetass
-                    self.oldpi = newss2
-                    self.oldvalue = newvalue2
-
-            self.results['values'].append(self.oldvalue)
 
             self.MCMC[j, :] = self.thetaj*1
 
@@ -112,7 +90,4 @@ class DRAM_algorithm():
         self.results['accepted'] = 100*self.accepted/self.nsamples
 
         return self.results
-        
-
-
-
+ 
