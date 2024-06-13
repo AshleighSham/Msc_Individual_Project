@@ -22,7 +22,8 @@ class EnKF_mcmc():
 
         self.X = self.results['MCMC'] #1 x nsamples
         self.Y = np.squeeze(self.results['values']).T #nsamples x nel
-        self.thetaj = self.X[:, self.K0 - 2]
+        self.thetaj = self.X[:, self.K0 - 2].reshape(-1,1)
+        
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj)
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
@@ -67,7 +68,7 @@ class EnKF_mcmc():
             
             tempX[:,:-1] = self.X*1
             tempY[:,:-1] = self.Y*1
-            tempX[:,-1] = self.thetaj
+            tempX[:,-1] = self.thetaj.T
             tempY[:,-1] = np.squeeze(self.oldvalue) #keep an eye on this for more dims
 
             self.X = tempX

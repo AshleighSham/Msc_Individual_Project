@@ -26,8 +26,8 @@ class AMH_mcmc():
         self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta)
 
         self.accepted = 0
-        self.MCMC[0,:] = self.initial_theta
-        self.thetaj = self.initial_theta.T
+        self.MCMC[0,:] = self.initial_theta.T
+        self.thetaj = self.initial_theta
 
         #initialise Kalman features
         self.MCMC_cov = np.zeros_like(self.initial_cov)
@@ -47,9 +47,10 @@ class AMH_mcmc():
         while i < n:
             xi = np.array([x[i]])
             wsum = np.array([w[i]])
-            xmeann = xi*1
+            xmeann = xi
 
-            xmean = self.MCMC_mean + np.divide(wsum,(wsum + self.ss))@(xmeann - self.MCMC_mean)
+            xmean = self.MCMC_mean + np.divide(wsum,(wsum + self.ss))*(xmeann - self.MCMC_mean)
+            
             a = np.divide(wsum,(wsum + self.ss-np.array([1])))
             b = np.multiply(np.divide(self.ss,(wsum + self.ss)),(xi-self.MCMC_mean).T)
             xcov = self.MCMC_cov + np.multiply(a,(b@(xi - self.MCMC_mean) - self.MCMC_cov))
@@ -73,7 +74,7 @@ class AMH_mcmc():
                 self.thetaj = thetas
                 self.oldpi = newpi
 
-            self.MCMC[j, :] = self.thetaj*1
+            self.MCMC[j, :] = self.thetaj.T
 
             if j % self.adpt == 0:
                 self.update_cov(1, j)
