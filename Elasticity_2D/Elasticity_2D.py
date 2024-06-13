@@ -53,6 +53,8 @@ if inp['Method'] == 0:
     # The Metropolis-Hastings technique
     C = MH_mcmc(inp)
     results = C.MH_go()
+    if config['Print chain'] == 1:
+        print(results['MCMC'])
     print('----------------------------------------------')
     print('Metropolis Hastings')
     print('----------------------------------------------')
@@ -66,7 +68,8 @@ elif inp['Method'] == 1:
     # The AMH algorithm 
     A = AMH_mcmc(inp)
     results = A.AMH_go()
-    #print(results['MCMC'])
+    if config['Print chain'] == 1:
+        print(results['MCMC'])
     print('----------------------------------------------')
     print('Adaptive Metropolis Hastings')
     print('----------------------------------------------')
@@ -80,7 +83,8 @@ elif inp['Method'] == 2:
     # The AMH algorithm 
     A = MH_DR_mcmc(inp)
     results = A.MH_DR_go()
-    #print(results['MCMC'])
+    if config['Print chain'] == 1:
+        print(results['MCMC'])
     print('----------------------------------------------')
     print('Metropolis Hastings Delayed Rejection')
     print('----------------------------------------------')
@@ -94,7 +98,8 @@ elif inp['Method'] == 3:
     # The DRAM algorithm 
     A = DRAM_algorithm(inp)
     results = A.DRAM_go()
-    #print(results['MCMC'])
+    if config['Print chain'] == 1:
+        print(results['MCMC'])
     print('----------------------------------------------')
     print('Delayed Rejection Adaptive Metropolis Hastings')
     print('----------------------------------------------')
@@ -108,7 +113,8 @@ elif inp['Method'] == 4:
     #The EnKF algorithm 
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()
-    #print(results['MCMC'])
+    if config['Print chain'] == 1:
+        print(results['MCMC'])
     print('----------------------------------------------')
     print('Ensemble Kalman Filter')
     print('----------------------------------------------')
