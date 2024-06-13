@@ -13,6 +13,7 @@ class EnKF_mcmc():
         self.observations = inp['measurement']
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
+        self.mesh = inp['mesh']
 
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
@@ -23,8 +24,8 @@ class EnKF_mcmc():
         self.X = self.results['MCMC'] #1 x nsamples
         self.Y = np.squeeze(self.results['values']).T #nsamples x nel
         self.thetaj = self.X[:, self.K0 - 2].reshape(-1,1)
-        
-        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj)
+
+        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj, self.mesh)
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
     def Kalman_gain(self, j):
@@ -46,14 +47,14 @@ class EnKF_mcmc():
         while j < self.s:
             KK = self.Kalman_gain(j)
             
-            XX = utilities.forward_model(self.thetaj)
+            XX = utilities.forward_model(self.thetaj, self.mesh)
             dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - XX)
 
             thetas = self.thetaj + dt
 
             thetas = utilities.check_bounds(thetas, self.range)
 
-            newpi, newvalue = utilities.ESS(self.observations, thetas)
+            newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
 
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
 

@@ -13,12 +13,13 @@ class MH_mcmc:
         self.observations = inp['measurement']
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
+        self.mesh = inp['mesh']
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
-        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta)
+        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
         self.results = {}
 
         self.results['values'] = [self.oldvalue*1]
@@ -34,7 +35,7 @@ class MH_mcmc:
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
 
-            newpi, newvalue = utilities.ESS(self.observations, thetas)
+            newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
 
             if np.random.uniform(0, 1) < lam:

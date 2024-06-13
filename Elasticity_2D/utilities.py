@@ -20,7 +20,7 @@ def check_bounds(x, rang):
 
     return x
 
-def ESS(measurements, e):
+def ESS(measurements, e, ms):
     """Calculates EES results of FEM with etsimated E, G_f and the measured data
 
         Args:
@@ -29,7 +29,7 @@ def ESS(measurements, e):
         Returns:
             numpy.array: ESS, resulting FEM
     """
-    arr = forward_model(e)
+    arr = forward_model(e, ms)
     ss1 = np.linalg.norm(measurements - arr)
 
     return ss1, arr
@@ -78,12 +78,12 @@ def Jacobian(xyze, xi, eta):
     Jmat = dNdnat @ natcoord
     return Jmat, np.linalg.det(Jmat)
 
-def forward_model(args):
+def forward_model(args, ms):
     #generate mesh
-    top = [0, 1, 2]
-    bot = [0, 1, 2]
-    left = [0, 1]
-    right = [0, 1]
+    top = ms[0]
+    bot = ms[1]
+    left = ms[2]
+    right = ms[3]
     my_mesh = Mesh(bot, top, left, right)
     d1 = my_mesh.displacement(args[0], args[1])
     return d1

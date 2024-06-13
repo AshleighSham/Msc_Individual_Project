@@ -14,6 +14,7 @@ class DRAM_algorithm():
         self.observations = inp['measurement']
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
+        self.mesh = inp['mesh']
 
         self.eps = 1e-5
         self.adpt = 100
@@ -22,7 +23,7 @@ class DRAM_algorithm():
         self.Kp = 2.4/np.sqrt(self.dim)
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
-        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta)
+        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
 
         self.results = {}
         self.results['values'] = [self.oldvalue*1]
@@ -70,7 +71,7 @@ class DRAM_algorithm():
         while j < self.nsamples:
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
-            newpi, newvalue = utilities.ESS(self.observations, thetas)
+            newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
             if np.random.uniform(0,1) < lam:
                 self.accepted += 1
@@ -82,7 +83,7 @@ class DRAM_algorithm():
                 thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
                 thetass = utilities.check_bounds(thetass, self.range)
 
-                newss2, newvalue2 = utilities.ESS(self.observations, thetass)
+                newss2, newvalue2 = utilities.ESS(self.observations, thetass, self.mesh)
                 k1 = min(1, np.exp(-0.5*(newpi - newss2)/self.sigma))
                 k2 = np.exp(-0.5*(newss2-self.oldpi)/self.sigma)
                 k3 = np.exp(-0.5*(np.linalg.norm(self.invR@(thetass - thetas))**2))

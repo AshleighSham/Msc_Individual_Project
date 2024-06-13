@@ -14,6 +14,8 @@ class AMH_mcmc():
         self.observations = inp['measurement']
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
+        self.mesh = inp['mesh']
+
         self.results ={}
 
         self.eps = 1e-5
@@ -23,7 +25,7 @@ class AMH_mcmc():
         self.Kp = 2.4/np.sqrt(self.dim)
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
-        self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta)
+        self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta, self.mesh)
 
         self.accepted = 0
         self.MCMC[0,:] = self.initial_theta.T
@@ -67,7 +69,7 @@ class AMH_mcmc():
         while j < self.nsamples:
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
-            newpi, _ = utilities.ESS(self.observations, thetas)
+            newpi, _ = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
             if np.random.uniform(0,1) < lam:
                 self.accepted += 1

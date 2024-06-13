@@ -14,6 +14,8 @@ class MH_DR_mcmc():
         self.observations = inp['measurement']
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
+        self.mesh = inp['mesh']
+
         self.results ={}
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
@@ -23,7 +25,7 @@ class MH_DR_mcmc():
         self.invR = np.linalg.solve(self.Rj, np.eye(len(self.Rj[0])))
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
-        self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta)
+        self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta, self.mesh)
 
         self.accepted = 0
         self.MCMC[0,:] = self.initial_theta.T
@@ -35,7 +37,8 @@ class MH_DR_mcmc():
         while j < self.nsamples:
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
-            newpi, _ = utilities.ESS(self.observations, thetas)
+
+            newpi, _ = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
             if np.random.uniform(0,1) < lam:
                 self.accepted += 1
@@ -46,10 +49,12 @@ class MH_DR_mcmc():
                 thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
                 thetass = utilities.check_bounds(thetass, self.range)
 
-                newss2, _ = utilities.ESS(self.observations, thetass)
+                newss2, _ = utilities.ESS(self.observations, thetass, self.mesh)
+
                 k1 = min(1, np.exp(-0.5*(newpi - newss2)/self.sigma))
                 k2 = np.exp(-0.5*(newss2-self.oldpi)/self.sigma)
                 k3 = np.exp(-0.5*(np.linalg.norm(self.invR@(thetass - thetas))**2))
+
                 lam2 = k2*k3*(1-k1)/(1-lam)
                 if np.random.uniform(0,1) < lam2:
                     self.accepted += 1
