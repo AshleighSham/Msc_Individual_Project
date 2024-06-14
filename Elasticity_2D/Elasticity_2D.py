@@ -6,6 +6,7 @@ from EnKF import EnKF_mcmc
 from DRAM import DRAM_algorithm
 from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
+from mesh import Mesh
 
 inp = {}
 
@@ -32,14 +33,21 @@ inp['Kalmans']= config['Starting Kalman point']
 inp['me']=config['Measurement error for Kalman'] 
 
 #mesh set up
-inp['mesh'] = [config['Mesh grid']['top'],
-               config['Mesh grid']['bot'],
-               config['Mesh grid']['left'],
-               config['Mesh grid']['right']]
+inp['mesh'] = [config['Mesh grid']['quad'], 
+               config['Mesh grid']['Nodal Coordinates'], 
+               config['Mesh grid']['Element Node Numbers'],
+               config['Mesh grid']['Number of elements'],
+               config['Mesh grid']['Force Magnitude'],
+               config['Mesh grid']['Force Nodes'],
+               config['Mesh grid']['Fixed Nodes']]
 
 measurements=utilities.forward_model(np.array([[config['True Material Parameters']['Youngs Modulus']],[config['True Material Parameters']['Poissons Ratio']]]), inp['mesh'])
 measurements += np.random.normal(0, config['Measurement Noise'], size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements
+
+my_mesh = Mesh(inp['mesh'])
+my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])
+my_mesh.deformation_plot()
 
 inp['Method'] = config['Methods']['Choosen Method']
 
@@ -53,7 +61,7 @@ if inp['Method'] == 0:
     # The Metropolis-Hastings technique
     C = MH_mcmc(inp)
     results = C.MH_go()
-    if config['Print chain'] == 1:
+    if config['Print Chain'] == 1:
         print(results['MCMC'])
     print('----------------------------------------------')
     print('Metropolis Hastings')
@@ -63,12 +71,15 @@ if inp['Method'] == 0:
     print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
     print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
     print()
+    my_mesh = Mesh(inp['mesh'])
+    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
+    my_mesh.deformation_plot()
 
 elif inp['Method'] == 1:
     # The AMH algorithm 
     A = AMH_mcmc(inp)
     results = A.AMH_go()
-    if config['Print chain'] == 1:
+    if config['Print Chain'] == 1:
         print(results['MCMC'])
     print('----------------------------------------------')
     print('Adaptive Metropolis Hastings')
@@ -78,12 +89,15 @@ elif inp['Method'] == 1:
     print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
     print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
     print()
+    my_mesh = Mesh(inp['mesh'])
+    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
+    my_mesh.deformation_plot()
 
 elif inp['Method'] == 2:
-    # The AMH algorithm 
+    # The MH DR algorithm 
     A = MH_DR_mcmc(inp)
     results = A.MH_DR_go()
-    if config['Print chain'] == 1:
+    if config['Print Chain'] == 1:
         print(results['MCMC'])
     print('----------------------------------------------')
     print('Metropolis Hastings Delayed Rejection')
@@ -93,12 +107,15 @@ elif inp['Method'] == 2:
     print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
     print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
     print()
+    my_mesh = Mesh(inp['mesh'])
+    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
+    my_mesh.deformation_plot()
 
 elif inp['Method'] == 3:
     # The DRAM algorithm 
     A = DRAM_algorithm(inp)
     results = A.DRAM_go()
-    if config['Print chain'] == 1:
+    if config['Print Chain'] == 1:
         print(results['MCMC'])
     print('----------------------------------------------')
     print('Delayed Rejection Adaptive Metropolis Hastings')
@@ -108,12 +125,15 @@ elif inp['Method'] == 3:
     print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
     print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
     print()
+    my_mesh = Mesh(inp['mesh'])
+    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
+    my_mesh.deformation_plot()
 
 elif inp['Method'] == 4:
     #The EnKF algorithm 
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()
-    if config['Print chain'] == 1:
+    if config['Print Chain'] == 1:
         print(results['MCMC'])
     print('----------------------------------------------')
     print('Ensemble Kalman Filter')
@@ -123,3 +143,6 @@ elif inp['Method'] == 4:
     print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
     print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
     print()
+    my_mesh = Mesh(inp['mesh'])
+    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
+    my_mesh.deformation_plot()

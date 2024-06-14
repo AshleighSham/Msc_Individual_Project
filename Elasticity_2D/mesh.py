@@ -1,57 +1,72 @@
 import numpy as np
 import utilities as utilities
+import matplotlib.pyplot as plt
 
 class Mesh():
     # the initialisation procedure
-    def __init__(self, bot, top, left, right):
-        self.bot = bot
-        self.top = top
-        self.left = left
-        self.right = right
-        
-        # number of nodes and elements in the domain
-        self.nnodesx = len(bot)                     # number of horizontal nodes
-        self.nnodesy = len(left)                    # number of vertical nodes 
-        nelx = self.nnodesx-1                       # number of horizontal elements
-        nely = self.nnodesy-1                       # number of vertical elements
-        nnodes = self.nnodesx*self.nnodesy               # total number of nodes    
-        
-        # dimensions of the domain
-        lx = bot[self.nnodesx-1] - bot[0]           # length of the domain in x-direction (horizontal)
-        ly = left[self.nnodesy-1] - left[0]         # length of the domain in y-direction (vertical)
-        
-        # GENERATE COORDINATES OF NODES 'XYZ'
-        self.XYZ = np.zeros((nnodes,2))         # two-column array [nnodes x 2] containing all nodal coordinates  
-        for i in range(self.nnodesy):                # loop over all nodes on the vertical sides 
-            yl = left[i] - left[0]              # distance between node 'i' and left-bottom node '1'
-            dy = right[i] - left[i]             # distance between the corresponing nodes j on top and bottom 
-            for j in range(self.nnodesx):            # loop over all nodes on the horizontal sides
-                xb = bot[j] - bot[0]            # distance between node 'j' and bottom-left node '1' 
-                dx = top[j] - bot[j]            # distance between nodes 'j' on opposite sides (top and bottom)
+    def __init__(self, m):
+        self.m = m
+        quad, NC, ENN, NE, FM, FN, FBCN = self.m
+        if quad != 0:
+            bot = np.array([x for x in range(quad[1])])
+            top = np.array([x for x in range(quad[1])])
+            left = np.array([x for x in range(quad[0])])
+            right = np.array([x for x in range(quad[0])])
+            
+            # number of nodes and elements in the domain
+            self.nnodesx = len(bot)                     # number of horizontal nodes
+            self.nnodesy = len(left)                    # number of vertical nodes 
+            nelx = self.nnodesx-1                       # number of horizontal elements
+            nely = self.nnodesy-1                       # number of vertical elements
+            nnodes = self.nnodesx*self.nnodesy               # total number of nodes    
+            
+            # dimensions of the domain
+            lx = bot[self.nnodesx-1] - bot[0]           # length of the domain in x-direction (horizontal)
+            ly = left[self.nnodesy-1] - left[0]         # length of the domain in y-direction (vertical)
+            
+            # GENERATE COORDINATES OF NODES 'XYZ'
+            self.XYZ = np.zeros((nnodes,2))         # two-column array [nnodes x 2] containing all nodal coordinates  
+            for i in range(self.nnodesy):                # loop over all nodes on the vertical sides 
+                yl = left[i] - left[0]              # distance between node 'i' and left-bottom node '1'
+                dy = right[i] - left[i]             # distance between the corresponing nodes j on top and bottom 
+                for j in range(self.nnodesx):            # loop over all nodes on the horizontal sides
+                    xb = bot[j] - bot[0]            # distance between node 'j' and bottom-left node '1' 
+                    dx = top[j] - bot[j]            # distance between nodes 'j' on opposite sides (top and bottom)
 
-                x = (dx*yl+xb*ly)/(ly-dx*dy/lx) # x-coordinate (horizontal) of a node in the interior of the domain
-                y = dy/lx*x+yl                  # y-coordinate (vertical) of a node in the interior of the domain
+                    x = (dx*yl+xb*ly)/(ly-dx*dy/lx) # x-coordinate (horizontal) of a node in the interior of the domain
+                    y = dy/lx*x+yl                  # y-coordinate (vertical) of a node in the interior of the domain
 
-                self.XYZ[j+i*self.nnodesx, 0] = x + bot[0]  # coordinate 'x' in the global coordinate system 
-                self.XYZ[j+i*self.nnodesx, 1] = y + left[0] # coordinate 'y' in the global coordinate system
+                    self.XYZ[j+i*self.nnodesx, 0] = x + bot[0]  # coordinate 'x' in the global coordinate system 
+                    self.XYZ[j+i*self.nnodesx, 1] = y + left[0] # coordinate 'y' in the global coordinate system
 
-        # NODE NUMBERS FOR ELEMENTS 
-        self.nel = nelx*nely                              # total number of elements in the domain
-        self.CON = np.zeros((self.nel,4), dtype=int)           # [nel*4] array of node number for each element
-        for i in range(nely):                        # loop over elements in the vertical direction 
-            for j in range(nelx):                    # loop over elements in the horizontal direction 
-                # element 'el' and corresponding node numbers
-                self.CON[j+i*nelx, :] = [j+i*self.nnodesx, j+i*self.nnodesx+1,j+(i+1)*self.nnodesx+1, j+(i+1)*self.nnodesx] 
+            # NODE NUMBERS FOR ELEMENTS 
+            self.nel = nelx*nely                              # total number of elements in the domain
+            self.CON = np.zeros((self.nel,4), dtype=int)           # [nel*4] array of node number for each element
+            for i in range(nely):                        # loop over elements in the vertical direction 
+                for j in range(nelx):                    # loop over elements in the horizontal direction 
+                    # element 'el' and corresponding node numbers
+                    self.CON[j+i*nelx, :] = [j+i*self.nnodesx, j+i*self.nnodesx+1,j+(i+1)*self.nnodesx+1, j+(i+1)*self.nnodesx] 
 
-        # Global DOF for each element (4-node (linear) quadrilateral element)
+
+
+        else:
+            self.XYZ = np.array(NC)
+            self.CON = np.array(ENN)
+            self.nel = NE
+            self.DOF = np.zeros((self.nel,2*4), dtype=int)
+
         self.DOF = np.zeros((self.nel,2*4), dtype=int)
         for i in range(self.nel):
             # defines single row of DOF for each element 'i'
             self.DOF[i,:] = [self.CON[i,0]*2, self.CON[i,1]*2-1, self.CON[i,1]*2, \
-                             self.CON[i,1]*2+1, self.CON[i,2]*2, self.CON[i,2]*2+1, \
-                             self.CON[i,3]*2, self.CON[i,3]*2+1]
-            
+                            self.CON[i,1]*2+1, self.CON[i,2]*2, self.CON[i,2]*2+1, \
+                            self.CON[i,3]*2, self.CON[i,3]*2+1]
+
         self.ndofs = 2 * len(self.XYZ)
+
+        self.force = FM
+        self.forcenodes = np.array(FN)
+        self.BCnodes = np.array(FBCN)
     
     def eff_el(self):
         # calculate the effective elasticity of the system
@@ -105,22 +120,17 @@ class Mesh():
 
     # Function which returns global DOFs given fixed nodes, and a list of internal left boundary nodes
     def BC_fun(self):
-        
-        # Identify fixed left nodes
-        fixed_nodes = np.array([x*self.nnodesx for x in range(self.nnodesy)])
-
         #DOFs
-        fnDOFs = np.r_[fixed_nodes*2,fixed_nodes*2+1]
+        fnDOFs = np.r_[self.BCnodes*2,self.BCnodes*2+1]
 
         # Get array of DOFs after removing fixed nodes
         BCleft = np.arange(self.ndofs)
         self.BC = np.setdiff1d(BCleft,fnDOFs)
 
     def force_vector(self):
-        rnodes = np.array([self.nnodesx - 1 + i*self.nnodesx for i in range(self.nnodesy)])
-        force = 10
+        rnodes = self.forcenodes
         f = np.zeros((self.ndofs, 1))
-        f[2*rnodes] = force
+        f[2*rnodes] = self.force
         self.f = f[self.BC]
 
     def dispstrain_B(self, xyze,xi,eta):
@@ -208,6 +218,32 @@ class Mesh():
         dm = np.linalg.solve(self.K, self.f)
         d = np.zeros((self.ndofs, 1))
         d[self.BC] = dm
-
+        self.d = d
         return d
+
+    def plot_fun(self):
+        ax, fig = plt.subplots()
+        plt.plot(self.XYZ[:, 0], self.XYZ[:, 1], 'sk')
+        for i in range(len(self.CON)):
+            plt.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False)
+        plt.show()
+        
+    def deformation_plot(self):
+        ccc1=np.array(self.XYZ[:,0])
+        ccc2=np.array(self.d[0:len(self.d):2]).reshape(-1)
+        ccc= np.array(ccc1+ccc2) 
+
+        ddd1=np.array(self.XYZ[:,1])
+        ddd2=np.array(self.d[1:len(self.d):2]).reshape(-1)
+        ddd= np.array(ddd1+ddd2)
+
+        figure = plt.figure()
+        plt.plot(self.XYZ[:,0], self.XYZ[:, 1],'sk', markersize='10')
+        plt.plot(self.XYZ[:,0] + self.d[0:len(self.d):2].reshape(-1), self.XYZ[:,1] + self.d[1:len(self.d):2].reshape(-1), 'or',markersize='10')
+        plt.title("Deformed Material")
+
+        for i in range(len(self.CON)):
+            plt.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False)
+            plt.fill(self.XYZ[self.CON[i, :], 0] + ccc2[(self.CON[i, :])], self.XYZ[self.CON[i, :], 1] + ddd2[(self.CON[i, :])], edgecolor='r', fill=False)
+        plt.show()
 

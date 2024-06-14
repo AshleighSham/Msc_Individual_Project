@@ -80,10 +80,6 @@ def Jacobian(xyze, xi, eta):
 
 def forward_model(args, ms):
     #generate mesh
-    top = ms[0]
-    bot = ms[1]
-    left = ms[2]
-    right = ms[3]
-    my_mesh = Mesh(bot, top, left, right)
+    my_mesh = Mesh(ms)
     d1 = my_mesh.displacement(args[0], args[1])
     return d1
