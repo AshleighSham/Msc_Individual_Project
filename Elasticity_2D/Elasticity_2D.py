@@ -9,6 +9,8 @@ from MH_DR import MH_DR_mcmc
 from mesh import Mesh
 import matplotlib.pyplot as plt
 
+fig, ax1 = plt.subplots()
+
 inp = {}
 
 # range of the parameters based on the prior density
@@ -46,9 +48,10 @@ measurements=utilities.forward_model(np.array([[config['True Material Parameters
 measurements += np.random.normal(0, config['Measurement Noise'], size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements
 
+lines = []
 my_mesh = Mesh(inp['mesh'])
 my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])
-my_mesh.deformation_plot(title = f'True Deformation, E: %.3f, v: %.3f' % (config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']))
+my_mesh.deformation_plot(label = f'True Deformation, E: %.3f, v: %.3f' % (config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']), colour= 'r', ch = 'or', ax = ax1, lines = lines, ls = 'solid')
 
 inp['Method'] = config['Methods']['Choosen Method']
 
@@ -74,7 +77,7 @@ if inp['Method'] == 0:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
+    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
 
 
 elif inp['Method'] == 1:
@@ -93,7 +96,7 @@ elif inp['Method'] == 1:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
+    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
 
 elif inp['Method'] == 2:
     # The MH DR algorithm 
@@ -111,7 +114,7 @@ elif inp['Method'] == 2:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
+    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
 
 elif inp['Method'] == 3:
     # The DRAM algorithm 
@@ -129,7 +132,7 @@ elif inp['Method'] == 3:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
+    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
 
 elif inp['Method'] == 4:
     #The EnKF algorithm 
@@ -147,6 +150,13 @@ elif inp['Method'] == 4:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
+    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
 
+ax1.set_title('Deformation Plot', fontsize = 25)
+plt.subplots_adjust(bottom = 0.1)
+fig.legend([lines[1], lines[-1]], 
+           [f'True Deformation, E: %.3f, v: %.3f' % (config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']) ,
+            f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))], 
+           ncol=2, 
+           loc = 'lower center')
 plt.show()

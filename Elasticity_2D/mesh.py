@@ -228,7 +228,7 @@ class Mesh():
             plt.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False)
         plt.show()
         
-    def deformation_plot(self, title):
+    def deformation_plot(self, label, colour, ch, ax, lines, ls):
         ccc1=np.array(self.XYZ[:,0])
         ccc2=np.array(self.d[0:len(self.d):2]).reshape(-1)
         ccc= np.array(ccc1+ccc2) 
@@ -237,12 +237,12 @@ class Mesh():
         ddd2=np.array(self.d[1:len(self.d):2]).reshape(-1)
         ddd= np.array(ddd1+ddd2)
 
-        figure = plt.figure()
-        plt.plot(self.XYZ[:,0], self.XYZ[:, 1],'sk', markersize='10')
-        plt.plot(self.XYZ[:,0] + self.d[0:len(self.d):2].reshape(-1), self.XYZ[:,1] + self.d[1:len(self.d):2].reshape(-1), 'or',markersize='10')
-        plt.title(title)
+        #figure = plt.figure()
+        lines += ax.plot(self.XYZ[:,0], self.XYZ[:, 1],'sk', markersize='6', zorder = 1, alpha = 0.6)
+        lines += ax.plot(self.XYZ[:,0] + self.d[0:len(self.d):2].reshape(-1), self.XYZ[:,1] + self.d[1:len(self.d):2].reshape(-1), ch ,markersize='10', label = label, zorder = 5, alpha = 1)
+        #plt.title(title)
 
         for i in range(len(self.CON)):
-            plt.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False)
-            plt.fill(self.XYZ[self.CON[i, :], 0] + ccc2[(self.CON[i, :])], self.XYZ[self.CON[i, :], 1] + ddd2[(self.CON[i, :])], edgecolor='r', fill=False)
+            ax.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False, zorder = 1, alpha = 0.6)
+            ax.fill(self.XYZ[self.CON[i, :], 0] + ccc2[(self.CON[i, :])], self.XYZ[self.CON[i, :], 1] + ddd2[(self.CON[i, :])], edgecolor = colour, linestyle = ls, fill=False, label = label, zorder = 5, alpha = 1, linewidth = 2.5)
 
