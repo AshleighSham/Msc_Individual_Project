@@ -70,15 +70,6 @@ if inp['Method'] == 0:
     print('----------------------------------------------')
     print('Metropolis Hastings')
     print('----------------------------------------------')
-    print('Acceptance Rate: %.3f' % results['accepted'])
-    print('Number of Samples: %.0f' % config['Number of samples'])
-    print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
-    print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
-    print()
-    my_mesh = Mesh(inp['mesh'])
-    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
-
 
 elif inp['Method'] == 1:
     # The AMH algorithm 
@@ -89,14 +80,6 @@ elif inp['Method'] == 1:
     print('----------------------------------------------')
     print('Adaptive Metropolis Hastings')
     print('----------------------------------------------')
-    print('Acceptance Rate: %.3f' % results['accepted'])
-    print('Number of Samples: %.0f' % config['Number of samples'])
-    print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
-    print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
-    print()
-    my_mesh = Mesh(inp['mesh'])
-    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
 
 elif inp['Method'] == 2:
     # The MH DR algorithm 
@@ -107,14 +90,6 @@ elif inp['Method'] == 2:
     print('----------------------------------------------')
     print('Metropolis Hastings Delayed Rejection')
     print('----------------------------------------------')
-    print('Acceptance Rate: %.3f' % results['accepted'])
-    print('Number of Samples: %.0f' % config['Number of samples'])
-    print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
-    print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
-    print()
-    my_mesh = Mesh(inp['mesh'])
-    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
 
 elif inp['Method'] == 3:
     # The DRAM algorithm 
@@ -125,14 +100,6 @@ elif inp['Method'] == 3:
     print('----------------------------------------------')
     print('Delayed Rejection Adaptive Metropolis Hastings')
     print('----------------------------------------------')
-    print('Acceptance Rate: %.3f' % results['accepted'])
-    print('Number of Samples: %.0f' % config['Number of samples'])
-    print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
-    print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
-    print()
-    my_mesh = Mesh(inp['mesh'])
-    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
 
 elif inp['Method'] == 4:
     #The EnKF algorithm 
@@ -143,14 +110,15 @@ elif inp['Method'] == 4:
     print('----------------------------------------------')
     print('Ensemble Kalman Filter')
     print('----------------------------------------------')
-    print('Acceptance Rate: %.3f' % results['accepted'])
-    print('Number of Samples: %.0f' % config['Number of samples'])
-    print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
-    print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
-    print()
-    my_mesh = Mesh(inp['mesh'])
-    my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
+   
+print('Acceptance Rate: %.3f' % results['accepted'])
+print('Number of Samples: %.0f' % config['Number of samples'])
+print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
+print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
+print()
+my_mesh = Mesh(inp['mesh'])
+my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
+my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
 
 ax1.set_title('Deformation Plot', fontsize = 25)
 plt.subplots_adjust(bottom = 0.1)
