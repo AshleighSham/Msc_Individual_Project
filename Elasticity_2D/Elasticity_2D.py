@@ -7,6 +7,7 @@ from DRAM import DRAM_algorithm
 from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
 from mesh import Mesh
+import matplotlib.pyplot as plt
 
 inp = {}
 
@@ -47,7 +48,7 @@ inp['measurement'] = measurements
 
 my_mesh = Mesh(inp['mesh'])
 my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])
-my_mesh.deformation_plot()
+my_mesh.deformation_plot(title = f'True Deformation, E: %.3f, v: %.3f' % (config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']))
 
 inp['Method'] = config['Methods']['Choosen Method']
 
@@ -73,7 +74,8 @@ if inp['Method'] == 0:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot()
+    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
+
 
 elif inp['Method'] == 1:
     # The AMH algorithm 
@@ -91,7 +93,7 @@ elif inp['Method'] == 1:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot()
+    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
 
 elif inp['Method'] == 2:
     # The MH DR algorithm 
@@ -109,7 +111,7 @@ elif inp['Method'] == 2:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot()
+    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
 
 elif inp['Method'] == 3:
     # The DRAM algorithm 
@@ -127,7 +129,7 @@ elif inp['Method'] == 3:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot()
+    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
 
 elif inp['Method'] == 4:
     #The EnKF algorithm 
@@ -145,4 +147,6 @@ elif inp['Method'] == 4:
     print()
     my_mesh = Mesh(inp['mesh'])
     my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-    my_mesh.deformation_plot()
+    my_mesh.deformation_plot(title = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])))
+
+plt.show()

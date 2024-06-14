@@ -228,7 +228,7 @@ class Mesh():
             plt.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False)
         plt.show()
         
-    def deformation_plot(self):
+    def deformation_plot(self, title):
         ccc1=np.array(self.XYZ[:,0])
         ccc2=np.array(self.d[0:len(self.d):2]).reshape(-1)
         ccc= np.array(ccc1+ccc2) 
@@ -240,10 +240,9 @@ class Mesh():
         figure = plt.figure()
         plt.plot(self.XYZ[:,0], self.XYZ[:, 1],'sk', markersize='10')
         plt.plot(self.XYZ[:,0] + self.d[0:len(self.d):2].reshape(-1), self.XYZ[:,1] + self.d[1:len(self.d):2].reshape(-1), 'or',markersize='10')
-        plt.title("Deformed Material")
+        plt.title(title)
 
         for i in range(len(self.CON)):
             plt.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False)
             plt.fill(self.XYZ[self.CON[i, :], 0] + ccc2[(self.CON[i, :])], self.XYZ[self.CON[i, :], 1] + ddd2[(self.CON[i, :])], edgecolor='r', fill=False)
-        plt.show()
 
