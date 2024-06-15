@@ -67,6 +67,7 @@ if inp['Method'] == 0:
     results = C.MH_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Poissons Ratio'], [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']])
     print('----------------------------------------------')
     print('Metropolis Hastings')
     print('----------------------------------------------')
@@ -77,6 +78,7 @@ elif inp['Method'] == 1:
     results = A.AMH_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Poissons Ratio'], [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']])
     print('----------------------------------------------')
     print('Adaptive Metropolis Hastings')
     print('----------------------------------------------')
@@ -87,6 +89,7 @@ elif inp['Method'] == 2:
     results = A.MH_DR_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Poissons Ratio'], [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']])
     print('----------------------------------------------')
     print('Metropolis Hastings Delayed Rejection')
     print('----------------------------------------------')
@@ -97,6 +100,7 @@ elif inp['Method'] == 3:
     results = A.DRAM_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Poissons Ratio'], [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']])
     print('----------------------------------------------')
     print('Delayed Rejection Adaptive Metropolis Hastings')
     print('----------------------------------------------')
