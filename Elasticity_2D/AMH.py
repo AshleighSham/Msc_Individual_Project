@@ -67,7 +67,8 @@ class AMH_mcmc():
     def AMH_go(self):
         j = 1
         while j < self.nsamples:
-            thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
+            #thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
+            thetas = self.thetaj + self.R2@np.array([[np.random.normal()], [np.random.normal(0,0.3)]])
             thetas = utilities.check_bounds(thetas, self.range)
             newpi, _ = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))

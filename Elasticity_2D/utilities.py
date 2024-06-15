@@ -1,5 +1,6 @@
 import numpy as np
 from mesh import Mesh
+import matplotlib.pyplot as plt
 
 def check_bounds(x, rang):
     """Check that the proposed thetas are within the defined ranges.
@@ -83,3 +84,26 @@ def forward_model(args, ms):
     my_mesh = Mesh(ms)
     d1 = my_mesh.displacement(args[0], args[1])
     return d1
+
+f = lambda x: np.exp(-0.5*x**2)*(2*np.pi)**-1
+def normalkernel(x, u):
+    a = 0
+    h = 1.06*np.sqrt(np.var(u))*len(u)**-0.2
+    N = len(u)
+    for i in u:
+        a += f((x - i)* h**-1)
+    a *= (N*h)**-1
+    return a
+
+def histogram(data, titles, truevalues):
+    figh, axes = plt.subplots(len(data), 1)
+    for i in range(len(data)):
+        axes[i].hist(data[i], 50, density = True, alpha = 0.9, color = 'plum')
+        axes[i].set_title(f'Prosterior Distribution for the {titles[i]}')
+        X = np.linspace(min(data[i]), max(data[i]), 100)
+        axes[i].plot(X, [4*normalkernel(x, data[i]) for x in X], color = 'rebeccapurple', alpha =0.9, linewidth = 2)
+        axes[i].axvline(np.median(data[i]), linestyle = (0,(4,2)), alpha = 0.75, color = 'rebeccapurple', label = 'Posterior Median', linewidth = 1.8)
+        axes[i].axvline(truevalues[i], alpha = 0.8, linestyle = (0,(4,8)), color = 'k', label = 'True Value', linewidth = 1.8)
+        axes[i].grid()
+        axes[i].legend()
+

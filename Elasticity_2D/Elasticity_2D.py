@@ -51,7 +51,7 @@ inp['measurement'] = measurements
 lines = []
 my_mesh = Mesh(inp['mesh'])
 my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])
-my_mesh.deformation_plot(label = f'True Deformation, E: %.3f, v: %.3f' % (config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']), colour= 'r', ch = 'or', ax = ax1, lines = lines, ls = 'solid')
+my_mesh.deformation_plot(label = f'True Deformation, E: %.3f, v: %.3f' % (config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']), colour= 'plum', ch = 1, ax = ax1, lines = lines, ls = 'solid')
 
 inp['Method'] = config['Methods']['Choosen Method']
 
@@ -107,6 +107,7 @@ elif inp['Method'] == 4:
     results = B.EnKF_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Poissons Ratio'], [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']])
     print('----------------------------------------------')
     print('Ensemble Kalman Filter')
     print('----------------------------------------------')
@@ -118,13 +119,14 @@ print('The median of the Poissons Ratio posterior is: %f' % np.median(results['M
 print()
 my_mesh = Mesh(inp['mesh'])
 my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(5,5)),colour = 'b', ch = 'ob', ax = ax1, lines = lines)
+my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(3,5)),colour = 'rebeccapurple', ch = 0.9, ax = ax1, lines = lines)
 
 ax1.set_title('Deformation Plot', fontsize = 25)
 plt.subplots_adjust(bottom = 0.1)
-fig.legend([lines[1], lines[-1]], 
-           [f'True Deformation, E: %.3f, v: %.3f' % (config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']) ,
-            f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))], 
-           ncol=2, 
-           loc = 'lower center')
+fig.legend()
+# fig.legend([lines[1], lines[-1]], 
+#            [f'True Deformation, E: %.3f, v: %.3f' % (config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']) ,
+#             f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))], 
+#            ncol=2, 
+#            loc = 'lower center')
 plt.show()

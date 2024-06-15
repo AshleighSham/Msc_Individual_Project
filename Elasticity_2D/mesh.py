@@ -238,11 +238,11 @@ class Mesh():
         ddd= np.array(ddd1+ddd2)
 
         #figure = plt.figure()
-        lines += ax.plot(self.XYZ[:,0], self.XYZ[:, 1],'sk', markersize='6', zorder = 1, alpha = 0.6)
-        lines += ax.plot(self.XYZ[:,0] + self.d[0:len(self.d):2].reshape(-1), self.XYZ[:,1] + self.d[1:len(self.d):2].reshape(-1), ch ,markersize='10', label = label, zorder = 5, alpha = 1)
+        ax.plot(self.XYZ[:,0], self.XYZ[:, 1],'sk', markersize='6', zorder = 1, alpha = 0.6)
+        ax.scatter(self.XYZ[:,0] + self.d[0:len(self.d):2].reshape(-1), self.XYZ[:,1] + self.d[1:len(self.d):2].reshape(-1), c = colour ,s=60, label = label, zorder = 5, alpha = ch)
         #plt.title(title)
 
         for i in range(len(self.CON)):
             ax.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False, zorder = 1, alpha = 0.6)
-            ax.fill(self.XYZ[self.CON[i, :], 0] + ccc2[(self.CON[i, :])], self.XYZ[self.CON[i, :], 1] + ddd2[(self.CON[i, :])], edgecolor = colour, linestyle = ls, fill=False, label = label, zorder = 5, alpha = 1, linewidth = 2.5)
+            ax.fill(self.XYZ[self.CON[i, :], 0] + ccc2[(self.CON[i, :])], self.XYZ[self.CON[i, :], 1] + ddd2[(self.CON[i, :])], edgecolor = colour, linestyle = ls, fill=False, zorder = 5, alpha = ch, linewidth = 3)
 

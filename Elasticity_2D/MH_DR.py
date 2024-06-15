@@ -35,7 +35,8 @@ class MH_DR_mcmc():
     def MH_DR_go(self):
         j = 1
         while j < self.nsamples:
-            thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
+            #thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
+            thetas = self.thetaj + self.R2@np.array([[np.random.normal()], [np.random.normal(0,0.3)]])
             thetas = utilities.check_bounds(thetas, self.range)
 
             newpi, _ = utilities.ESS(self.observations, thetas, self.mesh)
@@ -46,7 +47,8 @@ class MH_DR_mcmc():
                 self.oldpi = newpi
 
             else:
-                thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
+                #thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
+                thetass = self.thetaj + self.R2@np.array([[np.random.normal()], [np.random.normal(0,0.3)]])
                 thetass = utilities.check_bounds(thetass, self.range)
 
                 newss2, _ = utilities.ESS(self.observations, thetass, self.mesh)
