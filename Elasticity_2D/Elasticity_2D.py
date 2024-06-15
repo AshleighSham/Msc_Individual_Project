@@ -128,9 +128,4 @@ my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (n
 ax1.set_title('Deformation Plot', fontsize = 25)
 plt.subplots_adjust(bottom = 0.1)
 fig.legend()
-# fig.legend([lines[1], lines[-1]], 
-#            [f'True Deformation, E: %.3f, v: %.3f' % (config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']) ,
-#             f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))], 
-#            ncol=2, 
-#            loc = 'lower center')
 plt.show()

@@ -32,8 +32,7 @@ class MH_mcmc:
     def MH_go(self):
         j = 1
         while j < self.nsamples:
-            #thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
-            thetas = self.thetaj + self.R2@np.array([[np.random.normal()], [np.random.normal(0,0.3)]])
+            thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
 
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)

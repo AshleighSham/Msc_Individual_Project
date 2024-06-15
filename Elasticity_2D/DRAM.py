@@ -69,8 +69,7 @@ class DRAM_algorithm():
     def DRAM_go(self):
         j = 1
         while j < self.nsamples:
-            #thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
-            thetas = self.thetaj + self.Rj@np.array([[np.random.normal()], [np.random.normal(0,0.3)]])
+            thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
@@ -81,8 +80,7 @@ class DRAM_algorithm():
                 self.oldvalue = newvalue
 
             else:
-                #thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
-                thetass = self.thetaj + self.R2@np.array([[np.random.normal()], [np.random.normal(0,0.3)]])
+                thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
                 thetass = utilities.check_bounds(thetass, self.range)
 
                 newss2, newvalue2 = utilities.ESS(self.observations, thetass, self.mesh)

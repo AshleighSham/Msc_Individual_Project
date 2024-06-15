@@ -1,27 +1,27 @@
 {
   "Initial Material Parameters": {
     "Youngs Modulus": 10,
-    "Poissons Ratio": 0.2
+    "Poissons Ratio": 0.4
   },
 
   "True Material Parameters": {
     "Youngs Modulus": 30,
-    "Poissons Ratio": 0.1
+    "Poissons Ratio": 0.2
   },
 
   "Imposed limits": {
     "Youngs Modulus": [1, 60],
-    "Poissons Ratio": [0.01, 0.5]
+    "Poissons Ratio": [1e-10, 0.5]
   },
 
   "Initial Variance": {
-    "Youngs Modulus": 5,
-    "Poissons Ratio": 0.05
+    "Youngs Modulus": 10,
+    "Poissons Ratio": 1e-3
   },
 
-  "Standard Deviation": 0.1,
+  "Standard Deviation": 0.05,
 
-  "Number of samples": 1000,
+  "Number of samples": 1500,
 
   "Starting Kalman point": 200,
 
@@ -60,7 +60,7 @@
       [10, 11, 15, 14]
     ],
     "Number of elements": 8,
-    "Force Magnitude": 5,
+    "Force Magnitude": 20,
     "Force Nodes": [7, 11],
     "Fixed Nodes": [0, 4, 8, 12]
   },

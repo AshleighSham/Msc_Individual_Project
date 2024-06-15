@@ -210,7 +210,6 @@ class Mesh():
         self.K = K[np.ix_(self.BC,self.BC)] # Pin fixed nodes
 
     def displacement(self, E, nu):
-
         D = self.plane_stress(E, nu)
         self.BC_fun()
         self.force_vector()
