@@ -10,6 +10,7 @@ from mesh import Mesh
 import matplotlib.pyplot as plt
 
 fig, ax1 = plt.subplots()
+plt.subplots_adjust(bottom = 0.1)
 
 inp = {}
 
@@ -126,6 +127,6 @@ my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]
 my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(3,5)),colour = 'rebeccapurple', ch = 0.9, ax = ax1, lines = lines)
 
 ax1.set_title('Deformation Plot', fontsize = 25)
-plt.subplots_adjust(bottom = 0.1)
-fig.legend()
+fig.legend(loc = 'lower center', ncols=2)
+
 plt.show()
