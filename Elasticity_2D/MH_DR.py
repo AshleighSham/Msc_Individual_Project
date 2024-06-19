@@ -15,6 +15,7 @@ class MH_DR_mcmc():
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
         self.mesh = inp['mesh']
+        self.adpt = inp['adapt']
 
         self.results ={}
 

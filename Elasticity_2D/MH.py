@@ -14,6 +14,7 @@ class MH_mcmc:
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
         self.mesh = inp['mesh']
+        self.adpt = inp['adapt']
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)

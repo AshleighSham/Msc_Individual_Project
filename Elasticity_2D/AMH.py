@@ -15,11 +15,10 @@ class AMH_mcmc():
         self.K0 = inp['Kalmans']
         self.m0 = inp['me']
         self.mesh = inp['mesh']
-
+        self.adpt = inp['adapt']
         self.results ={}
 
         self.eps = 1e-5
-        self.adpt = 100
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
         self.Kp = 2.4/np.sqrt(self.dim)

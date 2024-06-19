@@ -29,6 +29,8 @@
 
   "Measurement Noise": 0.01,
 
+  "Adaption Step Size": 50,
+
   "Mesh grid": {
     "quad": 0,
     "Nodal Coordinates": [

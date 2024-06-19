@@ -36,6 +36,9 @@ inp['Kalmans']= config['Starting Kalman point']
 # assumed measurement error for Kalman MCMC
 inp['me']=config['Measurement error for Kalman'] 
 
+#adaption setp size
+inp['adapt'] = config['Adaption Step Size']
+
 #mesh set up
 inp['mesh'] = [config['Mesh grid']['quad'], 
                config['Mesh grid']['Nodal Coordinates'], 
@@ -119,8 +122,8 @@ elif inp['Method'] == 4:
    
 print('Acceptance Rate: %.3f' % results['accepted'])
 print('Number of Samples: %.0f' % config['Number of samples'])
-print('The median of the Youngs Modulus posterior is: %f' % np.median(results['MCMC'][0]))
-print('The median of the Poissons Ratio posterior is: %f' % np.median(results['MCMC'][1]))
+print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][0]), np.sqrt(np.var(results['MCMC'][0]))))
+print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][1]), np.sqrt(np.var(results['MCMC'][1]))))
 print()
 my_mesh = Mesh(inp['mesh'])
 my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
