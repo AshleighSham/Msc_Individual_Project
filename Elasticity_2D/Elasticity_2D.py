@@ -41,6 +41,7 @@ inp['adapt'] = config['Adaption Step Size']
 
 #mesh set up
 inp['mesh'] = [config['Mesh grid']['quad'], 
+               config['Mesh grid']['sf'],
                config['Mesh grid']['Nodal Coordinates'], 
                config['Mesh grid']['Element Node Numbers'],
                config['Mesh grid']['Number of elements'],

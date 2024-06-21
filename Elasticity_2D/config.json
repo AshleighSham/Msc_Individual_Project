@@ -1,16 +1,16 @@
 {
   "Initial Material Parameters": {
     "Youngs Modulus": 10,
-    "Poissons Ratio": 0.4
-  },
-
-  "True Material Parameters": {
-    "Youngs Modulus": 30,
     "Poissons Ratio": 0.2
   },
 
+  "True Material Parameters": {
+    "Youngs Modulus": 40,
+    "Poissons Ratio": 0.3
+  },
+
   "Imposed limits": {
-    "Youngs Modulus": [1, 60],
+    "Youngs Modulus": [0.1, 60],
     "Poissons Ratio": [1e-10, 0.5]
   },
 
@@ -21,7 +21,7 @@
 
   "Standard Deviation": 0.05,
 
-  "Number of samples": 1500,
+  "Number of samples": 1000,
 
   "Starting Kalman point": 200,
 
@@ -32,7 +32,8 @@
   "Adaption Step Size": 50,
 
   "Mesh grid": {
-    "quad": 0,
+    "sf": 0.02,
+    "quad": [7, 31],
     "Nodal Coordinates": [
       [0, 0],
       [1, 0],
@@ -53,6 +54,7 @@
     ],
     "Element Node Numbers": [
       [0, 1, 5, 4],
+      [1, 2, 6, 5],
       [2, 3, 7, 6],
       [4, 5, 9, 8],
       [5, 6, 10, 9],
@@ -61,10 +63,10 @@
       [9, 10, 14, 13],
       [10, 11, 15, 14]
     ],
-    "Number of elements": 8,
-    "Force Magnitude": 20,
-    "Force Nodes": [7, 11],
-    "Fixed Nodes": [0, 4, 8, 12]
+    "Number of elements": 9,
+    "Force Magnitude": 3e-3,
+    "Force Nodes": [30, 61, 92, 123, 154, 185, 216],
+    "Fixed Nodes": [0, 31, 62, 93, 124, 155, 186]
   },
 
   "Methods": {
@@ -73,7 +75,7 @@
     "Metropolis Hastings Delyayed Rejection": 2,
     "Delayed Rejection Adaptive Metropolis Hastings": 3,
     "Ensemble Kalman Filter": 4,
-    "Choosen Method": 4
+    "Choosen Method": 2
   },
   "Print Chain": 0
 }

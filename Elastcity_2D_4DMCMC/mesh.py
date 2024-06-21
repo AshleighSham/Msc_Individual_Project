@@ -6,7 +6,7 @@ class Mesh():
     # the initialisation procedure
     def __init__(self, m):
         self.m = m
-        quad, scfa, NC, ENN, NE, FM, FN, FBCN = self.m
+        quad, scfa, NC, ENN, NE, FM, FN, FBCN, eID = self.m
         if quad != 0:
             bot = np.array([x for x in range(quad[1])])
             top = np.array([x for x in range(quad[1])])
@@ -40,6 +40,7 @@ class Mesh():
                     self.XYZ[j+i*self.nnodesx, 1] = y + left[0] # coordinate 'y' in the global coordinate system
                     
             self.XYZ = self.XYZ*scfa
+            
             # NODE NUMBERS FOR ELEMENTS 
             self.nel = nelx*nely                              # total number of elements in the domain
             self.CON = np.zeros((self.nel,4), dtype=int)           # [nel*4] array of node number for each element
@@ -49,10 +50,14 @@ class Mesh():
                     self.CON[j+i*nelx, :] = [j+i*self.nnodesx, j+i*self.nnodesx+1,j+(i+1)*self.nnodesx+1, j+(i+1)*self.nnodesx] 
 
         else:
-            self.XYZ = np.array(NC)*scfa
+            self.XYZ = scfa*np.array(NC)
             self.CON = np.array(ENN)
             self.nel = NE
             self.DOF = np.zeros((self.nel,2*4), dtype=int)
+
+        self.IDS = np.array(eID)
+
+            
 
         self.DOF = np.zeros((self.nel,2*4), dtype=int)
         for i in range(self.nel):
@@ -62,6 +67,7 @@ class Mesh():
                             self.CON[i,3]*2, self.CON[i,3]*2+1]
 
         self.ndofs = 2 * len(self.XYZ)
+
         self.force = FM
         self.forcenodes = np.array(FN)
         self.BCnodes = np.array(FBCN)
@@ -102,18 +108,17 @@ class Mesh():
         # this method terminates WITHOUT returning a value.
         # it's sole effect is to modify the state of the mesh object.
 
-    def plane_stress(self, E, nu):
+    def plane_stress(self, E,nu):
     
-        D=np.zeros((3*self.nel,3))                                           #elasticity matrix - DIM: [3*element number X 3]
+        D=np.zeros((3*len(E),3))                                           #elasticity matrix - DIM: [3*element number X 3]
         
-        for i in range(self.nel):
-            C = E/(1 - nu**2)
+        for i in range(len(E)):
+            C = E[i]/(1 - nu[i]**2)
             D[i*3][0] = C
-            D[i*3][1] = C*nu
-            D[i*3+1][0] = C*nu
-            D[i*3+1][1] = C
-            D[i*3 +2][2] = C*0.5*(1 - nu)
-            
+            D[i*3][1] = C * nu[i]
+            D[i*3 + 1][0] = C * nu[i]
+            D[i*3 + 1][1] = C
+            D[i*3 + 2][2] = C * (1 - nu[i])/2
         return D
 
     # Function which returns global DOFs given fixed nodes, and a list of internal left boundary nodes
@@ -207,7 +212,9 @@ class Mesh():
 
         self.K = K[np.ix_(self.BC,self.BC)] # Pin fixed nodes
 
-    def displacement(self, E, nu):
+    def displacement(self, Ea, nua):
+        E = np.array([Ea[i] for i in self.IDS])
+        nu = np.array([nua[i] for i in self.IDS])
         D = self.plane_stress(E, nu)
         self.BC_fun()
         self.force_vector()
