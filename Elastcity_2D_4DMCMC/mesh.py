@@ -250,3 +250,40 @@ class Mesh():
             ax.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False, zorder = 1, alpha = 0.6)
             ax.fill(self.XYZ[self.CON[i, :], 0] + ccc2[(self.CON[i, :])], self.XYZ[self.CON[i, :], 1] + ddd2[(self.CON[i, :])], edgecolor = colour, linestyle = ls, fill=False, zorder = 5, alpha = ch, linewidth = 3)
 
+        ax.set_aspect('equal')
+
+    def contour_plot(self, ver, f, a):
+        ccc2=np.array(self.d[0:len(self.d):2]).reshape(-1) #deformation x
+
+        ddd2=np.array(self.d[1:len(self.d):2]).reshape(-1) #deformation y
+
+        X, Y = [], []
+        j = self.XYZ[0][1]
+
+        while j <= self.XYZ[-1][1]:
+            x, y = [], []
+            i = 0
+            while i < len(self.XYZ):
+                if self.XYZ[i][1] == j:
+                    x.append(self.XYZ[i][0])
+                    y.append(self.XYZ[i][1])
+                elif i > 1 and self.XYZ[i - 1][1] == j:
+                    break
+                i += 1
+            X.append(x)
+            Y.append(y)
+            if i == len(self.XYZ):
+                break
+            j = self.XYZ[i][1]
+        X = np.array(X)
+        Y = np.array(Y)
+
+        a0 = a[0].contourf(X, Y, ccc2.reshape(np.shape(X)), 20)
+        a1 = a[1].contourf(X, Y, ddd2.reshape(np.shape(X)), 20)
+
+        f.colorbar(a0, ax=a[0], shrink=0.9)
+        f.colorbar(a1, ax=a[1], shrink=0.9)
+
+        a[0].set(title = f'{ver} Displacement in x direction', aspect="equal")
+        a[1].set(title = f'{ver} Displacement in y direction', aspect="equal")
+

@@ -1,5 +1,6 @@
 import numpy as np
 from DRAM import DRAM_algorithm
+from MH import MH_mcmc
 import utilities as utilities
 
 class EnKF_mcmc():
@@ -12,15 +13,15 @@ class EnKF_mcmc():
         self.sigma = inp['sigma']
         self.observations = inp['measurement']
         self.K0 = inp['Kalmans']
-        self.m0 = inp['me']
         self.mesh = inp['mesh']
+        self.m0 = inp['me']
         self.adpt = inp['adapt']
 
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
         inp['nsamples'] = self.nsamples
-        A = DRAM_algorithm(inp)
-        self.results = A.DRAM_go()
+        A = MH_mcmc(inp)
+        self.results = A.MH_go()
 
         self.X = self.results['MCMC'] #1 x nsamples
         self.Y = np.squeeze(self.results['values']).T #nsamples x nel
@@ -75,6 +76,14 @@ class EnKF_mcmc():
 
             self.X = tempX
             self.Y = tempY
+
+            if j % 200 == 0:
+                print(f'{j} samples completed')
+                print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
+                print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
+                print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
+                print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[3]), np.sqrt(np.var(self.X[3]))))
+                print()
 
             j += 1
         

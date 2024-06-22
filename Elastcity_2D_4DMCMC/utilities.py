@@ -83,8 +83,8 @@ def Jacobian(xyze, xi, eta):
 def forward_model(args, ms):
     #generate mesh
     my_mesh = Mesh(ms)
-    E1 = [args[0], args[2]]
-    nu1 = [args[1], args[3]]
+    E1 = [args[0], args[1]]
+    nu1 = [args[2], args[3]]
     d1 = my_mesh.displacement(E1, nu1)
     return d1
 
@@ -98,7 +98,7 @@ def normalkernel(x, u):
     a *= (N*h)**-1
     return a
 
-def histogram(data, titles, truevalues):
+def histogram(data, titles, truevalues, ranges):
     figh, axes = plt.subplots(len(data), 1)
     for i in range(len(data)):
         axes[i].hist(data[i], 70, density = True, alpha = 0.9, color = 'plum')
@@ -107,6 +107,7 @@ def histogram(data, titles, truevalues):
         axes[i].plot(X, [4*normalkernel(x, data[i]) for x in X], color = 'rebeccapurple', alpha =0.9, linewidth = 2)
         axes[i].axvline(np.median(data[i]), linestyle = (0,(4,2)), alpha = 0.75, color = 'rebeccapurple', label = 'Posterior Median', linewidth = 1.8)
         axes[i].axvline(truevalues[i], alpha = 0.8, linestyle = (0,(4,8)), color = 'k', label = 'True Value', linewidth = 1.8)
+        axes[i].set_xlim([ranges[0][i], ranges[1][i]])
         axes[i].grid()
         axes[i].legend()
 
