@@ -16,6 +16,8 @@ class DRAM_algorithm():
         self.m0 = inp['me']
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
+        self.freeze = inp['freeze']
+        self.delay = inp['delay']
 
         self.eps = 1e-5
         self.Rj = sp.linalg.cholesky(self.initial_cov)
@@ -38,7 +40,6 @@ class DRAM_algorithm():
         self.MCMC_cov = np.zeros_like(self.initial_cov)
         self.MCMC_mean = np.zeros_like(self.initial_theta)
         self.ss = np.array([1])
-        self.ii = 0
 
     def update_cov(self, w, ind):
         x = self.MCMC[self.ii+1:ind] #100, 1
@@ -67,9 +68,32 @@ class DRAM_algorithm():
             i += 1
 
     def DRAM_go(self):
+        f = -1
+        F = np.array([0,2,1,3])
+        count = False
         j = 1
         while j < self.nsamples:
-            thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
+            if j % self.freeze == 0 and j > self.delay:
+                count = True
+            if count == True:
+                print(f'Freeze: {j}, index: {F[(f+1) % self.dim]}')
+                TEMP = self.MCMC*1
+                print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[0][:j]), np.sqrt(np.var(TEMP.T[0][:j]))))
+                print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[1][:j]), np.sqrt(np.var(TEMP.T[1][:j]))))
+                print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[2][:j]), np.sqrt(np.var(TEMP.T[2][:j]))))
+                print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[3][:j]), np.sqrt(np.var(TEMP.T[3][:j]))))
+                print()
+                f += 1
+                f = f % self.dim
+                count = False
+            step = np.zeros((self.dim, 1))
+            #step[np.random.choice(range(4),1),0] = np.random.normal()
+            step[F[f],0] = np.random.normal()
+            if j <= self.delay:
+                step[np.random.choice(range(4),1),0] = np.random.normal()
+
+
+            thetas = self.thetaj + self.Rj@step
             thetas = utilities.check_bounds(thetas, self.range)
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
@@ -78,9 +102,17 @@ class DRAM_algorithm():
                 self.thetaj = thetas
                 self.oldpi = newpi
                 self.oldvalue = newvalue
+        
+            
 
             else:
-                thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
+                step = np.zeros((self.dim, 1))
+                #step[np.random.choice(range(4),1),0] = np.random.normal()
+                step[F[f],0] = np.random.normal()
+                if j <= self.delay:
+                    step[np.random.choice(range(4),1),0] = np.random.normal()
+
+                thetass = self.thetaj + self.R2@step
                 thetass = utilities.check_bounds(thetass, self.range)
 
                 newss2, newvalue2 = utilities.ESS(self.observations, thetass, self.mesh)
@@ -103,6 +135,14 @@ class DRAM_algorithm():
                 Ra = np.linalg.cholesky(self.MCMC_cov + np.eye(self.dim)*self.eps)
                 self.ii = j*1
                 self.Rj = Ra * self.Kp
+
+            if j % 100 == 0:
+                print(f'{j} samples completed')
+                print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[0][:j]), np.sqrt(np.var(self.MCMC.T[0][:j]))))
+                print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[1][:j]), np.sqrt(np.var(self.MCMC.T[1][:j]))))
+                print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[2][:j]), np.sqrt(np.var(self.MCMC.T[2][:j]))))
+                print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[3][:j]), np.sqrt(np.var(self.MCMC.T[3][:j]))))
+                print()
 
             j += 1
 

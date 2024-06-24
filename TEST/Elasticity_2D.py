@@ -61,13 +61,6 @@ measurements=utilities.forward_model(np.array(ini), inp['mesh'])
 measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf'], size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements1
 
-# fig2, ax2 = plt.subplots()
-
-# ax2.plot(measurements, '.')
-# ax2.plot(measurements1, '.')
-
-# plt.show()
-
 lines = []
 my_mesh = Mesh(inp['mesh'])
 true_displacement = my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])

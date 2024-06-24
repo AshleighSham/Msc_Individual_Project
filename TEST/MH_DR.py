@@ -40,13 +40,14 @@ class MH_DR_mcmc():
 
     def MH_DR_go(self):
         f = -1
+        F = np.array([0,2,1,3])
         count = False
         j = 1
         while j < self.nsamples:
             if j % self.freeze == 0 and j > self.delay:
                 count = True
             if count == True:
-                print(f'Freeze: {j}')
+                print(f'Freeze: {j}, index: {F[(f+1) % self.dim]}')
                 TEMP = self.MCMC*1
                 print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[0][:j]), np.sqrt(np.var(TEMP.T[0][:j]))))
                 print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[1][:j]), np.sqrt(np.var(TEMP.T[1][:j]))))
@@ -57,9 +58,9 @@ class MH_DR_mcmc():
                 f = f % self.dim
                 count = False
             step = np.zeros((self.dim, 1))
-            step[f,0] = np.random.normal()
+            step[F[f],0] = np.random.normal()
             if j <= self.delay:
-                step = np.random.normal(size = [self.dim, 1])
+                step[np.random.choice(range(4),1),0] = np.random.normal()
 
             thetas = self.thetaj + self.Rj@step
             thetas = utilities.check_bounds(thetas, self.range)

@@ -2,6 +2,7 @@ import numpy as np
 from DRAM import DRAM_algorithm
 from MH import MH_mcmc
 from MH_DR import MH_DR_mcmc
+from MH import MH_mcmc
 import utilities as utilities
 
 class EnKF_mcmc():
@@ -22,11 +23,14 @@ class EnKF_mcmc():
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
         inp['nsamples'] = self.nsamples
-        A = MH_DR_mcmc(inp)
-        self.results = A.MH_DR_go()
+        A = MH_mcmc(inp)
+        self.results = A.MH_go()
 
         self.X = self.results['MCMC'] #1 x nsamples
-        print('Values before the EnKF')
+        print('---------------------------------------------------------------------------------')
+        print('---------------------------------------------------------------------------------')
+        print('Values before the EnKF:')
+        print('---------------------------------------------------------------------------------')
         print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
         print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
         print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))

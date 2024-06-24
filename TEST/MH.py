@@ -15,6 +15,8 @@ class MH_mcmc:
         self.m0 = inp['me']
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
+        self.delay = inp['delay']
+        self.freeze = inp['freeze']
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
@@ -31,9 +33,31 @@ class MH_mcmc:
         self.thetaj = self.initial_theta
 
     def MH_go(self):
+        f = -1
+        F = np.array([0,2,1,3])
+        count = False
         j = 1
         while j < self.nsamples:
-            thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
+            if j % self.freeze == 0 and j > self.delay:
+                count = True
+            if count == True:
+                print(f'Freeze: {j}, index: {F[(f+1) % self.dim]}')
+                TEMP = self.MCMC*1
+                print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[0][:j]), np.sqrt(np.var(TEMP.T[0][:j]))))
+                print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[1][:j]), np.sqrt(np.var(TEMP.T[1][:j]))))
+                print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[2][:j]), np.sqrt(np.var(TEMP.T[2][:j]))))
+                print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[3][:j]), np.sqrt(np.var(TEMP.T[3][:j]))))
+                print()
+                f += 1
+                f = f % self.dim
+                count = False
+            step = np.zeros((self.dim, 1))
+            #step[np.random.choice(range(4),1),0] = np.random.normal()
+            step[F[f],0] = np.random.normal()
+            if j <= self.delay:
+                step[np.random.choice(range(4),1),0] = np.random.normal()
+
+            thetas = self.thetaj + self.Rj@step
 
             thetas = utilities.check_bounds(thetas, self.range)
             

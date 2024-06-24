@@ -2,7 +2,6 @@
   "Number of Materials": 2,
 
   "Freeze time": 50,
-
   "Freeze delay": 200,
 
   "Initial Material Parameters": {
@@ -17,12 +16,12 @@
 
   "Imposed Limits": {
     "Youngs Modulus": [
-      [1e-6, 30],
+      [1, 20],
       [1e-6, 10]
     ],
     "Poissons Ratio": [
-      [0.15, 0.35],
-      [0.15, 0.35]
+      [0.15, 0.4],
+      [0.15, 0.4]
     ]
   },
 
@@ -31,7 +30,7 @@
     "Poissons Ratio": 1e-3
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 0.001,
 
   "Number of samples": 1700,
 
