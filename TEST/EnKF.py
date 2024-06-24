@@ -17,6 +17,7 @@ class EnKF_mcmc():
         self.mesh = inp['mesh']
         self.m0 = inp['me']*inp['mesh'][1]
         self.adpt = inp['adapt']
+        self.delay = inp['delay']
 
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
@@ -84,7 +85,7 @@ class EnKF_mcmc():
             self.X = tempX
             self.Y = tempY
 
-            if j % 200 == 0:
+            if j % 100 == 0:
                 print(f'{j} samples completed')
                 print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
                 print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))

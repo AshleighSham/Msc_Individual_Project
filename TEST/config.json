@@ -1,6 +1,10 @@
 {
   "Number of Materials": 2,
 
+  "Freeze time": 50,
+
+  "Freeze delay": 200,
+
   "Initial Material Parameters": {
     "Youngs Modulus": [5, 5],
     "Poissons Ratio": [0.2, 0.2]
@@ -23,15 +27,15 @@
   },
 
   "Initial Variance": {
-    "Youngs Modulus": 5,
+    "Youngs Modulus": 1,
     "Poissons Ratio": 1e-3
   },
 
   "Standard Deviation": 0.05,
 
-  "Number of samples": 500,
+  "Number of samples": 1700,
 
-  "Starting Kalman point": 200,
+  "Starting Kalman point": 1000,
 
   "Measurement error for Kalman": 1e-1,
 

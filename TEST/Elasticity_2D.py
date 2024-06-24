@@ -22,6 +22,9 @@ inp['range']=np.array([minis, maxis])
 # number of iteration in MCMC
 inp['nsamples']=config['Number of samples']
 
+#freeze
+inp['freeze'] = config['Freeze time']
+inp['delay'] = config['Freeze delay']
 # initial covariance  
 icov = [config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Poissons Ratio'], config['Initial Variance']['Poissons Ratio']]
 inp['icov'] = np.eye(config['Number of Materials']*2)*np.array(icov)

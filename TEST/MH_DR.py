@@ -16,6 +16,8 @@ class MH_DR_mcmc():
         self.m0 = inp['me']
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
+        self.freeze = inp['freeze']
+        self.delay = inp['delay']
 
         self.results ={}
 
@@ -37,9 +39,29 @@ class MH_DR_mcmc():
 
 
     def MH_DR_go(self):
+        f = -1
+        count = False
         j = 1
         while j < self.nsamples:
-            thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
+            if j % self.freeze == 0 and j > self.delay:
+                count = True
+            if count == True:
+                print(f'Freeze: {j}')
+                TEMP = self.MCMC*1
+                print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[0][:j]), np.sqrt(np.var(TEMP.T[0][:j]))))
+                print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[1][:j]), np.sqrt(np.var(TEMP.T[1][:j]))))
+                print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[2][:j]), np.sqrt(np.var(TEMP.T[2][:j]))))
+                print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[3][:j]), np.sqrt(np.var(TEMP.T[3][:j]))))
+                print()
+                f += 1
+                f = f % self.dim
+                count = False
+            step = np.zeros((self.dim, 1))
+            step[f,0] = np.random.normal()
+            if j <= self.delay:
+                step = np.random.normal(size = [self.dim, 1])
+
+            thetas = self.thetaj + self.Rj@step
             thetas = utilities.check_bounds(thetas, self.range)
 
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
@@ -51,7 +73,7 @@ class MH_DR_mcmc():
                 self.oldvalue = newvalue
 
             else:
-                thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
+                thetass = self.thetaj + self.R2@step
                 thetass = utilities.check_bounds(thetass, self.range)
 
                 newss2, newvalue2 = utilities.ESS(self.observations, thetass, self.mesh)
