@@ -54,10 +54,15 @@ def ESS(measurements, e, ms):
         meas_edge.append(2*i + 1)
     arr = forward_model(e, ms)
 
-    indexs = np.random.choice(range(0, len(measurements)), int(0.25*len(measurements)), replace = False)
+    indexs = np.random.choice(range(0, len(measurements)//2), int(0.7*len(measurements)//2), replace = False)
+    rand_ind = []
+    for i in indexs:
+        rand_ind.append(2*i)
+        rand_ind.append(2*i + 1)
+
     diff2 = np.linalg.norm(measurements[meas_edge] - arr[meas_edge])
-    ss1 = np.linalg.norm(measurements[indexs] - arr[indexs])
-    return diff2, arr
+    ss1 = np.linalg.norm(measurements[rand_ind] - arr[rand_ind])
+    return ss1, arr
 
 
 def plane_strain(E, nu): 
@@ -121,8 +126,7 @@ def normalkernel(x, u):
     a *= (N*h)**-1
     return a
 
-def histogram(data, titles, truevalues, ranges):
-    figh, axes = plt.subplots(len(data), 1)
+def histogram(data, titles, truevalues, ranges, f, axes):
     for i in range(len(data)):
         axes[i].hist(data[i], 70, density = True, alpha = 0.9, color = 'plum')
         axes[i].set_title(f'Prosterior Distribution for the {titles[i]}')

@@ -1,21 +1,21 @@
 {
   "Initial Material Parameters": {
-    "Youngs Modulus": 10,
+    "Youngs Modulus": 5,
     "Poissons Ratio": 0.2
   },
 
   "True Material Parameters": {
-    "Youngs Modulus": 40,
+    "Youngs Modulus": 10,
     "Poissons Ratio": 0.3
   },
 
   "Imposed limits": {
     "Youngs Modulus": [0.1, 60],
-    "Poissons Ratio": [1e-10, 0.5]
+    "Poissons Ratio": [0.15, 0.4]
   },
 
   "Initial Variance": {
-    "Youngs Modulus": 10,
+    "Youngs Modulus": 1,
     "Poissons Ratio": 1e-3
   },
 
@@ -64,7 +64,7 @@
       [10, 11, 15, 14]
     ],
     "Number of elements": 9,
-    "Force Magnitude": 3e-3,
+    "Force Magnitude": 3e-5,
     "Force Nodes": [30, 61, 92, 123, 154, 185, 216],
     "Fixed Nodes": [0, 31, 62, 93, 124, 155, 186]
   },
@@ -75,7 +75,7 @@
     "Metropolis Hastings Delyayed Rejection": 2,
     "Delayed Rejection Adaptive Metropolis Hastings": 3,
     "Ensemble Kalman Filter": 4,
-    "Choosen Method": 2
+    "Choosen Method": 4
   },
   "Print Chain": 0
 }

@@ -16,6 +16,8 @@ class AMH_mcmc():
         self.m0 = inp['me']
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
+        self.freeze = inp['freeze']
+        self.delay = inp['delay']
         self.results ={}
 
         self.eps = 1e-5
@@ -24,9 +26,10 @@ class AMH_mcmc():
         self.Kp = 2.4/np.sqrt(self.dim)
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
-        self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta, self.mesh)
+        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
 
         self.accepted = 0
+        self.results['values'] = [self.oldvalue*1]
         self.MCMC[0,:] = self.initial_theta.T
         self.thetaj = self.initial_theta
 
@@ -64,18 +67,44 @@ class AMH_mcmc():
             i += 1
 
     def AMH_go(self):
+        f = -1
+        F = np.array([0,2,1,3])
+        count = False
         j = 1
         while j < self.nsamples:
-            thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
+            if j % self.freeze == 0 and j > self.delay:
+                count = True
+            if count == True:
+                print(f'Freeze: {j}, index: {F[(f+1) % self.dim]}')
+                TEMP = self.MCMC*1
+                print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[0][:j]), np.sqrt(np.var(TEMP.T[0][:j]))))
+                print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[1][:j]), np.sqrt(np.var(TEMP.T[1][:j]))))
+                print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[2][:j]), np.sqrt(np.var(TEMP.T[2][:j]))))
+                print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[3][:j]), np.sqrt(np.var(TEMP.T[3][:j]))))
+                print()
+                f += 1
+                f = f % self.dim
+                count = False
+            step = np.zeros((self.dim, 1))
+            #step[np.random.choice(range(4),1),0] = np.random.normal()
+            step[F[f],0] = np.random.normal()
+            if j <= self.delay:
+                step[np.random.choice(range(4),1),0] = np.random.normal()
+
+
+            thetas = self.thetaj + self.Rj@step
             thetas = utilities.check_bounds(thetas, self.range)
-            newpi, _ = utilities.ESS(self.observations, thetas, self.mesh)
+            newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
             if np.random.uniform(0,1) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi
+                self.oldvalue = newvalue
 
             self.MCMC[j, :] = self.thetaj.T
+
+            self.results['values'].append(self.oldvalue)
 
             if j % self.adpt == 0:
                 self.update_cov(1, j)

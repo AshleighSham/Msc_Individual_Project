@@ -21,6 +21,8 @@ class MH_mcmc:
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
 
+        self.loops = inp['freeze loops'] * self.dim
+
         self.MCMC = np.zeros([self.nsamples, self.dim])
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
         self.results = {}
@@ -33,29 +35,34 @@ class MH_mcmc:
         self.thetaj = self.initial_theta
 
     def MH_go(self):
-        f = -1
-        F = np.array([0,2,1,3])
+        f = np.array([-1,1])
+        l = 0
+        F = np.array([0,2])
         count = False
         j = 1
         while j < self.nsamples:
-            if j % self.freeze == 0 and j > self.delay:
+            if j % self.freeze == 0 and j > self.delay and l < self.loops:
                 count = True
             if count == True:
-                print(f'Freeze: {j}, index: {F[(f+1) % self.dim]}')
+                l += 1
+                f += 1
+                f = f % self.dim
+                #print(f'Freeze: {j}, index: {F[f]}')
                 TEMP = self.MCMC*1
                 print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[0][:j]), np.sqrt(np.var(TEMP.T[0][:j]))))
                 print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[1][:j]), np.sqrt(np.var(TEMP.T[1][:j]))))
                 print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[2][:j]), np.sqrt(np.var(TEMP.T[2][:j]))))
                 print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(TEMP.T[3][:j]), np.sqrt(np.var(TEMP.T[3][:j]))))
                 print()
-                f += 1
-                f = f % self.dim
                 count = False
             step = np.zeros((self.dim, 1))
             #step[np.random.choice(range(4),1),0] = np.random.normal()
-            step[F[f],0] = np.random.normal()
+            #step[F[f],0] = np.random.normal()
             if j <= self.delay:
-                step[np.random.choice(range(4),1),0] = np.random.normal()
+                step[np.array([0, 2]),0] = np.random.normal()
+
+            if j >= self.delay + self.freeze * self.loops:
+                step[np.array([0, 2]),0] = np.random.normal()
 
             thetas = self.thetaj + self.Rj@step
 

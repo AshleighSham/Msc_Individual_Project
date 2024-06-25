@@ -95,8 +95,7 @@ def normalkernel(x, u):
     a *= (N*h)**-1
     return a
 
-def histogram(data, titles, truevalues):
-    figh, axes = plt.subplots(len(data), 1)
+def histogram(data, titles, truevalues, ranges, f, axes):
     for i in range(len(data)):
         axes[i].hist(data[i], 70, density = True, alpha = 0.9, color = 'plum')
         axes[i].set_title(f'Prosterior Distribution for the {titles[i]}')
@@ -104,6 +103,7 @@ def histogram(data, titles, truevalues):
         axes[i].plot(X, [4*normalkernel(x, data[i]) for x in X], color = 'rebeccapurple', alpha =0.9, linewidth = 2)
         axes[i].axvline(np.median(data[i]), linestyle = (0,(4,2)), alpha = 0.75, color = 'rebeccapurple', label = 'Posterior Median', linewidth = 1.8)
         axes[i].axvline(truevalues[i], alpha = 0.8, linestyle = (0,(4,8)), color = 'k', label = 'True Value', linewidth = 1.8)
+        axes[i].set_xlim([ranges[0][i], ranges[1][i]])
         axes[i].grid()
         axes[i].legend()
 

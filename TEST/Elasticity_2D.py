@@ -7,6 +7,8 @@ from DRAM import DRAM_algorithm
 from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
 from mesh import Mesh
+from MH2 import MH2_mcmc
+from crank import Crank_mcmc
 import matplotlib.pyplot as plt
 
 fig, ax1 = plt.subplots()
@@ -17,7 +19,11 @@ inp = {}
 # range of the parameters based on the prior density
 minis = np.array([np.array(config['Imposed Limits']['Youngs Modulus'])[:,0], np.array(config['Imposed Limits']['Poissons Ratio'])[:,0]]).flatten()
 maxis = np.array([np.array(config['Imposed Limits']['Youngs Modulus'])[:,1], np.array(config['Imposed Limits']['Poissons Ratio'])[:,1]]).flatten()
-inp['range']=np.array([minis, maxis])                      
+inp['range']=np.array([minis, maxis])  
+
+inp['Priority'] = config['Priority']
+
+inp['s'] = config['s']
 
 # number of iteration in MCMC
 inp['nsamples']=config['Number of samples']
@@ -25,9 +31,12 @@ inp['nsamples']=config['Number of samples']
 #freeze
 inp['freeze'] = config['Freeze time']
 inp['delay'] = config['Freeze delay']
+inp['freeze loops'] = config['Freeze loops'] 
+
 # initial covariance  
 icov = [config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Poissons Ratio'], config['Initial Variance']['Poissons Ratio']]
 inp['icov'] = np.eye(config['Number of Materials']*2)*np.array(icov)
+inp['icov'] = np.array([[1,0,0,0],[0,1,0,0],[0,0,5e-2,0],[0,0,0,5e-2]])
 
 # initial guesss of the parameters based on the prior
 itheta = [[config['Initial Material Parameters']['Youngs Modulus'][0]],[config['Initial Material Parameters']['Youngs Modulus'][1]], [config['Initial Material Parameters']['Poissons Ratio'][0]],[config['Initial Material Parameters']['Poissons Ratio'][1]]]
@@ -56,6 +65,24 @@ inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['Fixed Nodes'],
                config['Mesh grid']['Element ID']]
 
+
+#edges
+edges_ind = []
+if inp['mesh'][0] != 0:
+    A = range(inp['mesh'][0][1])
+    edges_ind = [a for a in A]
+    for i in range(inp['mesh'][0][0]-1):
+        edges_ind.append(A[-1] + 1 + inp['mesh'][0][1]*i)
+        edges_ind.append(A[-1] + inp['mesh'][0][1]*i)
+    for i in range(inp['mesh'][0][1]):
+        edges_ind.append(inp['mesh'][0][1]*inp['mesh'][0][0]-1 - i)
+
+meas_edge = []
+for i in edges_ind:
+    meas_edge.append(2*i)
+    meas_edge.append(2*i + 1)
+
+
 ini = [config['True Material Parameters']['Youngs Modulus'][0], config['True Material Parameters']['Youngs Modulus'][1], config['True Material Parameters']['Poissons Ratio'][0],config['True Material Parameters']['Poissons Ratio'][1]]
 measurements=utilities.forward_model(np.array(ini), inp['mesh'])
 measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf'], size = [np.size(measurements, 0), np.size(measurements, 1)])
@@ -81,11 +108,12 @@ print('Standard Deviation of Noise on Measurement Data: %.10f' %(config['Measure
 print()
 if inp['Method'] == 0:
     # The Metropolis-Hastings technique
-    C = MH_mcmc(inp)
-    results = C.MH_go()
+    C = Crank_mcmc(inp)
+    results = C.Crank_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    fig5, ax5 = plt.subplots(4, 1)
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Metropolis Hastings')
     print('----------------------------------------------')
@@ -96,7 +124,8 @@ elif inp['Method'] == 1:
     results = A.AMH_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    fig5, ax5 = plt.subplots(4, 1)
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Adaptive Metropolis Hastings')
     print('----------------------------------------------')
@@ -107,7 +136,8 @@ elif inp['Method'] == 2:
     results = A.MH_DR_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    utilities.histogram(results['MCMC'],['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    fig5, ax5 = plt.subplots(4, 1)
+    utilities.histogram(results['MCMC'],['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Metropolis Hastings Delayed Rejection')
     print('----------------------------------------------')
@@ -118,18 +148,32 @@ elif inp['Method'] == 3:
     results = A.DRAM_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    fig5, ax5 = plt.subplots(4, 1)
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Delayed Rejection Adaptive Metropolis Hastings')
     print('----------------------------------------------')
 
 elif inp['Method'] == 4:
+    #The Crank algorithm 
+    B = Crank_mcmc(inp)
+    results = B.Crank_go()
+    if config['Print Chain'] == 1:
+        print(results['MCMC'])
+    fig5, ax5 = plt.subplots(4, 1)
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    print('----------------------------------------------')
+    print('Preconditioned Crank-Nicolson')
+    print('----------------------------------------------')
+
+elif inp['Method'] == 5:
     #The EnKF algorithm 
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    fig5, ax5 = plt.subplots(4, 1)
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Ensemble Kalman Filter')
     print('----------------------------------------------')
@@ -141,6 +185,20 @@ print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/-
 print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][2]), np.sqrt(np.var(results['MCMC'][2]))))
 print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][3]), np.sqrt(np.var(results['MCMC'][3]))))
 print()
+
+# BURN = 1000
+
+# print('Acceptance Rate: %.3f' % results['accepted'])
+# print('Number of Samples: %.0f' % config['Number of samples'])
+# print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][0][BURN:]), np.sqrt(np.var(results['MCMC'][0][BURN:]))))
+# print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][1][BURN:]), np.sqrt(np.var(results['MCMC'][1][BURN:]))))
+# print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][2][BURN:]), np.sqrt(np.var(results['MCMC'][2][BURN:]))))
+# print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][3][BURN:]), np.sqrt(np.var(results['MCMC'][3][BURN:]))))
+# print()
+
+# fig6, ax6 = plt.subplots(4, 1)
+# utilities.histogram(results['MCMC'][:,BURN:], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig6, ax6)
+    
 my_mesh = Mesh(inp['mesh'])
 my_mesh.displacement([np.median(results['MCMC'][0]),np.median(results['MCMC'][1])], [np.median(results['MCMC'][2]), np.median(results['MCMC'][3])])
 my_mesh.deformation_plot(label = f'Estimated Deformation, E1: %.3f, v1: %.3f, E2: %.3f, v2: %.3f ' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][2]), np.median(results['MCMC'][1]),np.median(results['MCMC'][3])), ls =(0,(3,5)),colour = 'rebeccapurple', ch = 0.9, ax = ax1, lines = lines)

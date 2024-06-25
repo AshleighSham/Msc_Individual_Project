@@ -3,7 +3,9 @@ from DRAM import DRAM_algorithm
 from MH import MH_mcmc
 from MH_DR import MH_DR_mcmc
 from MH import MH_mcmc
+from crank import Crank_mcmc
 import utilities as utilities
+from MH2 import MH2_mcmc
 
 class EnKF_mcmc():
     def __init__(self, inp):
@@ -23,35 +25,43 @@ class EnKF_mcmc():
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
         inp['nsamples'] = self.nsamples
-        A = MH_mcmc(inp)
-        self.results = A.MH_go()
+        A = Crank_mcmc(inp)
+        self.results = A.Crank_go()
+
+        print('Starting EnKF...')
 
         self.X = self.results['MCMC'] #1 x nsamples
-        print('---------------------------------------------------------------------------------')
-        print('---------------------------------------------------------------------------------')
-        print('Values before the EnKF:')
-        print('---------------------------------------------------------------------------------')
-        print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
-        print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
-        print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
-        print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[3]), np.sqrt(np.var(self.X[3]))))
-        print()
         self.Y = np.squeeze(self.results['values']).T #nsamples x nel
         self.thetaj = self.X[:, self.K0 - 2].reshape(-1,1)
 
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj, self.mesh)
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
-    def Kalman_gain(self, j):
+        self.edges_ind = []
+        if self.mesh[0] != 0:
+            A = range(self.mesh[0][1])
+            self.edges_ind = [a for a in A]
+            for i in range(self.mesh[0][0]-1):
+                self.edges_ind.append(A[-1] + 1 + self.mesh[0][1]*i)
+                self.edges_ind.append(A[-1] + self.mesh[0][1]*i)
+            for i in range(self.mesh[0][1]):
+                self.edges_ind.append(self.mesh[0][1]*self.mesh[0][0]-1 - i)
 
-        ss2 = self.m0*np.ones([np.size(self.observations, 0)])
+        self.meas_edge = []
+        for i in self.edges_ind:
+            self.meas_edge.append(2*i)
+            self.meas_edge.append(2*i + 1)
+
+    def Kalman_gain(self, j, indexs):
+
+        ss2 = self.m0*np.ones([np.size(self.observations[indexs], 0)])
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
-        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
+        mY = np.repeat(np.mean(self.Y[indexs], 1, keepdims = True), j-1, axis = 1) #nel, j-1
 
-        Ctm = (self.X - mX)@(self.Y - mY).T/(j-2)
-        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
+        Ctm = (self.X - mX)@(self.Y[indexs] - mY).T/(j-2)
+        Cmm = (self.Y[indexs] - mY)@(self.Y[indexs] - mY).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
@@ -59,10 +69,16 @@ class EnKF_mcmc():
     def EnKF_go(self):
         j = self.K0
         while j < self.s:
-            KK = self.Kalman_gain(j)
+            indexs = np.random.choice(range(0, len(self.observations)//2), int(0.25*len(self.observations)//2), replace = False)
+            rand_ind = []
+            for i in indexs:
+                rand_ind.append(2*i)
+                rand_ind.append(2*i + 1)
+            #index = self.meas_edge
+            KK = self.Kalman_gain(j, indexs)
             
-            XX = utilities.forward_model(self.thetaj, self.mesh)
-            dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - XX)
+            XX = utilities.forward_model(self.thetaj, self.mesh)[indexs]
+            dt = KK @ (self.observations[indexs] + np.random.normal(size = np.shape(self.observations[indexs]))*self.m0 - XX)
 
             thetas = self.thetaj + dt
 
