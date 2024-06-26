@@ -128,7 +128,7 @@ class Mesh():
     def force_vector(self):
         rnodes = self.forcenodes
         f = np.zeros((self.ndofs, 1))
-        f[2*rnodes + 1] = -self.force
+        f[2*rnodes+1] = -self.force
         self.f = f[self.BC]
 
     def dispstrain_B(self, xyze,xi,eta):
@@ -288,7 +288,7 @@ class Mesh():
         
         TrueY = np.array(Dis[1:len(Dis):2]).reshape(-1)
 
-        DiffX = 100*np.divde(abs(TrueX - EstimateX), TrueX)
+        DiffX = 100*np.divide(abs(TrueX - EstimateX), TrueX)
 
         DiffY = 100*np.divide(abs(TrueY - EstimateY), TrueY)
 

@@ -9,9 +9,11 @@ from MH_DR import MH_DR_mcmc
 from mesh import Mesh
 from MH2 import MH2_mcmc
 from crank import Crank_mcmc
+import seaborn as sns
+sns.set_context('talk')
 import matplotlib.pyplot as plt
 
-fig, ax1 = plt.subplots()
+fig, ax1 = plt.subplots(figsize = (5,5))
 plt.subplots_adjust(bottom = 0.1)
 
 inp = {}
@@ -92,7 +94,8 @@ lines = []
 my_mesh = Mesh(inp['mesh'])
 true_displacement = my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])
 my_mesh.deformation_plot(label = f'True Deformation, E1: %.3f, E2: %.3f, v1: %.3f, v2: %.3f' % (config['True Material Parameters']['Youngs Modulus'][0], config['True Material Parameters']['Youngs Modulus'][1], config['True Material Parameters']['Poissons Ratio'][0], config['True Material Parameters']['Poissons Ratio'][1]), 
-                         colour= 'plum', ch = 1, ax = ax1, lines = lines, ls = 'solid')
+                         colour= 'lightskyblue', ch = 1, ax = ax1, lines = lines, ls = 'solid')
+plt.show()
 
 fig2, ax2 = plt.subplots(2, 1)
 my_mesh.contour_plot('True', fig2, ax2)

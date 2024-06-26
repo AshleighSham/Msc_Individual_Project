@@ -14,7 +14,7 @@
   },
 
   "True Material Parameters": {
-    "Youngs Modulus": [10, 1],
+    "Youngs Modulus": [10, 10],
     "Poissons Ratio": [0.3, 0.3]
   },
 
@@ -24,8 +24,8 @@
       [1e-6, 10]
     ],
     "Poissons Ratio": [
-      [0.15, 0.4],
-      [0.15, 0.4]
+      [0.1, 0.4],
+      [0.1, 0.4]
     ]
   },
 
@@ -36,9 +36,9 @@
 
   "Standard Deviation": 0.005,
 
-  "Number of samples": 500,
+  "Number of samples": 2000,
 
-  "Starting Kalman point": 300,
+  "Starting Kalman point": 500,
 
   "Measurement error for Kalman": 0.1,
 
@@ -132,7 +132,7 @@
     "Number of elements": 9,
     "Element ID": [0, 0, 0, 0, 1, 0, 0, 0, 0],
 
-    "Force Magnitude": 3e-4,
+    "Force Magnitude": 6e-3,
     "Force Nodes": [3, 7, 11, 15],
     "Fixed Nodes": [0, 4, 8, 12]
   },

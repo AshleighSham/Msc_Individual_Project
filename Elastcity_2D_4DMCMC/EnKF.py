@@ -2,6 +2,7 @@ import numpy as np
 from DRAM import DRAM_algorithm
 from MH import MH_mcmc
 from MH_DR import MH_DR_mcmc
+from crank import Crank_mcmc
 import utilities as utilities
 
 class EnKF_mcmc():
@@ -21,8 +22,8 @@ class EnKF_mcmc():
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
         inp['nsamples'] = self.nsamples
-        A = MH_DR_mcmc(inp)
-        self.results = A.MH_DR_go()
+        A = Crank_mcmc(inp)
+        self.results = A.Crank_go()
 
         self.X = self.results['MCMC'] #1 x nsamples
         print('Values before the EnKF')

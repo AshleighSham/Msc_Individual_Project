@@ -7,6 +7,7 @@ from DRAM import DRAM_algorithm
 from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
 from mesh import Mesh
+from crank import Crank_mcmc
 import matplotlib.pyplot as plt
 
 fig, ax1 = plt.subplots()
@@ -25,6 +26,9 @@ inp['nsamples']=config['Number of samples']
 # initial covariance  
 icov = [config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Poissons Ratio'], config['Initial Variance']['Poissons Ratio']]
 inp['icov'] = np.eye(config['Number of Materials']*2)*np.array(icov)
+inp['icov'] = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-1,0],[0,0,0,1e-1]])
+
+inp['s'] = config['s']
 
 # initial guesss of the parameters based on the prior
 itheta = [[config['Initial Material Parameters']['Youngs Modulus'][0]],[config['Initial Material Parameters']['Youngs Modulus'][1]], [config['Initial Material Parameters']['Poissons Ratio'][0]],[config['Initial Material Parameters']['Poissons Ratio'][1]]]
@@ -128,6 +132,17 @@ elif inp['Method'] == 3:
     print('----------------------------------------------')
 
 elif inp['Method'] == 4:
+    #The EnKF algorithm 
+    B = Crank_mcmc(inp)
+    results = B.Crank_go()
+    if config['Print Chain'] == 1:
+        print(results['MCMC'])
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    print('----------------------------------------------')
+    print('Ensemble Kalman Filter')
+    print('----------------------------------------------')
+
+elif inp['Method'] == 5:
     #The EnKF algorithm 
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()

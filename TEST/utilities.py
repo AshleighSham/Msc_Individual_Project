@@ -62,7 +62,7 @@ def ESS(measurements, e, ms):
 
     diff2 = np.linalg.norm(measurements[meas_edge] - arr[meas_edge])
     ss1 = np.linalg.norm(measurements[rand_ind] - arr[rand_ind])
-    return ss1, arr
+    return diff2, arr
 
 
 def plane_strain(E, nu): 
