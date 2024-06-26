@@ -1,5 +1,6 @@
 import numpy as np
 from DRAM import DRAM_algorithm
+from crank import Crank_mcmc
 import utilities as utilities
 
 class EnKF_mcmc():
@@ -21,6 +22,8 @@ class EnKF_mcmc():
         inp['nsamples'] = self.nsamples
         A = DRAM_algorithm(inp)
         self.results = A.DRAM_go()
+
+        print('Starting EnKF...')
 
         self.X = self.results['MCMC'] #1 x nsamples
         self.Y = np.squeeze(self.results['values']).T #nsamples x nel
@@ -75,6 +78,12 @@ class EnKF_mcmc():
 
             self.X = tempX
             self.Y = tempY
+
+            if j % 100 == 0:
+                print(f'{j} samples completed')
+                print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
+                print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
+                print()
 
             j += 1
         

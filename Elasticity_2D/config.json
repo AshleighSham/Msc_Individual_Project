@@ -1,4 +1,5 @@
 {
+  "s": 0.15,
   "Initial Material Parameters": {
     "Youngs Modulus": 5,
     "Poissons Ratio": 0.2
@@ -16,7 +17,7 @@
 
   "Initial Variance": {
     "Youngs Modulus": 1,
-    "Poissons Ratio": 1e-3
+    "Poissons Ratio": 1e-2
   },
 
   "Standard Deviation": 0.05,
@@ -74,8 +75,9 @@
     "Adaptive Metropolis Hastings": 1,
     "Metropolis Hastings Delyayed Rejection": 2,
     "Delayed Rejection Adaptive Metropolis Hastings": 3,
-    "Ensemble Kalman Filter": 4,
-    "Choosen Method": 4
+    "Crank": 4,
+    "Ensemble Kalman Filter": 5,
+    "Choosen Method": 5
   },
   "Print Chain": 0
 }

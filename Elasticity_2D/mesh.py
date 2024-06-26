@@ -288,9 +288,9 @@ class Mesh():
         
         TrueY = np.array(Dis[1:len(Dis):2]).reshape(-1)
 
-        DiffX = TrueX - EstimateX
+        DiffX = 100*np.divde(abs(TrueX - EstimateX), TrueX)
 
-        DiffY = TrueY - EstimateY
+        DiffY = 100*np.divide(abs(TrueY - EstimateY), TrueY)
 
         X, Y = [], []
         j = self.XYZ[0][1]

@@ -14,10 +14,20 @@ def check_bounds(x, rang):
     
     mini = rang[0]
     maxi = rang[1]
-    
+    R = [maxi[i] - mini[i] for i in  range(np.size(rang, 1))]
     for i in range(np.size(rang, 1)):
-        x[i][x[i]<mini[i]] = mini[i]
-        x[i][x[i]>maxi[i]] = maxi[i]
+        if x[i]<mini[i]:
+            if mini[i] - x[i] > R[i]:
+                x[i] = mini[i]
+            else:
+                x[i] = 2*mini[i] - x[i]
+        if x[i]> maxi[i]:
+            if x[i] - maxi[i] > R[i]:
+                x[i] = maxi[i]
+            else: 
+                x[i] = x[i] - 2*maxi[i]
+
+    return x
 
     return x
 

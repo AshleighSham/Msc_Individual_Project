@@ -1,5 +1,5 @@
 {
-  "s": 0.2,
+  "s": 0.15,
   "Number of Materials": 2,
 
   "Freeze time": 50,
@@ -36,7 +36,7 @@
 
   "Standard Deviation": 0.005,
 
-  "Number of samples": 1000,
+  "Number of samples": 500,
 
   "Starting Kalman point": 300,
 
