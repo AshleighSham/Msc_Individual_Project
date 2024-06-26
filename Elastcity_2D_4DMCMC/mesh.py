@@ -133,7 +133,7 @@ class Mesh():
     def force_vector(self):
         rnodes = self.forcenodes
         f = np.zeros((self.ndofs, 1))
-        f[2*rnodes] = self.force
+        f[2*rnodes+1] = -self.force
         self.f = f[self.BC]
 
     def dispstrain_B(self, xyze,xi,eta):

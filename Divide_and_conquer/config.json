@@ -2,6 +2,12 @@
   "s": 0.15,
   "Number of Materials": 2,
 
+  "Freeze time": 50,
+  "Freeze delay": 100,
+  "Freeze loops": 1,
+
+  "Priority": [0.2, 0.3, 0.2, 0.3],
+
   "Initial Material Parameters": {
     "Youngs Modulus": [5, 5],
     "Poissons Ratio": [0.2, 0.2]
@@ -14,7 +20,7 @@
 
   "Imposed Limits": {
     "Youngs Modulus": [
-      [1e-6, 30],
+      [1, 30],
       [1e-6, 10]
     ],
     "Poissons Ratio": [
@@ -24,21 +30,21 @@
   },
 
   "Initial Variance": {
-    "Youngs Modulus": 5,
-    "Poissons Ratio": 1e-3
+    "Youngs Modulus": 1,
+    "Poissons Ratio": 1e-2
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 0.005,
 
-  "Number of samples": 2000,
+  "Number of samples": 1000,
 
   "Starting Kalman point": 500,
 
-  "Measurement error for Kalman": 1e-1,
+  "Measurement error for Kalman": 0.1,
 
   "Measurement Noise": 0.01,
 
-  "Adaption Step Size": 100,
+  "Adaption Step Size": 400,
 
   "Mesh grid": {
     "sf": 0.02,
@@ -129,16 +135,6 @@
     "Force Magnitude": 6e-3,
     "Force Nodes": [3, 7, 11, 15],
     "Fixed Nodes": [0, 4, 8, 12]
-  },
-
-  "Methods": {
-    "Metropolis Hastings": 0,
-    "Adaptive Metropolis Hastings": 1,
-    "Metropolis Hastings Delyayed Rejection": 2,
-    "Delayed Rejection Adaptive Metropolis Hastings": 3,
-    "Crank": 4,
-    "Ensemble Kalman Filter": 5,
-    "Choosen Method": 5
   },
   "Print Chain": 0
 }
