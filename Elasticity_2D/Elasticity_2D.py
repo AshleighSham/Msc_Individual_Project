@@ -29,7 +29,7 @@ inp['icov']=np.array([[config['Initial Variance']['Youngs Modulus'], 0],[0, conf
 
 # initial guesss of the parameters based on the prior
 inp['theta0']=np.array([[config['Initial Material Parameters']['Youngs Modulus']],[config['Initial Material Parameters']['Poissons Ratio']]])  
-inp['theta0'] += inp['icov']@np.random.normal(size = (2, 1))
+
 # std                               
 inp['sigma']=config['Standard Deviation']
 
@@ -55,7 +55,7 @@ inp['mesh'] = [config['Mesh grid']['quad'],
 ini = [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']]
 
 measurements=utilities.forward_model(np.array([[config['True Material Parameters']['Youngs Modulus']],[config['True Material Parameters']['Poissons Ratio']]]), inp['mesh'])
-measurements += np.random.normal(0, config['Measurement Noise'], size = [np.size(measurements, 0), np.size(measurements, 1)])
+measurements += np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf'], size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements
 # inp['measurement'] = [[-3.55564323e-04], [ 1.30177716e-04], [-2.99018843e-04], [-6.05993608e-05], [-5.93661063e-04], [ 1.07172160e-04], 
 #                       [-4.25997740e-04], [-1.27344989e-04], [-5.58510424e-04], [-4.74301048e-04], [-5.73632799e-04], [-1.83340375e-04], 
@@ -154,8 +154,8 @@ if inp['Method'] == 0:
     results = C.MH_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(4, 1)
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    fig5, ax5 = plt.subplots(2, 1)
+    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Metropolis Hastings')
     print('----------------------------------------------')
@@ -166,8 +166,8 @@ elif inp['Method'] == 1:
     results = A.AMH_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(4, 1)
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    fig5, ax5 = plt.subplots(2, 1)
+    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Adaptive Metropolis Hastings')
     print('----------------------------------------------')
@@ -178,8 +178,8 @@ elif inp['Method'] == 2:
     results = A.MH_DR_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(4, 1)
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    fig5, ax5 = plt.subplots(2, 1)
+    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Metropolis Hastings Delayed Rejection')
     print('----------------------------------------------')
@@ -190,8 +190,8 @@ elif inp['Method'] == 3:
     results = A.DRAM_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(4, 1)
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    fig5, ax5 = plt.subplots(2, 1)
+    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Delayed Rejection Adaptive Metropolis Hastings')
     print('----------------------------------------------')
@@ -202,8 +202,8 @@ elif inp['Method'] == 4:
     results = B.Crank_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(4, 1)
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    fig5, ax5 = plt.subplots(2, 1)
+    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Preconditioned Crank-Nicolson')
     print('----------------------------------------------')
@@ -214,8 +214,8 @@ elif inp['Method'] == 5:
     results = B.EnKF_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(4, 1)
-    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    fig5, ax5 = plt.subplots(2, 1)
+    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Ensemble Kalman Filter')
     print('----------------------------------------------')

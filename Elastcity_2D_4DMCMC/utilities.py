@@ -25,7 +25,7 @@ def check_bounds(x, rang):
             if x[i] - maxi[i] > R[i]:
                 x[i] = maxi[i]
             else: 
-                x[i] = x[i] - 2*maxi[i]
+                x[i] = maxi[i] - (x[i] - maxi[i])
 
     return x
 

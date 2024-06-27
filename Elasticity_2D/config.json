@@ -1,5 +1,5 @@
 {
-  "s": 0.15,
+  "s": 0.05,
   "Initial Material Parameters": {
     "Youngs Modulus": 5,
     "Poissons Ratio": 0.2
@@ -17,12 +17,12 @@
 
   "Initial Variance": {
     "Youngs Modulus": 1,
-    "Poissons Ratio": 1e-2
+    "Poissons Ratio": 1e-3
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 0.005,
 
-  "Number of samples": 1000,
+  "Number of samples": 1500,
 
   "Starting Kalman point": 200,
 
@@ -30,7 +30,7 @@
 
   "Measurement Noise": 0.01,
 
-  "Adaption Step Size": 50,
+  "Adaption Step Size": 100,
 
   "Mesh grid": {
     "sf": 0.02,

@@ -25,10 +25,14 @@ def check_bounds(x, rang):
             if x[i] - maxi[i] > R[i]:
                 x[i] = maxi[i]
             else: 
-                x[i] = x[i] - 2*maxi[i]
+                x[i] = maxi[i] - (x[i] - maxi[i])
 
-    return x
-
+    # for i in range(np.size(rang, 1)):
+    #     if x[i]<mini[i]:
+    #         x[i] = mini[i]
+    #     elif x[i]> maxi[i]:
+    #         x[i] = maxi[i]
+    
     return x
 
 def ESS(measurements, e, ms):
@@ -40,8 +44,32 @@ def ESS(measurements, e, ms):
         Returns:
             numpy.array: ESS, resulting FEM
     """
+    edges_ind = []
+    if ms[0] != 0:
+        A = range(ms[0][1])
+        edges_ind = [a for a in A]
+        for i in range(ms[0][0]-1):
+            edges_ind.append(A[-1] + 1 + ms[0][1]*i)
+            edges_ind.append(A[-1] + ms[0][1]*i)
+        for i in range(ms[0][1]):
+            edges_ind.append(ms[0][1]*ms[0][0]-1 - i)
+
+    meas_edge = []
+    for i in edges_ind:
+        meas_edge.append(2*i)
+        meas_edge.append(2*i + 1)
     arr = forward_model(e, ms)
-    ss1 = np.linalg.norm(measurements - arr)
+
+    indexs = np.random.choice(range(0, len(measurements)//2), int(0.5*len(measurements)//2), replace = False)
+    rand_ind = []
+    for i in indexs[:int(0.8*len(indexs))]:
+        rand_ind.append(2*i)
+    for i in indexs[int(0.8*len(indexs)):]:
+        rand_ind.append(2*i + 1)
+
+    diff2 = np.linalg.norm(measurements[meas_edge] - arr[meas_edge])
+    ss1 = np.linalg.norm(measurements[rand_ind] - arr[rand_ind])
+    #ss1 = np.linalg.norm(measurements - arr)
 
     return ss1, arr
 
@@ -105,15 +133,23 @@ def normalkernel(x, u):
     a *= (N*h)**-1
     return a
 
-def histogram(data, titles, truevalues, ranges, f, axes):
+def histogram(data, burn, titles, truevalues, ranges, f, axes):
     for i in range(len(data)):
-        axes[i].hist(data[i], 70, density = True, alpha = 0.9, color = 'plum')
+        axes[i].hist(data[i][burn:], 70, density = True, alpha = 0.9, color = 'plum')
         axes[i].set_title(f'Prosterior Distribution for the {titles[i]}')
-        X = np.linspace(min(data[i]), max(data[i]), 200)
-        axes[i].plot(X, [4*normalkernel(x, data[i]) for x in X], color = 'rebeccapurple', alpha =0.9, linewidth = 2)
-        axes[i].axvline(np.median(data[i]), linestyle = (0,(4,2)), alpha = 0.75, color = 'rebeccapurple', label = 'Posterior Median', linewidth = 1.8)
-        axes[i].axvline(truevalues[i], alpha = 0.8, linestyle = (0,(4,8)), color = 'k', label = 'True Value', linewidth = 1.8)
+        X = np.linspace(min(data[i][burn:]), max(data[i][burn:]), 200)
+        axes[i].plot(X, [4*normalkernel(x, data[i][burn:]) for x in X], color = 'rebeccapurple', alpha =0.9, linewidth = 2)
+        axes[i].axvline(np.median(data[i][burn:]), linestyle = (0,(4,2)), alpha = 0.75, color = 'rebeccapurple', label = 'Posterior Median', linewidth = 1.8)
+        #axes[i].axvline(truevalues[i], alpha = 0.8, linestyle = (0,(4,8)), color = 'k', label = 'True Value', linewidth = 1.8)
         axes[i].set_xlim([ranges[0][i], ranges[1][i]])
         axes[i].grid()
         axes[i].legend()
+
+def histogram_bulk(data, label, range, f, ax, colour, a, l):
+    for i in range(len(data)):
+        X = np.linspace(min(data[i]), max(data[i]), 200)
+        ax[i].plot(X, [4*normalkernel(x, data[i]) for x in X], color = colour, alpha =a, linewidth = l, label = label)
+        ax[i].set_xlim([range[i][0], range[i][1]])
+        ax[i].grid()
+        ax[i].legend()
 
