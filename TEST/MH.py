@@ -22,6 +22,7 @@ class MH_mcmc:
         self.dim = np.size(self.range, 1)
 
         self.loops = inp['freeze loops'] * self.dim
+        self.countdown = self.nsamples - self.delay - self.loops * self.freeze
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
@@ -35,11 +36,12 @@ class MH_mcmc:
         self.thetaj = self.initial_theta
 
     def MH_go(self):
-        f = np.array([-1,1])
+        f = 1
         l = 0
-        F = np.array([0,2])
+        F = np.array([0,2,1,3])
         count = False
         j = 1
+        Final_countdown = 0
         while j < self.nsamples:
             if j % self.freeze == 0 and j > self.delay and l < self.loops:
                 count = True
@@ -56,13 +58,36 @@ class MH_mcmc:
                 print()
                 count = False
             step = np.zeros((self.dim, 1))
-            #step[np.random.choice(range(4),1),0] = np.random.normal()
-            #step[F[f],0] = np.random.normal()
+            step[np.random.choice(range(4),1),0] = np.random.normal()
+            step[F[f],0] = np.random.normal()  
             if j <= self.delay:
-                step[np.array([0, 2]),0] = np.random.normal()
+                step[np.random.choice(range(4),1),0] = np.random.normal()
 
             if j >= self.delay + self.freeze * self.loops:
-                step[np.array([0, 2]),0] = np.random.normal()
+                Final_countdown += 1
+                self.thetaj[0,0] = np.median(self.MCMC.T[0][:j])
+                step[np.array([1, 2, 3]),0] = np.random.normal(size = (3,))
+                if Final_countdown >= self.countdown * 0.5:
+                    self.thetaj[1,0] = np.median(self.MCMC.T[1][:j])
+                    step[np.array([2, 3]),0] = np.random.normal(size = (2,))
+                if Final_countdown == int(self.countdown * 0.5):
+                    print('final countdown 1')
+                    print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[0][:j]), np.sqrt(np.var(self.MCMC.T[0][:j]))))
+                    print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[1][:j]), np.sqrt(np.var(self.MCMC.T[1][:j]))))
+                    print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[2][:j]), np.sqrt(np.var(self.MCMC.T[2][:j]))))
+                    print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[3][:j]), np.sqrt(np.var(self.MCMC.T[3][:j]))))
+                    print()
+                if Final_countdown == int(self.countdown * 0.75):
+                    print('final countdown 2')
+                    print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[0][:j]), np.sqrt(np.var(self.MCMC.T[0][:j]))))
+                    print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[1][:j]), np.sqrt(np.var(self.MCMC.T[1][:j]))))
+                    print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[2][:j]), np.sqrt(np.var(self.MCMC.T[2][:j]))))
+                    print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[3][:j]), np.sqrt(np.var(self.MCMC.T[3][:j]))))
+                    print()
+                if Final_countdown >= self.countdown * 0.75:
+                    self.thetaj[2,0] = np.median(self.MCMC.T[2][:j])
+                    step[3,0] = np.random.normal()                   
+
 
             thetas = self.thetaj + self.Rj@step
 

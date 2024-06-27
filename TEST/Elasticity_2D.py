@@ -8,6 +8,7 @@ from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
 from mesh import Mesh
 from MH2 import MH2_mcmc
+from EnKFbalnk import EnKF_mcmc2
 from crank import Crank_mcmc
 import seaborn as sns
 sns.set_context('talk')
@@ -111,10 +112,13 @@ print('Standard Deviation of Noise on Measurement Data: %.10f' %(config['Measure
 print()
 if inp['Method'] == 0:
     # The Metropolis-Hastings technique
-    C = Crank_mcmc(inp)
-    results = C.Crank_go()
+    C = MH_mcmc(inp)
+    results = C.MH_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
+    inp['nsamples'] += 1000
+    D = EnKF_mcmc2(inp, results)
+    results2 = D.EnKF_go()
     fig5, ax5 = plt.subplots(4, 1)
     utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
