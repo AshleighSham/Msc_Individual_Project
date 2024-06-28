@@ -4,7 +4,7 @@
 
   "Freeze time": 50,
   "Freeze delay": 100,
-  "Freeze loops": 2,
+  "Freeze loops": 1,
 
   "Priority": [0.2, 0.3, 0.2, 0.3],
 
@@ -36,11 +36,11 @@
 
   "Standard Deviation": 0.005,
 
-  "Number of samples": 1500,
+  "Number of samples": 1000,
 
   "Starting Kalman point": 500,
 
-  "Measurement error for Kalman": 0.1,
+  "Measurement error for Kalman": 0.001,
 
   "Measurement Noise": 0.01,
 

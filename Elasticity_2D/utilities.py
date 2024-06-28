@@ -14,24 +14,24 @@ def check_bounds(x, rang):
     
     mini = rang[0]
     maxi = rang[1]
-    R = [maxi[i] - mini[i] for i in  range(np.size(rang, 1))]
-    for i in range(np.size(rang, 1)):
-        if x[i]<mini[i]:
-            if mini[i] - x[i] > R[i]:
-                x[i] = mini[i]
-            else:
-                x[i] = 2*mini[i] - x[i]
-        if x[i]> maxi[i]:
-            if x[i] - maxi[i] > R[i]:
-                x[i] = maxi[i]
-            else: 
-                x[i] = maxi[i] - (x[i] - maxi[i])
-
+    # R = [maxi[i] - mini[i] for i in  range(np.size(rang, 1))]
     # for i in range(np.size(rang, 1)):
     #     if x[i]<mini[i]:
-    #         x[i] = mini[i]
-    #     elif x[i]> maxi[i]:
-    #         x[i] = maxi[i]
+    #         if mini[i] - x[i] > R[i]:
+    #             x[i] = mini[i]
+    #         else:
+    #             x[i] = 2*mini[i] - x[i]
+    #     if x[i]> maxi[i]:
+    #         if x[i] - maxi[i] > R[i]:
+    #             x[i] = maxi[i]
+    #         else: 
+    #             x[i] = maxi[i] - (x[i] - maxi[i])
+
+    for i in range(np.size(rang, 1)):
+        if x[i]<mini[i]:
+            x[i] = mini[i]
+        elif x[i]> maxi[i]:
+            x[i] = maxi[i]
     
     return x
 
@@ -145,11 +145,13 @@ def histogram(data, burn, titles, truevalues, ranges, f, axes):
         axes[i].grid()
         axes[i].legend()
 
-def histogram_bulk(data, label, range, f, ax, colour, a, l):
+def histogram_bulk(data, label, ranges, f, ax, colour, a, l, h):
     for i in range(len(data)):
         X = np.linspace(min(data[i]), max(data[i]), 200)
+        o = [X, [4*normalkernel(x, data[i]) for x in X]]
         ax[i].plot(X, [4*normalkernel(x, data[i]) for x in X], color = colour, alpha =a, linewidth = l, label = label)
-        ax[i].set_xlim([range[i][0], range[i][1]])
+        h[i].append(o)
+        ax[i].set_xlim([ranges[i][0], ranges[i][1]])
         ax[i].grid()
         ax[i].legend()
 

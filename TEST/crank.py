@@ -36,8 +36,9 @@ class Crank_mcmc:
     def Crank_go(self):
         j = 1
         while j < self.nsamples:
-
-            thetas = (1 - self.s**2)**0.5 * self.thetaj + self.Rj.dot(np.random.normal(size = (self.dim,1)))
+            step = np.zeros((self.dim, 1))
+            step[np.random.choice(range(4),1),0] = np.random.normal()
+            thetas = (1 - self.s**2)**0.5 * self.thetaj + self.Rj@step
 
             thetas = utilities.check_bounds(thetas, self.range)
             

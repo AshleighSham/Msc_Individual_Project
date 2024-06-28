@@ -1,8 +1,7 @@
 import numpy as np
 from DRAM import DRAM_algorithm
-from MH import MH_mcmc
+from FMH import FMH_mcmc
 from MH_DR import MH_DR_mcmc
-from MH import MH_mcmc
 from crank import Crank_mcmc
 import utilities as utilities
 from MH2 import MH2_mcmc
@@ -54,10 +53,10 @@ class EnKF_mcmc2():
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
-        mY = np.repeat(np.mean(self.Y[indexs], 1, keepdims = True), j-1, axis = 1) #nel, j-1
+        mY = np.repeat(np.mean(self.Y[indexs] , 1, keepdims = True), j-1, axis = 1) #nel, j-1
 
-        Ctm = (self.X - mX)@(self.Y[indexs] - mY).T/(j-2)
-        Cmm = (self.Y[indexs] - mY)@(self.Y[indexs] - mY).T/(j-2)
+        Ctm = (self.X - mX)@(self.Y[indexs]  - mY).T/(j-2)
+        Cmm = (self.Y[indexs]  - mY)@(self.Y[indexs]  - mY).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
@@ -65,16 +64,18 @@ class EnKF_mcmc2():
     def EnKF_go(self):
         j = self.K0 + 1
         while j < self.nsamples:
-            indexs = np.random.choice(range(0, len(self.observations)//2), int(0.25*len(self.observations)//2), replace = False)
+            indexs = np.random.choice(range(0, len(self.observations)//2), int(0.7*len(self.observations)//2), replace = False)
+            indexs = range(len(self.observations))
             rand_ind = []
             for i in indexs:
                 rand_ind.append(2*i)
-                rand_ind.append(2*i + 1)
+                if i % 2 == 0:
+                    rand_ind.append(2*i + 1)
             #index = self.meas_edge
             KK = self.Kalman_gain(j, indexs)
             
-            XX = utilities.forward_model(self.thetaj, self.mesh)[indexs]
-            dt = KK @ (self.observations[indexs] + np.random.normal(size = np.shape(self.observations[indexs]))*self.m0 - XX)
+            XX = utilities.forward_model(self.thetaj, self.mesh)[indexs] 
+            dt = KK @ (self.observations[indexs] + np.random.normal(size = np.shape(self.observations[indexs] ))*self.m0 - XX)
 
             thetas = self.thetaj + dt
 
@@ -82,7 +83,7 @@ class EnKF_mcmc2():
 
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
 
-            lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
+            lam = min(0, -5*(newpi - self.oldpi)/self.sigma)
 
             if np.log(np.random.uniform(0, 1)) < lam:
                 self.accepted += 1

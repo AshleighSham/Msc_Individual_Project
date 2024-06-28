@@ -13,6 +13,8 @@ import seaborn as sns
 sns.set_context('talk')
 
 inp = {}
+hist = {0:[], 1:[]}
+med = {0:[],1:[]}
 
 # range of the parameters based on the prior density
 inp['range']=np.array([[config['Imposed limits']['Youngs Modulus'][0], config['Imposed limits']['Poissons Ratio'][0]], 
@@ -54,15 +56,15 @@ inp['mesh'] = [config['Mesh grid']['quad'],
 ini = [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']]
 
 measurements=utilities.forward_model(np.array([[config['True Material Parameters']['Youngs Modulus']],[config['True Material Parameters']['Poissons Ratio']]]), inp['mesh'])
-measurements += np.random.normal(0, config['Measurement Noise'], size = [np.size(measurements, 0), np.size(measurements, 1)])
+measurements += np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf'], size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements
 Fig, Ax = plt.subplots(2,1)
 
 A = MH_mcmc(inp)
 resultsA = A.MH_go()
-print(resultsA['MCMC'])
-utilities.histogram_bulk(resultsA['MCMC'], 'MH', [[0, 30],[0, 0.5]],Fig, Ax, 'red', 0.7, 3)
-
+utilities.histogram_bulk(resultsA['MCMC'], 'MH', [[0, 30],[0, 0.5]],Fig, Ax, 'deepskyblue', 0.8, 3, hist)
+med[0].append(np.median(resultsA['MCMC'][0]))
+med[1].append(np.median(resultsA['MCMC'][1]))
 print('----------------------------------------------')
 print('Metropolis Hastings')
 print('----------------------------------------------')
@@ -74,8 +76,9 @@ print()
 
 B = AMH_mcmc(inp)
 resultsB = B.AMH_go()
-utilities.histogram_bulk(resultsB['MCMC'], 'AMH', [[0, 30],[0, 0.5]],Fig, Ax, 'blue', 0.7, 3)
-
+utilities.histogram_bulk(resultsB['MCMC'], 'AMH', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumseagreen', 0.8, 3, hist)
+med[0].append(np.median(resultsB['MCMC'][0]))
+med[1].append(np.median(resultsB['MCMC'][1]))
 print('----------------------------------------------')
 print('AMH')
 print('----------------------------------------------')
@@ -87,8 +90,9 @@ print()
 
 C = MH_DR_mcmc(inp)
 resultsC = C.MH_DR_go()
-utilities.histogram_bulk(resultsC['MCMC'], 'DR MH', [[0, 30],[0, 0.5]],Fig, Ax, 'green', 0.7, 3)
-
+utilities.histogram_bulk(resultsC['MCMC'], 'DR MH', [[0, 30],[0, 0.5]],Fig, Ax, 'orange', 0.8, 3, hist)
+med[0].append(np.median(resultsC['MCMC'][0]))
+med[1].append(np.median(resultsC['MCMC'][1]))
 print('----------------------------------------------')
 print('DR MH')
 print('----------------------------------------------')
@@ -100,8 +104,9 @@ print()
 
 D = DRAM_algorithm(inp)
 resultsD = D.DRAM_go()
-utilities.histogram_bulk(resultsD['MCMC'], 'DRAM', [[0, 30],[0, 0.5]],Fig, Ax, 'pink', 0.7, 3)
-
+utilities.histogram_bulk(resultsD['MCMC'], 'DRAM', [[0, 30],[0, 0.5]],Fig, Ax, 'hotpink', 0.8, 3, hist)
+med[0].append(np.median(resultsD['MCMC'][0]))
+med[1].append(np.median(resultsD['MCMC'][1]))
 print('----------------------------------------------')
 print('DRAM')
 print('----------------------------------------------')
@@ -113,8 +118,9 @@ print()
 
 E = Crank_mcmc(inp)
 resultsE = E.Crank_go()
-utilities.histogram_bulk(resultsE['MCMC'], 'pCN', [[0, 30],[0, 0.5]],Fig, Ax, 'orange', 0.7, 3)
-
+utilities.histogram_bulk(resultsE['MCMC'], 'pCN', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumorchid', 0.8, 3, hist)
+med[0].append(np.median(resultsE['MCMC'][0]))
+med[1].append(np.median(resultsE['MCMC'][1]))
 print('----------------------------------------------')
 print('CRANK')
 print('----------------------------------------------')
@@ -126,8 +132,9 @@ print()
 
 F = EnKF_mcmc(inp)
 resultsF = F.EnKF_go()
-utilities.histogram_bulk(resultsF['MCMC'], 'EnKF', [[0, 30],[0, 0.5]],Fig, Ax, 'grey', 0.7, 3)
-
+utilities.histogram_bulk(resultsF['MCMC'], 'EnKF', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumvioletred', 0.8, 3, hist)
+med[0].append(np.median(resultsF['MCMC'][0]))
+med[1].append(np.median(resultsF['MCMC'][1]))
 print('----------------------------------------------')
 print('EnKF')
 print('----------------------------------------------')
@@ -138,3 +145,8 @@ print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %
 print()
 
 plt.show()
+
+data = {}
+data['graphs'] = hist
+data['values'] = med
+np.save('my_file.npy', data) 

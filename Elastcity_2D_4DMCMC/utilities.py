@@ -14,18 +14,24 @@ def check_bounds(x, rang):
     
     mini = rang[0]
     maxi = rang[1]
-    R = [maxi[i] - mini[i] for i in  range(np.size(rang, 1))]
+    # R = [maxi[i] - mini[i] for i in  range(np.size(rang, 1))]
+    # for i in range(np.size(rang, 1)):
+    #     if x[i]<mini[i]:
+    #         if mini[i] - x[i] > R[i]:
+    #             x[i] = mini[i]
+    #         else:
+    #             x[i] = 2*mini[i] - x[i]
+    #     if x[i]> maxi[i]:
+    #         if x[i] - maxi[i] > R[i]:
+    #             x[i] = maxi[i]
+    #         else: 
+    #             x[i] = maxi[i] - (x[i] - maxi[i])
+
     for i in range(np.size(rang, 1)):
         if x[i]<mini[i]:
-            if mini[i] - x[i] > R[i]:
-                x[i] = mini[i]
-            else:
-                x[i] = 2*mini[i] - x[i]
-        if x[i]> maxi[i]:
-            if x[i] - maxi[i] > R[i]:
-                x[i] = maxi[i]
-            else: 
-                x[i] = maxi[i] - (x[i] - maxi[i])
+            x[i] = mini[i]
+        elif x[i]> maxi[i]:
+            x[i] = maxi[i]
 
     return x
 
@@ -62,7 +68,7 @@ def ESS(measurements, e, ms):
 
     diff2 = np.linalg.norm(measurements[meas_edge] - arr[meas_edge])
     ss1 = np.linalg.norm(measurements[rand_ind] - arr[rand_ind])
-    #ss1 = np.linalg.norm(measurements - arr)
+    ss1 = np.linalg.norm(measurements - arr)
     return diff2, arr
 
 
@@ -140,3 +146,11 @@ def histogram(data, titles, truevalues, ranges):
         axes[i].grid()
         axes[i].legend()
 
+def histogram_bulk(data, label, ranges, f, ax, colour, a, l, h):
+    for i in range(len(data)):
+        X = np.linspace(min(data[i]), max(data[i]), 200)
+        o = [X, [4*normalkernel(x, data[i]) for x in X]]
+        ax[i].plot(X, [4*normalkernel(x, data[i]) for x in X], color = colour, alpha =a, linewidth = l, label = label)
+        h[i].append(o)
+        ax[i].grid()
+        ax[i].legend()

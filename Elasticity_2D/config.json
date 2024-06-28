@@ -1,5 +1,5 @@
 {
-  "s": 0.05,
+  "s": 0.1,
   "Initial Material Parameters": {
     "Youngs Modulus": 5,
     "Poissons Ratio": 0.2
@@ -12,7 +12,7 @@
 
   "Imposed limits": {
     "Youngs Modulus": [0.1, 60],
-    "Poissons Ratio": [0.15, 0.4]
+    "Poissons Ratio": [1e-5, 0.5]
   },
 
   "Initial Variance": {
@@ -22,7 +22,7 @@
 
   "Standard Deviation": 0.005,
 
-  "Number of samples": 1500,
+  "Number of samples": 1000,
 
   "Starting Kalman point": 200,
 

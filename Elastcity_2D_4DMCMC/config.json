@@ -1,6 +1,9 @@
 {
-  "s": 0.15,
+  "s": 0.1,
   "Number of Materials": 2,
+  "Freeze time": 50,
+  "Freeze delay": 200,
+  "Freeze loops": 3,
 
   "Initial Material Parameters": {
     "Youngs Modulus": [5, 5],
@@ -18,8 +21,8 @@
       [1e-6, 10]
     ],
     "Poissons Ratio": [
-      [0.1, 0.4],
-      [0.1, 0.4]
+      [1e-3, 0.5],
+      [1e-3, 0.5]
     ]
   },
 
@@ -28,11 +31,11 @@
     "Poissons Ratio": 1e-3
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 0.005,
 
   "Number of samples": 2000,
 
-  "Starting Kalman point": 500,
+  "Starting Kalman point": 300,
 
   "Measurement error for Kalman": 1e-1,
 
@@ -40,7 +43,7 @@
 
   "Adaption Step Size": 100,
 
-  "Mesh grid": {
+  "Mesh grid1": {
     "sf": 0.02,
     "quad": [7, 31],
     "Nodal Coordinates": [
@@ -91,7 +94,7 @@
     "Force Nodes": [30, 61, 92, 123, 154, 185, 216],
     "Fixed Nodes": [0, 31, 62, 93, 124, 155, 186]
   },
-  "Mesh grid1": {
+  "Mesh grid": {
     "sf": 0.02,
     "quad": [4, 4],
     "Nodal Coordinates": [

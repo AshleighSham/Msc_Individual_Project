@@ -4,10 +4,9 @@ from FMH import FMH_mcmc
 from MH_DR import MH_DR_mcmc
 from crank import Crank_mcmc
 import utilities as utilities
-from MH2 import MH2_mcmc
 
-class EnKF_mcmc():
-    def __init__(self, inp):
+class EnKF_mcmc2():
+    def __init__(self, inp, results):
 
         self.range = inp['range']
         self.nsamples = inp['nsamples']
@@ -15,26 +14,22 @@ class EnKF_mcmc():
         self.initial_theta = inp['theta0']
         self.sigma = inp['sigma']
         self.observations = inp['measurement']
-        self.K0 = inp['Kalmans']
+        self.K0 = len(results['MCMC'][0])
         self.mesh = inp['mesh']
         self.m0 = inp['me']*inp['mesh'][1]
         self.adpt = inp['adapt']
         self.delay = inp['delay']
 
-        self.s = self.nsamples  #maybe need deepcopy
-        self.nsamples = self.K0 - 1
-        inp['nsamples'] = self.nsamples
-        A = Crank_mcmc(inp)
-        self.results = A.Crank_go()
+        self.results = results
 
         print('Starting EnKF...')
 
         self.X = self.results['MCMC'] #1 x nsamples
         self.Y = np.squeeze(self.results['values']).T #nsamples x nel
-        self.thetaj = self.X[:, self.K0 - 2].reshape(-1,1)
+        self.thetaj = self.X[:, -1].reshape(-1,1)
 
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj, self.mesh)
-        self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
+        self.accepted = np.fix(self.results['accepted']*(len(self.X) - 1)/100)
 
         self.edges_ind = []
         if self.mesh[0] != 0:
@@ -57,27 +52,29 @@ class EnKF_mcmc():
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
-        mY = np.repeat(np.mean(self.Y[indexs], 1, keepdims = True), j-1, axis = 1) #nel, j-1
+        mY = np.repeat(np.mean(self.Y[indexs] , 1, keepdims = True), j-1, axis = 1) #nel, j-1
 
-        Ctm = (self.X - mX)@(self.Y[indexs] - mY).T/(j-2)
-        Cmm = (self.Y[indexs] - mY)@(self.Y[indexs] - mY).T/(j-2)
+        Ctm = (self.X - mX)@(self.Y[indexs]  - mY).T/(j-2)
+        Cmm = (self.Y[indexs]  - mY)@(self.Y[indexs]  - mY).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
 
     def EnKF_go(self):
-        j = self.K0
-        while j < self.s:
-            indexs = np.random.choice(range(0, len(self.observations)//2), int(0.25*len(self.observations)//2), replace = False)
+        j = self.K0 + 1
+        while j < self.nsamples:
+            indexs = np.random.choice(range(0, len(self.observations)//2), int(0.7*len(self.observations)//2), replace = False)
+            indexs = range(len(self.observations))
             rand_ind = []
             for i in indexs:
                 rand_ind.append(2*i)
-                rand_ind.append(2*i + 1)
-            #index = self.meas_edge
+                if i % 2 == 0:
+                    rand_ind.append(2*i + 1)
+            indexs = self.meas_edge
             KK = self.Kalman_gain(j, indexs)
             
-            XX = utilities.forward_model(self.thetaj, self.mesh)[indexs]
-            dt = KK @ (self.observations[indexs] + np.random.normal(size = np.shape(self.observations[indexs]))*self.m0 - XX)
+            XX = utilities.forward_model(self.thetaj, self.mesh)[indexs] 
+            dt = KK @ (self.observations[indexs] + np.random.normal(size = np.shape(self.observations[indexs] ))*self.m0 - XX)
 
             thetas = self.thetaj + dt
 
@@ -85,9 +82,9 @@ class EnKF_mcmc():
 
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
 
-            lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
+            lam = min(0, -5*(newpi - self.oldpi)/self.sigma)
 
-            if np.random.uniform(0, 1) < lam:
+            if np.log(np.random.uniform(0, 1)) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi
@@ -115,6 +112,6 @@ class EnKF_mcmc():
             j += 1
         
         self.results['MCMC'] = self.X
-        self.results['accepted'] = (self.accepted/self.s)*100
+        self.results['accepted'] = (self.accepted/self.nsamples)*100
 
         return self.results

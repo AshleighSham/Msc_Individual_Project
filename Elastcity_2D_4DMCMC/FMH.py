@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 import utilities as utilities
 
-class MH_mcmc:
+class FMH_mcmc:
     def __init__(self, inp):
 
         self.range = inp['range']
@@ -35,7 +35,7 @@ class MH_mcmc:
 
         self.thetaj = self.initial_theta
 
-    def MH_go(self):
+    def FMH_go(self):
         f = 1
         l = 0
         F = np.array([0,2,1,3])
@@ -69,7 +69,8 @@ class MH_mcmc:
                 step[np.array([1, 2, 3]),0] = np.random.normal(size = (3,))
                 if Final_countdown >= self.countdown * 0.5:
                     self.thetaj[1,0] = np.median(self.MCMC.T[1][:j])
-                    step[np.array([2, 3]),0] = np.random.normal(size = (2,))
+                    self.thetaj[3,0] = np.median(self.MCMC.T[3][:j])
+                    step[np.array([2]),0] = np.random.normal()
                 if Final_countdown == int(self.countdown * 0.5):
                     print('final countdown 1')
                     print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[0][:j]), np.sqrt(np.var(self.MCMC.T[0][:j]))))

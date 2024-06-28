@@ -20,8 +20,8 @@ class EnKF_mcmc():
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
         inp['nsamples'] = self.nsamples
-        A = Crank_mcmc(inp)
-        self.results = A.Crank_go()
+        A = DRAM_algorithm(inp)
+        self.results = A.DRAM_go()
 
         print('Starting EnKF...')
 
