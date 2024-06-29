@@ -8,6 +8,7 @@ from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
 from mesh import Mesh
 from crank import Crank_mcmc
+from baby import Baby_mcmc
 import matplotlib.pyplot as plt
 
 fig, ax1 = plt.subplots()
@@ -153,6 +154,17 @@ elif inp['Method'] == 5:
     print('Ensemble Kalman Filter')
     print('----------------------------------------------')
    
+elif inp['Method'] == 6:
+    #The EnKF algorithm 
+    B = Baby_mcmc(inp)
+    results = B.Baby_go()
+    if config['Print Chain'] == 1:
+        print(results['MCMC'])
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    print('----------------------------------------------')
+    print('Baby')
+    print('----------------------------------------------')
+
 print('Acceptance Rate: %.3f' % results['accepted'])
 print('Number of Samples: %.0f' % config['Number of samples'])
 print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][0]), np.sqrt(np.var(results['MCMC'][0]))))
@@ -172,4 +184,4 @@ my_mesh.error_plot(true_displacement, fig4, ax4)
 ax1.set_title('Deformation Plot', fontsize = 25)
 fig.legend(loc = 'lower center', ncols=2)
 
-plt.show()
+#plt.show()

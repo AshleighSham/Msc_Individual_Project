@@ -10,6 +10,7 @@ from mesh import Mesh
 from MH2 import MH2_mcmc
 from EnKFbalnk import EnKF_mcmc2
 from crank import Crank_mcmc
+from baby import Baby_mcmc
 import seaborn as sns
 sns.set_context('talk')
 import matplotlib.pyplot as plt
@@ -116,7 +117,7 @@ if inp['Method'] == 0:
     results = C.FMH_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    inp['nsamples'] += 500
+    inp['nsamples'] += 1500
     D = EnKF_mcmc2(inp, results)
     results2 = D.EnKF_go()
     fig5, ax5 = plt.subplots(4, 1)
@@ -177,6 +178,18 @@ elif inp['Method'] == 5:
     #The EnKF algorithm 
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()
+    if config['Print Chain'] == 1:
+        print(results['MCMC'])
+    fig5, ax5 = plt.subplots(4, 1)
+    utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    print('----------------------------------------------')
+    print('Ensemble Kalman Filter')
+    print('----------------------------------------------')
+
+elif inp['Method'] == 6:
+    #The Baby algorithm 
+    B = Baby_mcmc(inp)
+    results = B.Baby_go()
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     fig5, ax5 = plt.subplots(4, 1)

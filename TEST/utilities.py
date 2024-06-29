@@ -14,18 +14,24 @@ def check_bounds(x, rang):
     
     mini = rang[0]
     maxi = rang[1]
-    R = [maxi[i] - mini[i] for i in  range(np.size(rang, 1))]
+    # R = [maxi[i] - mini[i] for i in  range(np.size(rang, 1))]
+    # for i in range(np.size(rang, 1)):
+    #     if x[i]<mini[i]:
+    #         if mini[i] - x[i] > R[i]:
+    #             x[i] = mini[i]
+    #         else:
+    #             x[i] = 2*mini[i] - x[i]
+    #     if x[i]> maxi[i]:
+    #         if x[i] - maxi[i] > R[i]:
+    #             x[i] = maxi[i]
+    #         else: 
+    #             x[i] = maxi[i] - (x[i] - maxi[i])
+
     for i in range(np.size(rang, 1)):
         if x[i]<mini[i]:
-            if mini[i] - x[i] > R[i]:
-                x[i] = mini[i]
-            else:
-                x[i] = 2*mini[i] - x[i]
-        if x[i]> maxi[i]:
-            if x[i] - maxi[i] > R[i]:
-                x[i] = maxi[i]
-            else: 
-                x[i] = maxi[i] - (x[i] - maxi[i])
+            x[i] = mini[i]
+        elif x[i]> maxi[i]:
+            x[i] = maxi[i]
 
     return x
 
@@ -38,31 +44,32 @@ def ESS(measurements, e, ms):
         Returns:
             numpy.array: ESS, resulting FEM
     """
-    edges_ind = []
-    if ms[0] != 0:
-        A = range(ms[0][1])
-        edges_ind = [a for a in A]
-        for i in range(ms[0][0]-1):
-            edges_ind.append(A[-1] + 1 + ms[0][1]*i)
-            edges_ind.append(A[-1] + ms[0][1]*i)
-        for i in range(ms[0][1]):
-            edges_ind.append(ms[0][1]*ms[0][0]-1 - i)
+    # edges_ind = []
+    # if ms[0] != 0:
+    #     A = range(ms[0][1])
+    #     edges_ind = [a for a in A]
+    #     for i in range(ms[0][0]-1):
+    #         edges_ind.append(A[-1] + 1 + ms[0][1]*i)
+    #         edges_ind.append(A[-1] + ms[0][1]*i)
+    #     for i in range(ms[0][1]):
+    #         edges_ind.append(ms[0][1]*ms[0][0]-1 - i)
 
-    meas_edge = []
-    for i in edges_ind:
-        meas_edge.append(2*i)
-        meas_edge.append(2*i + 1)
+    # meas_edge = []
+    # for i in edges_ind:
+    #     meas_edge.append(2*i)
+    #     meas_edge.append(2*i + 1)
     arr = forward_model(e, ms)
 
-    indexs = np.random.choice(range(0, len(measurements)//2), int(0.7*len(measurements)//2), replace = False)
-    rand_ind = []
-    for i in indexs:
-        rand_ind.append(2*i)
-        rand_ind.append(2*i + 1)
+    # indexs = np.random.choice(range(0, len(measurements)//2), int(0.7*len(measurements)//2), replace = False)
+    # rand_ind = []
+    # for i in indexs:
+    #     rand_ind.append(2*i)
+    #     rand_ind.append(2*i + 1)
 
-    diff2 = np.linalg.norm(measurements[meas_edge] - arr[meas_edge])
-    ss1 = np.linalg.norm(measurements[rand_ind] - arr[rand_ind])
-    return diff2, arr
+    # diff2 = np.linalg.norm(measurements[meas_edge] - arr[meas_edge])
+    ss1 = np.linalg.norm(measurements - arr)
+
+    return ss1, arr
 
 
 def plane_strain(E, nu): 

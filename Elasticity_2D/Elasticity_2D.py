@@ -8,6 +8,7 @@ from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
 from mesh import Mesh
 from crank import Crank_mcmc
+from baby import Baby_mcmc
 import matplotlib.pyplot as plt
 
 fig, ax1 = plt.subplots()
@@ -218,6 +219,18 @@ elif inp['Method'] == 5:
     utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Ensemble Kalman Filter')
+    print('----------------------------------------------')
+
+elif inp['Method'] == 6:
+    #The Baby algorithm 
+    B = Baby_mcmc(inp)
+    results = B.Baby_go()
+    if config['Print Chain'] == 1:
+        print(results['MCMC'])
+    fig5, ax5 = plt.subplots(2, 1)
+    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    print('----------------------------------------------')
+    print('Baby')
     print('----------------------------------------------')
    
 print('Acceptance Rate: %.3f' % results['accepted'])

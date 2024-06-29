@@ -77,7 +77,8 @@
     "Delayed Rejection Adaptive Metropolis Hastings": 3,
     "Crank": 4,
     "Ensemble Kalman Filter": 5,
-    "Choosen Method": 5
+    "Baby": 6,
+    "Choosen Method": 6
   },
   "Print Chain": 0
 }

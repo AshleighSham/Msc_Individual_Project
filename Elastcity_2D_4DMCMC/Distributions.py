@@ -10,6 +10,7 @@ from EnKFbalnk import EnKF_mcmc2
 from FMH import FMH_mcmc
 from mesh import Mesh
 from crank import Crank_mcmc
+from baby import Baby_mcmc
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_context('talk')
@@ -176,19 +177,15 @@ print('The median of the V 1 posterior is: %f, with uncertainty +/- %.5f' % (np.
 print('The median of the V 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsF['MCMC'][3]), np.sqrt(np.var(resultsF['MCMC'][3]))))
 print()
 
-inp['nsamples'] = 800
-G = FMH_mcmc(inp)
-resultsG = G.FMH_go()
-inp['nsamples'] += 700
-H = EnKF_mcmc2(inp, resultsG)
-resultsG = H.EnKF_go()
-utilities.histogram_bulk(resultsG['MCMC'], 'FMH EnKF', [[0, 30],[0,30],[0,0.5],[0, 0.5]],Fig, Ax, 'midnightblue', 0.8, 3, hist)
+G = Baby_mcmc(inp)
+resultsG = G.Baby_go()
+utilities.histogram_bulk(resultsG['MCMC'], 'Baby', [[0, 30],[0,30],[0,0.5],[0, 0.5]],Fig, Ax, 'red', 0.8, 3, hist)
 med[0].append(np.median(resultsG['MCMC'][0]))
 med[1].append(np.median(resultsG['MCMC'][1]))
 med[2].append(np.median(resultsG['MCMC'][2]))
 med[3].append(np.median(resultsG['MCMC'][3]))
 print('----------------------------------------------')
-print('FMH')
+print('Baby')
 print('----------------------------------------------')
 print('Acceptance Rate: %.3f' % resultsG['accepted'])
 print('Number of Samples: %.0f' % config['Number of samples'])
@@ -199,7 +196,7 @@ print('The median of the V 2 posterior is: %f, with uncertainty +/- %.5f' % (np.
 print()
 plt.show()
 
-data = {}
-data['graphs'] = hist
-data['values'] = med
-np.save('my_fileRVE.npy', data) 
+# data = {}
+# data['graphs'] = hist
+# data['values'] = med
+# np.save('my_fileRVE.npy', data) 

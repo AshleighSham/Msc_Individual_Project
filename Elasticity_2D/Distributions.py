@@ -8,6 +8,7 @@ from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
 from mesh import Mesh
 from crank import Crank_mcmc
+from baby import Baby_mcmc
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_context('talk')
@@ -144,9 +145,23 @@ print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %
 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsF['MCMC'][1]), np.sqrt(np.var(resultsF['MCMC'][1]))))
 print()
 
+G = Baby_mcmc(inp)
+resultsG = G.Baby_go()
+utilities.histogram_bulk(resultsG['MCMC'], 'Baby', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumvioletred', 0.8, 3, hist)
+med[0].append(np.median(resultsG['MCMC'][0]))
+med[1].append(np.median(resultsG['MCMC'][1]))
+print('----------------------------------------------')
+print('Baby')
+print('----------------------------------------------')
+print('Acceptance Rate: %.3f' % resultsF['accepted'])
+print('Number of Samples: %.0f' % config['Number of samples'])
+print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsG['MCMC'][0]), np.sqrt(np.var(resultsG['MCMC'][0]))))
+print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsG['MCMC'][1]), np.sqrt(np.var(resultsG['MCMC'][1]))))
+print()
+
 plt.show()
 
-data = {}
-data['graphs'] = hist
-data['values'] = med
-np.save('my_file.npy', data) 
+# data = {}
+# data['graphs'] = hist
+# data['values'] = med
+# np.save('my_file.npy', data) 

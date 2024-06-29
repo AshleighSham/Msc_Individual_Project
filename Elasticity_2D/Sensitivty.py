@@ -5,7 +5,6 @@ import seaborn as sns
 from mesh import Mesh
 sns.set_context('talk')
 import matplotlib.pyplot as plt
-import sympy as sym
 import pandas as pd
 import scipy.stats as st
 

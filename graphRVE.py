@@ -6,8 +6,8 @@ from copy import copy
 
 read_dictionary = np.load('my_fileRVE.npy',allow_pickle='TRUE').item()
 
-colours = ['deepskyblue','mediumseagreen','orange','hotpink','mediumorchid','mediumvioletred', 'midnightblue']
-labels = ['MH', 'AMH', 'DR MH', 'DRAM', 'pCN', 'EnKF', 'FMH']
+colours = ['deepskyblue','mediumseagreen','orange','hotpink','mediumorchid','mediumvioletred', 'red']
+labels = ['MH', 'AMH', 'DR MH', 'DRAM', 'pCN', 'EnKF', 'Baby']
 fig, ax = plt.subplots(2,2, figsize = (10,10) )
 
 read_dictionary['graphs'][0][-2][1] = np.array(read_dictionary['graphs'][0][-2][1]) /2
