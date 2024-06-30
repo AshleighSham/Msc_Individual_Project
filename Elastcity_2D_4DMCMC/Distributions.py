@@ -87,6 +87,7 @@ print('The median of the V 1 posterior is: %f, with uncertainty +/- %.5f' % (np.
 print('The median of the V 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsA['MCMC'][3]), np.sqrt(np.var(resultsA['MCMC'][3]))))
 print()
 
+inp['nsamples'] = config['Number of samples']
 B = AMH_mcmc(inp)
 resultsB = B.AMH_go()
 utilities.histogram_bulk(resultsB['MCMC'], 'AMH',  [[0, 30],[0,30],[0,0.5],[0, 0.5]],Fig, Ax, 'mediumseagreen', 0.8, 3, hist)
@@ -105,6 +106,7 @@ print('The median of the V 1 posterior is: %f, with uncertainty +/- %.5f' % (np.
 print('The median of the V 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsB['MCMC'][3]), np.sqrt(np.var(resultsB['MCMC'][3]))))
 print()
 
+inp['nsamples'] = config['Number of samples']
 C = MH_DR_mcmc(inp)
 resultsC = C.MH_DR_go()
 utilities.histogram_bulk(resultsC['MCMC'], 'DR MH', [[0, 30],[0,30],[0,0.5],[0, 0.5]],Fig, Ax, 'orange', 0.8, 3, hist)
@@ -123,6 +125,7 @@ print('The median of the V 1 posterior is: %f, with uncertainty +/- %.5f' % (np.
 print('The median of the V 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsC['MCMC'][3]), np.sqrt(np.var(resultsC['MCMC'][3]))))
 print()
 
+inp['nsamples'] = config['Number of samples']
 D = DRAM_algorithm(inp)
 resultsD = D.DRAM_go()
 utilities.histogram_bulk(resultsD['MCMC'], 'DRAM', [[0, 30],[0,30],[0,0.5],[0, 0.5]],Fig, Ax, 'hotpink', 0.8, 3, hist)
@@ -141,6 +144,7 @@ print('The median of the V 1 posterior is: %f, with uncertainty +/- %.5f' % (np.
 print('The median of the V 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsD['MCMC'][3]), np.sqrt(np.var(resultsD['MCMC'][3]))))
 print()
 
+inp['nsamples'] = config['Number of samples']
 E = Crank_mcmc(inp)
 resultsE = E.Crank_go()
 utilities.histogram_bulk(resultsE['MCMC'], 'pCN',  [[0, 30],[0,30],[0,0.5],[0, 0.5]],Fig, Ax, 'mediumorchid', 0.8, 3, hist)
@@ -159,6 +163,7 @@ print('The median of the V 1 posterior is: %f, with uncertainty +/- %.5f' % (np.
 print('The median of the V 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsE['MCMC'][3]), np.sqrt(np.var(resultsE['MCMC'][3]))))
 print()
 
+inp['nsamples'] = config['Number of samples']
 F = EnKF_mcmc(inp)
 resultsF = F.EnKF_go()
 utilities.histogram_bulk(resultsF['MCMC'], 'EnKF', [[0, 30],[0,30],[0,0.5],[0, 0.5]],Fig, Ax, 'mediumvioletred', 0.8, 3, hist)
@@ -176,6 +181,49 @@ print('The median of the E 2 posterior is: %f, with uncertainty +/- %.5f' % (np.
 print('The median of the V 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsF['MCMC'][2]), np.sqrt(np.var(resultsF['MCMC'][2]))))
 print('The median of the V 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsF['MCMC'][3]), np.sqrt(np.var(resultsF['MCMC'][3]))))
 print()
+
+minis = np.array([np.array(config['Imposed Limits']['Youngs Modulus'])[:,0], np.array(config['Imposed Limits']['Poissons Ratio'])[:,0]]).flatten()
+maxis = np.array([np.array(config['Imposed Limits']['Youngs Modulus'])[:,1], np.array(config['Imposed Limits']['Poissons Ratio'])[:,1]]).flatten()
+inp['range']=np.array([minis, maxis])   
+inp['s'] = config['s']                      
+
+# number of iteration in MCMC
+inp['nsamples']=config['Number of samples']
+
+#freeze
+inp['freeze'] = config['Freeze time']
+inp['delay'] = config['Freeze delay']
+inp['freeze loops'] = config['Freeze loops'] 
+
+# initial covariance                          
+inp['icov']=np.array([[config['Initial Variance']['Youngs Modulus'], 0],[0, config['Initial Variance']['Poissons Ratio']]])                                   
+inp['icov'] = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-1,0],[0,0,0,1e-1]])
+
+# initial guesss of the parameters based on the prior
+itheta = [[config['Initial Material Parameters']['Youngs Modulus'][0]],[config['Initial Material Parameters']['Youngs Modulus'][1]], [config['Initial Material Parameters']['Poissons Ratio'][0]],[config['Initial Material Parameters']['Poissons Ratio'][1]]]
+inp['theta0']=np.array(itheta)
+# std                               
+inp['sigma']=config['Standard Deviation']
+
+# The starting point of the Kalman MCMC           
+inp['Kalmans']= config['Starting Kalman point']                        
+
+# assumed measurement error for Kalman MCMC
+inp['me']=config['Measurement error for Kalman'] 
+
+#adaption setp size
+inp['adapt'] = config['Adaption Step Size']
+
+#mesh set up
+inp['mesh'] = [config['Mesh grid']['quad'],
+               config['Mesh grid']['sf'], 
+               config['Mesh grid']['Nodal Coordinates'], 
+               config['Mesh grid']['Element Node Numbers'],
+               config['Mesh grid']['Number of elements'],
+               config['Mesh grid']['Force Magnitude'],
+               config['Mesh grid']['Force Nodes'],
+               config['Mesh grid']['Fixed Nodes'],
+               config['Mesh grid']['Element ID']]
 
 G = Baby_mcmc(inp)
 resultsG = G.Baby_go()
@@ -200,3 +248,8 @@ plt.show()
 # data['graphs'] = hist
 # data['values'] = med
 # np.save('my_fileRVE.npy', data) 
+
+# data = {}
+# data['graphs'] = hist
+# data['values'] = med
+# np.save('my_fileBEAM.npy', data) 

@@ -12,14 +12,14 @@ fig, ax = plt.subplots(2,1, figsize = (10,5) )
 
 for i, j, q in zip(read_dictionary['graphs'][0], read_dictionary['values'][0], range(7)):
     ax[0].plot(i[0], i[1], alpha = 0.8, c = colours[q])
-    ax[0].plot([j], [0], c = colours[q], marker = "|", markersize=18, markeredgewidth = 3)
+    ax[0].plot([j], [-0.02], c = colours[q], marker = "|", markersize=18, markeredgewidth = 3)
 
 for i, j, q in zip(read_dictionary['graphs'][1], read_dictionary['values'][1], range(7)):
     ax[1].plot(i[0], i[1], alpha = 0.8, c = colours[q])
-    ax[1].plot([j], [0], c = colours[q], marker = "|", markersize=18, markeredgewidth = 3, label = labels[q])
+    ax[1].plot([j], [-1], c = colours[q], marker = "|", markersize=18, markeredgewidth = 3, label = labels[q])
 
-ax[0].plot([10], [0], c = 'black', marker = "o", markersize=5, markeredgewidth = 3, label = 'True Value', alpha = 0.6)
-ax[1].plot([0.3], [0], c = 'black', marker = "o", markersize=5, markeredgewidth = 3, alpha = 0.6)
+ax[0].plot([10], [-0.02], c = 'black', marker = "o", markersize=5, markeredgewidth = 3, label = 'True Value', alpha = 0.6)
+ax[1].plot([0.3], [-1], c = 'black', marker = "o", markersize=5, markeredgewidth = 3, alpha = 0.6)
 plt.tight_layout()
 plt.subplots_adjust(bottom = 0.17)
 fig.legend(loc='lower center', ncol = 4, prop={'size': 15})

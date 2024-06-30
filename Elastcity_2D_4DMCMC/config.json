@@ -1,5 +1,5 @@
 {
-  "s": 0.7,
+  "s": 0.1,
   "Number of Materials": 2,
   "Freeze time": 50,
   "Freeze delay": 200,
@@ -31,11 +31,11 @@
     "Poissons Ratio": 1e-3
   },
 
-  "Standard Deviation": 0.005,
+  "Standard Deviation": 0.001,
 
-  "Number of samples": 2000,
+  "Number of samples": 3000,
 
-  "Starting Kalman point": 2000,
+  "Starting Kalman point": 200,
 
   "Measurement error for Kalman": 1e-2,
 
@@ -43,7 +43,7 @@
 
   "Adaption Step Size": 100,
 
-  "Mesh grid1": {
+  "Mesh grid": {
     "sf": 0.02,
     "quad": [7, 31],
     "Nodal Coordinates": [
@@ -94,7 +94,7 @@
     "Force Nodes": [30, 61, 92, 123, 154, 185, 216],
     "Fixed Nodes": [0, 31, 62, 93, 124, 155, 186]
   },
-  "Mesh grid": {
+  "Mesh grid1": {
     "sf": 0.02,
     "quad": [4, 4],
     "Nodal Coordinates": [

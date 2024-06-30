@@ -184,4 +184,4 @@ my_mesh.error_plot(true_displacement, fig4, ax4)
 ax1.set_title('Deformation Plot', fontsize = 25)
 fig.legend(loc = 'lower center', ncols=2)
 
-#plt.show()
+plt.show()
