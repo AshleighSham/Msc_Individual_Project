@@ -11,6 +11,9 @@ from crank import Crank_mcmc
 from baby import Baby_mcmc
 import matplotlib.pyplot as plt
 
+#data = np.load('RVE_EnKF.npy', allow_pickle=True)
+#data = data.tolist()
+
 fig, ax1 = plt.subplots()
 plt.subplots_adjust(bottom = 0.1)
 
@@ -27,7 +30,7 @@ inp['nsamples']=config['Number of samples']
 # initial covariance  
 icov = [config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Poissons Ratio'], config['Initial Variance']['Poissons Ratio']]
 inp['icov'] = np.eye(config['Number of Materials']*2)*np.array(icov)
-inp['icov'] = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-1,0],[0,0,0,1e-1]])
+inp['icov'] = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-3,0],[0,0,0,1e-3]])
 
 inp['s'] = config['s']
 
@@ -59,6 +62,7 @@ inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['Element ID']]
 
 ini = [config['True Material Parameters']['Youngs Modulus'][0], config['True Material Parameters']['Youngs Modulus'][1], config['True Material Parameters']['Poissons Ratio'][0],config['True Material Parameters']['Poissons Ratio'][1]]
+
 measurements=utilities.forward_model(np.array(ini), inp['mesh'])
 measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf'], size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements1
@@ -80,6 +84,8 @@ fig2, ax2 = plt.subplots(2, 1)
 my_mesh.contour_plot('True', fig2, ax2)
 
 inp['Method'] = config['Methods']['Choosen Method']
+
+inp['theta0'] = np.array([np.random.choice(range(int(minis[0]*1e6), int(maxis[0]*1e6)), 1)/1e6, np.random.choice(range(int(minis[1]*1e6), int(maxis[1]*1e6)), 1)/1e6, np.random.choice(range(int(minis[2]*1e6), int(maxis[2]*1e6)), 1)/1e6, np.random.choice(range(int(minis[3]*1e6), int(maxis[3]*1e6)), 1)/1e6])
 
 print()
 print()
@@ -155,7 +161,7 @@ elif inp['Method'] == 5:
     print('----------------------------------------------')
    
 elif inp['Method'] == 6:
-    #The EnKF algorithm 
+    #The Baby algorithm 
     B = Baby_mcmc(inp)
     results = B.Baby_go()
     if config['Print Chain'] == 1:
@@ -184,4 +190,18 @@ my_mesh.error_plot(true_displacement, fig4, ax4)
 ax1.set_title('Deformation Plot', fontsize = 25)
 fig.legend(loc = 'lower center', ncols=2)
 
-plt.show()
+#data = {'Initial':{0:[], 1:[], 2:[], 3:[]}, 'Median':{0:[], 1:[], 2:[], 3:[]}, 'Uncertainty':{0:[], 1:[], 2:[], 3:[]}}
+# for i in range(4):
+#     data['Initial'][i].append(inp['theta0'][i][0])
+
+# data['Median'][0].append(np.median(results['MCMC'][0]))
+# data['Median'][1].append(np.median(results['MCMC'][1]))
+# data['Median'][2].append(np.median(results['MCMC'][2]))
+# data['Median'][3].append(np.median(results['MCMC'][3]))
+
+# data['Uncertainty'][0].append(np.sqrt(np.var(results['MCMC'][0])))
+# data['Uncertainty'][1].append(np.sqrt(np.var(results['MCMC'][1])))
+# data['Uncertainty'][2].append(np.sqrt(np.var(results['MCMC'][2])))
+# data['Uncertainty'][3].append(np.sqrt(np.var(results['MCMC'][3])))
+
+# np.save('RVE_EnKF.npy', data, allow_pickle=True) 

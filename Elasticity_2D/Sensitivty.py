@@ -63,6 +63,8 @@ df_disp = pd.DataFrame.from_dict(dict(parameter=variable_names,
                                  scaled_sensitivity=x0*dF_dx,
                                  sensitivity_index=sigma0*dF_dx))
 
+fig, ax = plt.subplots(figsize = (5,5))
+
 ax = df_disp['scaled_sensitivity'].abs().plot(xticks=df_disp.index, color = 'cornflowerblue')
 
 ax.set_xticklabels(df_disp.parameter)

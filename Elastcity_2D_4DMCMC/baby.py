@@ -16,7 +16,7 @@ class Baby_mcmc():
         self.adpt = inp['adapt']
         self.s = inp['s']
 
-        self.FC = self.nsamples - 1000
+        self.FC = self.nsamples - 2500
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
@@ -188,7 +188,7 @@ class Baby_mcmc():
         j = 1
         R = 0
         F = True
-        N = 50
+        N = 100
         rotation = np.array([0,1,2,3])
         while j < self.nsamples:
             if j % N == 0 and F == True:
