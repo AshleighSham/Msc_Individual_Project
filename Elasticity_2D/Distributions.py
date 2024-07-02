@@ -16,6 +16,7 @@ sns.set_context('talk')
 inp = {}
 hist = {0:[], 1:[]}
 med = {0:[],1:[]}
+chains = {0:[], 1:[]}
 
 # range of the parameters based on the prior density
 inp['range']=np.array([[config['Imposed limits']['Youngs Modulus'][0], config['Imposed limits']['Poissons Ratio'][0]], 
@@ -63,9 +64,11 @@ Fig, Ax = plt.subplots(2,1)
 
 A = MH_mcmc(inp)
 resultsA = A.MH_go()
-utilities.histogram_bulk(resultsA['MCMC'], 'MH', [[0, 30],[0, 0.5]],Fig, Ax, 'deepskyblue', 0.8, 3, hist)
+#utilities.histogram_bulk(resultsA['MCMC'], 'MH', [[0, 30],[0, 0.5]],Fig, Ax, 'deepskyblue', 0.8, 3, hist)
 med[0].append(np.median(resultsA['MCMC'][0]))
 med[1].append(np.median(resultsA['MCMC'][1]))
+chains[0].append(resultsA['MCMC'][0])
+chains[1].append(resultsA['MCMC'][1])
 print('----------------------------------------------')
 print('Metropolis Hastings')
 print('----------------------------------------------')
@@ -77,9 +80,11 @@ print()
 
 B = AMH_mcmc(inp)
 resultsB = B.AMH_go()
-utilities.histogram_bulk(resultsB['MCMC'], 'AMH', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumseagreen', 0.8, 3, hist)
+#utilities.histogram_bulk(resultsB['MCMC'], 'AMH', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumseagreen', 0.8, 3, hist)
 med[0].append(np.median(resultsB['MCMC'][0]))
 med[1].append(np.median(resultsB['MCMC'][1]))
+chains[0].append(resultsB['MCMC'][0])
+chains[1].append(resultsB['MCMC'][1])
 print('----------------------------------------------')
 print('AMH')
 print('----------------------------------------------')
@@ -91,9 +96,11 @@ print()
 
 C = MH_DR_mcmc(inp)
 resultsC = C.MH_DR_go()
-utilities.histogram_bulk(resultsC['MCMC'], 'DR MH', [[0, 30],[0, 0.5]],Fig, Ax, 'orange', 0.8, 3, hist)
+#utilities.histogram_bulk(resultsC['MCMC'], 'DR MH', [[0, 30],[0, 0.5]],Fig, Ax, 'orange', 0.8, 3, hist)
 med[0].append(np.median(resultsC['MCMC'][0]))
 med[1].append(np.median(resultsC['MCMC'][1]))
+chains[0].append(resultsC['MCMC'][0])
+chains[1].append(resultsC['MCMC'][1])
 print('----------------------------------------------')
 print('DR MH')
 print('----------------------------------------------')
@@ -105,9 +112,11 @@ print()
 
 D = DRAM_algorithm(inp)
 resultsD = D.DRAM_go()
-utilities.histogram_bulk(resultsD['MCMC'], 'DRAM', [[0, 30],[0, 0.5]],Fig, Ax, 'hotpink', 0.8, 3, hist)
+#utilities.histogram_bulk(resultsD['MCMC'], 'DRAM', [[0, 30],[0, 0.5]],Fig, Ax, 'hotpink', 0.8, 3, hist)
 med[0].append(np.median(resultsD['MCMC'][0]))
 med[1].append(np.median(resultsD['MCMC'][1]))
+chains[0].append(resultsD['MCMC'][0])
+chains[1].append(resultsD['MCMC'][1])
 print('----------------------------------------------')
 print('DRAM')
 print('----------------------------------------------')
@@ -119,9 +128,11 @@ print()
 
 E = Crank_mcmc(inp)
 resultsE = E.Crank_go()
-utilities.histogram_bulk(resultsE['MCMC'], 'pCN', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumorchid', 0.8, 3, hist)
+#utilities.histogram_bulk(resultsE['MCMC'], 'pCN', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumorchid', 0.8, 3, hist)
 med[0].append(np.median(resultsE['MCMC'][0]))
 med[1].append(np.median(resultsE['MCMC'][1]))
+chains[0].append(resultsE['MCMC'][0])
+chains[1].append(resultsE['MCMC'][1])
 print('----------------------------------------------')
 print('CRANK')
 print('----------------------------------------------')
@@ -133,9 +144,11 @@ print()
 
 F = EnKF_mcmc(inp)
 resultsF = F.EnKF_go()
-utilities.histogram_bulk(resultsF['MCMC'], 'EnKF', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumvioletred', 0.8, 3, hist)
+#utilities.histogram_bulk(resultsF['MCMC'], 'EnKF', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumvioletred', 0.8, 3, hist)
 med[0].append(np.median(resultsF['MCMC'][0]))
 med[1].append(np.median(resultsF['MCMC'][1]))
+chains[0].append(resultsF['MCMC'][0])
+chains[1].append(resultsF['MCMC'][1])
 print('----------------------------------------------')
 print('EnKF')
 print('----------------------------------------------')
@@ -145,11 +158,16 @@ print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %
 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsF['MCMC'][1]), np.sqrt(np.var(resultsF['MCMC'][1]))))
 print()
 
+
+inp['nsamples'] = config['Number of samples']
 G = Baby_mcmc(inp)
+
 resultsG = G.Baby_go()
-utilities.histogram_bulk(resultsG['MCMC'], 'Baby', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumvioletred', 0.8, 3, hist)
+#utilities.histogram_bulk(resultsG['MCMC'], 'Baby', [[0, 30],[0, 0.5]],Fig, Ax, 'mediumvioletred', 0.8, 3, hist)
 med[0].append(np.median(resultsG['MCMC'][0]))
 med[1].append(np.median(resultsG['MCMC'][1]))
+chains[0].append(resultsG['MCMC'][0])
+chains[1].append(resultsG['MCMC'][1])
 print('----------------------------------------------')
 print('Baby')
 print('----------------------------------------------')
@@ -159,9 +177,7 @@ print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %
 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsG['MCMC'][1]), np.sqrt(np.var(resultsG['MCMC'][1]))))
 print()
 
-plt.show()
+#plt.show()
 
-# data = {}
-# data['graphs'] = hist
-# data['values'] = med
-# np.save('my_file.npy', data) 
+
+np.save('2D_chains.npy', chains) 

@@ -43,7 +43,7 @@
 
   "Adaption Step Size": 100,
 
-  "Mesh grid1": {
+  "Mesh grid": {
     "sf": 0.02,
     "quad": [7, 31],
     "Nodal Coordinates": [
@@ -94,7 +94,7 @@
     "Force Nodes": [30, 61, 92, 123, 154, 185, 216],
     "Fixed Nodes": [0, 31, 62, 93, 124, 155, 186]
   },
-  "Mesh grid": {
+  "Mesh grid1": {
     "sf": 0.02,
     "quad": [4, 4],
     "Nodal Coordinates": [
