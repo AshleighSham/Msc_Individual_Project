@@ -69,7 +69,7 @@ df_disp = pd.DataFrame.from_dict(dict(parameter=variable_names,
                                  scaled_sensitivity=x0*dF_dx,
                                  sensitivity_index=sigma0*dF_dx))
 
-ax = df_disp['scaled_sensitivity'].abs().plot(xticks=df_disp.index, color = 'cornflowerblue')
+ax = df_disp['scaled_sensitivity'].abs().plot(xticks=df_disp.index, color = 'cornflowerblue', marker ='s', markersize = 7)
 
 ax.set_xticklabels(df_disp.parameter)
 ax.set_ylabel('Absolute scaled sensitivity')

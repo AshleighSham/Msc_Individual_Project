@@ -144,7 +144,7 @@ class Baby_mcmc():
             f = 2
         else: 
             f = 3
-        F = np.array([3, 1, 2, 0])
+        F = np.array([0, 1, 2, 3])
         step = np.zeros((self.dim, 1))
 
         Rand = np.random.normal()
