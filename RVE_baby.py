@@ -4,8 +4,8 @@ import seaborn as sns
 sns.set_context('talk')
 from copy import copy
 
-read_dictionary = np.load('RVE_Baby.npy',allow_pickle='TRUE').item()
-#read_dictionary = np.load('RVE_EnKF.npy',allow_pickle='TRUE').item()
+#read_dictionary = np.load('RVE_Baby.npy',allow_pickle='TRUE').item()
+read_dictionary = np.load('RVE_EnKF.npy',allow_pickle='TRUE').item()
 print('Number of Runs: ', len(read_dictionary['Median'][0]))
 fig, ax = plt.subplots(nrows=2, ncols =2, sharex= 'col', sharey = 'row')
 Tru = [10, 1, 0.3, 0.3]

@@ -31,7 +31,7 @@
     "Poissons Ratio": 1e-3
   },
 
-  "Standard Deviation": 0.001,
+  "Standard Deviation": 0.0001,
 
   "Number of samples": 3500,
 
@@ -43,8 +43,9 @@
 
   "Adaption Step Size": 100,
 
-  "Mesh grid": {
+  "Mesh grid1": {
     "sf": 0.02,
+    "thickness": 0.1,
     "quad": [7, 31],
     "Nodal Coordinates": [
       [0, 0],
@@ -90,12 +91,13 @@
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     ],
 
-    "Force Magnitude": 3e-5,
+    "Force Magnitude": 3e-6,
     "Force Nodes": [30, 61, 92, 123, 154, 185, 216],
     "Fixed Nodes": [0, 31, 62, 93, 124, 155, 186]
   },
-  "Mesh grid1": {
+  "Mesh grid": {
     "sf": 0.02,
+    "thickness": 0.1,
     "quad": [4, 4],
     "Nodal Coordinates": [
       [0, 0],
@@ -129,7 +131,7 @@
     "Number of elements": 9,
     "Element ID": [0, 0, 0, 0, 1, 0, 0, 0, 0],
 
-    "Force Magnitude": 6e-3,
+    "Force Magnitude": 6e-4,
     "Force Nodes": [3, 7, 11, 15],
     "Fixed Nodes": [0, 4, 8, 12]
   },
@@ -142,7 +144,7 @@
     "Crank": 4,
     "Ensemble Kalman Filter": 5,
     "Baby": 6,
-    "Choosen Method": 5
+    "Choosen Method": 6
   },
   "Print Chain": 0
 }

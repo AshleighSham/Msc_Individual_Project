@@ -59,7 +59,8 @@ inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['Force Magnitude'],
                config['Mesh grid']['Force Nodes'],
                config['Mesh grid']['Fixed Nodes'],
-               config['Mesh grid']['Element ID']]
+               config['Mesh grid']['Element ID'], 
+               config['Mesh grid']['thickness']]
 
 ini = [config['True Material Parameters']['Youngs Modulus'][0], config['True Material Parameters']['Youngs Modulus'][1], config['True Material Parameters']['Poissons Ratio'][0],config['True Material Parameters']['Poissons Ratio'][1]]
 
@@ -189,6 +190,8 @@ my_mesh.error_plot(true_displacement, fig4, ax4)
 
 ax1.set_title('Deformation Plot', fontsize = 25)
 fig.legend(loc = 'lower center', ncols=2)
+
+plt.show()
 
 #data = {'Initial':{0:[], 1:[], 2:[], 3:[]}, 'Median':{0:[], 1:[], 2:[], 3:[]}, 'Uncertainty':{0:[], 1:[], 2:[], 3:[]}}
 # for i in range(4):

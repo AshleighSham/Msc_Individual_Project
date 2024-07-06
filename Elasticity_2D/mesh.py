@@ -6,7 +6,7 @@ class Mesh():
     # the initialisation procedure
     def __init__(self, m):
         self.m = m
-        quad, scfa, NC, ENN, NE, FM, FN, FBCN = self.m
+        quad, scfa, NC, ENN, NE, FM, FN, FBCN, self.th = self.m
         if quad != 0:
             bot = np.array([x for x in range(quad[1])])
             top = np.array([x for x in range(quad[1])])
@@ -175,7 +175,7 @@ class Mesh():
 
         return dsB, J
 
-    def keval(self, xyze,De):
+    def keval(self, xyze,De, th):
         ke = np.zeros((8,8))                                # create element stiffness matrix (array)                    
 
         a = 1/(np.sqrt(3))                                  # location of Gauss points (in natural coordinates)
@@ -189,7 +189,7 @@ class Mesh():
             dsB, J = self.dispstrain_B(xyze,xi,eta);           # evaluate dsB matrix and Jacobian
 
             # YOUR CODE HERE - Update element stiffness matrix
-            ke += w * w * dsB.T @ De @ dsB * J
+            ke += th * w * w * dsB.T @ De @ dsB * J
             
         return ke 
     
@@ -201,7 +201,7 @@ class Mesh():
             xyze = self.XYZ[self.CON[i,:], :]             # element coordinates
             De = D[3*i:3*i+3, 0:3]              # elasticity matrix
 
-            ke = self.keval(xyze,De)             # call function evaluating element stiffness matrix
+            ke = self.keval(xyze,De, self.th)             # call function evaluating element stiffness matrix
             
             K[np.ix_(idi, idi)] += ke
 

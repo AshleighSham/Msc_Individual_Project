@@ -54,7 +54,8 @@ inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['Number of elements'],
                config['Mesh grid']['Force Magnitude'],
                config['Mesh grid']['Force Nodes'],
-               config['Mesh grid']['Fixed Nodes']]
+               config['Mesh grid']['Fixed Nodes'],
+               config['Mesh grid']['thickness']]
 
 ini = [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']]
 
@@ -72,7 +73,7 @@ fig2, ax2 = plt.subplots(2, 1)
 my_mesh.contour_plot('True', fig2, ax2)
 
 inp['Method'] = config['Methods']['Choosen Method']
-inp['theta0'] = np.array([np.random.choice(range(int(inp['range'][0][0]*1e6), int(inp['range'][1][0]*1e6)), 1)/1e6, np.random.choice(range(int(inp['range'][0][1]*1e6), int(inp['range'][1][1]*1e6)), 1)/1e6])
+#inp['theta0'] = np.array([np.random.choice(range(int(inp['range'][0][0]*1e6), int(inp['range'][1][0]*1e6)), 1)/1e6, np.random.choice(range(int(inp['range'][0][1]*1e6), int(inp['range'][1][1]*1e6)), 1)/1e6])
 
 print()
 print()
@@ -159,7 +160,7 @@ elif inp['Method'] == 6:
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     fig5, ax5 = plt.subplots(2, 1)
-    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    #utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Baby')
     print('----------------------------------------------')
@@ -169,29 +170,42 @@ print('Number of Samples: %.0f' % config['Number of samples'])
 print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][0]), np.sqrt(np.var(results['MCMC'][0]))))
 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][1]), np.sqrt(np.var(results['MCMC'][1]))))
 print()
-my_mesh = Mesh(inp['mesh'])
-my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
-my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(3,5)),colour = 'rebeccapurple', ch = 0.9, ax = ax1, lines = lines)
 
-fig3, ax3 = plt.subplots(2, 1)
-my_mesh.contour_plot('Estimated', fig3, ax3)
+fig, ax = plt.subplots(2,1)
+ax[0].plot(range(len(results['MCMC'][0])), results['MCMC'][0])
+ax[0].set_ylim([0,35])
 
-fig4, ax4 = plt.subplots(2, 1)
-my_mesh.error_plot(true_displacement, fig4, ax4)
+ax[1].plot(range(len(results['MCMC'][1])), results['MCMC'][1])
+ax[1].set_ylim([0,0.5])
 
-ax1.set_title('Deformation Plot', fontsize = 25)
-fig.legend(loc = 'lower center', ncols=2)
+plt.show()
+# for i, q in zip(read_dictionary[0], range(7)):
+#     ax[q][0].plot(range(len(i)), i, alpha = 0.8, c = colours[q], label = labels[q])
+#     ax[q][0].axhline(10, alpha = 0.8, c = 'k', linestyle='dashed')
+#     ax[q][0].set_ylim([0,35])
+# my_mesh = Mesh(inp['mesh'])
+# my_mesh.displacement(np.median(results['MCMC'][0]), np.median(results['MCMC'][1]))
+# my_mesh.deformation_plot(label = f'Estimated Deformation, E: %.3f, v: %.3f' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][1])), ls =(0,(3,5)),colour = 'rebeccapurple', ch = 0.9, ax = ax1, lines = lines)
 
-#plt.show()
+# fig3, ax3 = plt.subplots(2, 1)
+# my_mesh.contour_plot('Estimated', fig3, ax3)
 
-data = {'Initial':{0:[], 1:[]}, 'Median':{0:[], 1:[]}, 'Uncertainty':{0:[], 1:[]}}
-for i in range(2):
-    data['Initial'][i].append(inp['theta0'][i][0])
+# fig4, ax4 = plt.subplots(2, 1)
+# my_mesh.error_plot(true_displacement, fig4, ax4)
 
-data['Median'][0].append(np.median(results['MCMC'][0]))
-data['Median'][1].append(np.median(results['MCMC'][1]))
+# ax1.set_title('Deformation Plot', fontsize = 25)
+# fig.legend(loc = 'lower center', ncols=2)
 
-data['Uncertainty'][0].append(np.sqrt(np.var(results['MCMC'][0])))
-data['Uncertainty'][1].append(np.sqrt(np.var(results['MCMC'][1])))
+# plt.show()
 
-np.save('RVE_Baby2D.npy', data, allow_pickle=True) 
+# data = {'Initial':{0:[], 1:[]}, 'Median':{0:[], 1:[]}, 'Uncertainty':{0:[], 1:[]}}
+# for i in range(2):
+#     data['Initial'][i].append(inp['theta0'][i][0])
+
+# data['Median'][0].append(np.median(results['MCMC'][0]))
+# data['Median'][1].append(np.median(results['MCMC'][1]))
+
+# data['Uncertainty'][0].append(np.sqrt(np.var(results['MCMC'][0])))
+# data['Uncertainty'][1].append(np.sqrt(np.var(results['MCMC'][1])))
+
+# np.save('RVE_Baby2D.npy', data, allow_pickle=True) 

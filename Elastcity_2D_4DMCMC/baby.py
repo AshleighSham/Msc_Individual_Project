@@ -16,7 +16,7 @@ class Baby_mcmc():
         self.adpt = inp['adapt']
         self.s = inp['s']
 
-        self.FC = self.nsamples - 2500
+        self.FC = 1000
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)

@@ -32,7 +32,7 @@ inp['icov']=np.array([[config['Initial Variance']['Youngs Modulus'], 0],[0, conf
 
 # initial guesss of the parameters based on the prior
 inp['theta0']=np.array([[config['Initial Material Parameters']['Youngs Modulus']],[config['Initial Material Parameters']['Poissons Ratio']]])  
-inp['theta0'] += inp['icov']@np.random.normal(size = (2, 1))
+#inp['theta0'] += inp['icov']@np.random.normal(size = (2, 1))
 # std                               
 inp['sigma']=config['Standard Deviation']
 
@@ -53,7 +53,8 @@ inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['Number of elements'],
                config['Mesh grid']['Force Magnitude'],
                config['Mesh grid']['Force Nodes'],
-               config['Mesh grid']['Fixed Nodes']]
+               config['Mesh grid']['Fixed Nodes'],
+               config['Mesh grid']['thickness']]
 
 ini = [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']]
 
