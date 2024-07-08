@@ -35,6 +35,20 @@ def check_bounds(x, rang):
     
     return x
 
+# def ESS(measurements, e, ms):
+#     """Calculates EES results of FEM with etsimated E, G_f and the measured data
+
+#         Args:
+#             measurement (numpy.array): np.array([observations]), np.array([E, G_f])
+
+#         Returns:
+#             numpy.array: ESS, resulting FEM
+#     """
+#     arr = forward_model(e, ms)
+#     ss1 = np.linalg.norm(measurements - arr)
+
+#     return ss1, arr
+
 def ESS(measurements, e, ms):
     """Calculates EES results of FEM with etsimated E, G_f and the measured data
 
@@ -44,34 +58,14 @@ def ESS(measurements, e, ms):
         Returns:
             numpy.array: ESS, resulting FEM
     """
-    # edges_ind = []
-    # if ms[0] != 0:
-    #     A = range(ms[0][1])
-    #     edges_ind = [a for a in A]
-    #     for i in range(ms[0][0]-1):
-    #         edges_ind.append(A[-1] + 1 + ms[0][1]*i)
-    #         edges_ind.append(A[-1] + ms[0][1]*i)
-    #     for i in range(ms[0][1]):
-    #         edges_ind.append(ms[0][1]*ms[0][0]-1 - i)
-
-    # meas_edge = []
-    # for i in edges_ind:
-    #     meas_edge.append(2*i)
-    #     meas_edge.append(2*i + 1)
     arr = forward_model(e, ms)
+    # mmean = np.mean(measurements)
+    # mstd = np.sqrt(np.var(measurements))
 
-    # indexs = np.random.choice(range(0, len(measurements)//2), int(0.5*len(measurements)//2), replace = False)
-    # rand_ind = []
-    # for i in indexs[:int(0.8*len(indexs))]:
-    #     rand_ind.append(2*i)
-    # for i in indexs[int(0.8*len(indexs)):]:
-    #     rand_ind.append(2*i + 1)
-
-    # diff2 = np.linalg.norm(measurements[meas_edge] - arr[meas_edge])
-    # ss1 = np.linalg.norm(measurements[rand_ind] - arr[rand_ind])
-    ss1 = np.linalg.norm(measurements - arr)
-
-    return ss1, arr
+    # normalized_measurements = (measurements)/mstd
+    # normalized_arr = (arr)/mstd
+    # ss1 = np.linalg.norm(normalized_measurements - normalized_arr)
+    return np.linalg.norm(measurements - arr), arr
 
 
 def plane_strain(E, nu): 

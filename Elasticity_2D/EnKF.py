@@ -16,6 +16,7 @@ class EnKF_mcmc():
         self.m0 = inp['me']
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
+        self.mav = np.mean(abs(self.observations - np.mean(self.observations)))
 
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
@@ -33,15 +34,15 @@ class EnKF_mcmc():
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
     def Kalman_gain(self, j):
-
+        Y = self.Y
         ss2 = self.m0*np.ones([np.size(self.observations, 0)])
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
-        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
+        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1)#nel, j-1
 
-        Ctm = (self.X - mX)@(self.Y - mY).T/(j-2)
-        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
+        Ctm = (self.X - mX)@(Y - mY).T/(j-2)
+        Cmm = (Y - mY)@(Y - mY).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
@@ -53,7 +54,6 @@ class EnKF_mcmc():
             
             XX = utilities.forward_model(self.thetaj, self.mesh)
             dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - XX)
-
             thetas = self.thetaj + dt
 
             thetas = utilities.check_bounds(thetas, self.range)

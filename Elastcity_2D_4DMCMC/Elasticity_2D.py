@@ -39,7 +39,7 @@ itheta = [[config['Initial Material Parameters']['Youngs Modulus'][0]],[config['
 inp['theta0']=np.array(itheta)
 
 # std                               
-inp['sigma']=config['Standard Deviation']
+inp['sigma']=config["Standard Deviation"]
 
 # The starting point of the Kalman MCMC           
 inp['Kalmans']= config['Starting Kalman point']                        

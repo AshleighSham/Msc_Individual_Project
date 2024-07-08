@@ -59,7 +59,7 @@ inp['mesh'] = [config['Mesh grid']['quad'],
 ini = [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']]
 
 measurements=utilities.forward_model(np.array([[config['True Material Parameters']['Youngs Modulus']],[config['True Material Parameters']['Poissons Ratio']]]), inp['mesh'])
-measurements += np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf'], size = [np.size(measurements, 0), np.size(measurements, 1)])
+measurements += np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf']*1000, size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements
 Fig, Ax = plt.subplots(2,1)
 

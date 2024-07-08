@@ -216,7 +216,7 @@ class Mesh():
         d = np.zeros((self.ndofs, 1))
         d[self.BC] = dm
         self.d = d
-        return d
+        return d*1000
 
     def plot_fun(self):
         ax, fig = plt.subplots()

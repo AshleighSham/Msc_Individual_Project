@@ -18,6 +18,7 @@ class EnKF_mcmc():
         self.mesh = inp['mesh']
         self.m0 = inp['me']*inp['mesh'][1]
         self.adpt = inp['adapt']
+        self.mav = np.mean(abs(self.observations - np.mean(self.observations)))
 
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
@@ -46,8 +47,8 @@ class EnKF_mcmc():
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
         mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
 
-        Ctm = (self.X - mX)@(self.Y - mY).T/(j-2)
-        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
+        Ctm = (self.X - mX)@((self.Y - mY)/self.mav).T/(j-2)
+        Cmm = ((self.Y - mY)/self.mav)@((self.Y - mY)/self.mav).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK

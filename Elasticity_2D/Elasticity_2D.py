@@ -35,7 +35,7 @@ inp['icov']=np.array([[config['Initial Variance']['Youngs Modulus'], 0],[0, conf
 inp['theta0']=np.array([[config['Initial Material Parameters']['Youngs Modulus']],[config['Initial Material Parameters']['Poissons Ratio']]])  
 
 # std                               
-inp['sigma']=config['Standard Deviation']
+inp['sigma']=config["Standard Deviation"]
 
 # The starting point of the Kalman MCMC           
 inp['Kalmans']= config['Starting Kalman point']                        
@@ -49,7 +49,7 @@ inp['adapt'] = config['Adaption Step Size']
 #mesh set up
 inp['mesh'] = [config['Mesh grid']['quad'], 
                config['Mesh grid']['sf'],
-               config['Mesh grid']['Nodal Coordinates'], 
+               config['Mesh grid']['Nodal Coordinates'],
                config['Mesh grid']['Element Node Numbers'],
                config['Mesh grid']['Number of elements'],
                config['Mesh grid']['Force Magnitude'],
@@ -60,8 +60,16 @@ inp['mesh'] = [config['Mesh grid']['quad'],
 ini = [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']]
 
 measurements=utilities.forward_model(np.array([[config['True Material Parameters']['Youngs Modulus']],[config['True Material Parameters']['Poissons Ratio']]]), inp['mesh'])
-measurements += np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf'], size = [np.size(measurements, 0), np.size(measurements, 1)])
-inp['measurement'] = measurements
+measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf']*1000, size = [np.size(measurements, 0), np.size(measurements, 1)])
+inp['measurement'] = measurements1
+
+figd, axd = plt.subplots()
+
+axd.scatter(range(len(measurements)),measurements, s =10)
+axd.scatter(range(len(measurements1)), measurements1, s= 10)
+
+# plt.show()
+
 
 lines = []
 my_mesh = Mesh(inp['mesh'])
@@ -79,7 +87,7 @@ print()
 print()
 print('True Youngs Modulus: %.3f' % config['True Material Parameters']['Youngs Modulus'])
 print('True Poissons Ratio: %.3f' % config['True Material Parameters']['Poissons Ratio'])
-print('Standard Deviation of Noise on Measurement Data: %f' %(config['Measurement Noise']*config['Mesh grid']['sf']))
+print('Standard Deviation of Noise on Measurement Data: %f' %(config['Measurement Noise']*config['Mesh grid']['sf']*1000))
 print()
 if inp['Method'] == 0:
     # The Metropolis-Hastings technique

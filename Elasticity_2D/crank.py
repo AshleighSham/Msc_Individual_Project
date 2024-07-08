@@ -40,7 +40,7 @@ class Crank_mcmc:
             thetas = utilities.check_bounds(thetas, self.range)
             
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-            lam = min(0, -0.25*(newpi - self.oldpi))
+            lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
             if np.log(np.random.uniform(0, 1)) < lam:
                 self.accepted += 1

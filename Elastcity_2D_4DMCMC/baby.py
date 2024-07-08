@@ -15,6 +15,7 @@ class Baby_mcmc():
         self.m0 = inp['me']*inp['mesh'][1]
         self.adpt = inp['adapt']
         self.s = inp['s']
+        self.mav = np.mean(abs(self.observations - np.mean(self.observations)))
 
         self.FC = 1000
 
@@ -36,14 +37,15 @@ class Baby_mcmc():
 
     def Kalman_gain(self, j):
 
+        Y = self.Y
         ss2 = self.m0*np.ones([np.size(self.observations, 0)])
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
-        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
+        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1)#nel, j-1
 
-        Ctm = (self.X - mX)@(self.Y- mY).T/(j-2)
-        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
+        Ctm = (self.X - mX)@(Y - mY).T/(j-2)
+        Cmm = (Y - mY)@(Y - mY).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
@@ -117,14 +119,12 @@ class Baby_mcmc():
         self.results['MCMC'][:,j] = self.thetaj.T
 
     def Crank_go(self, j):
-            # step = np.zeros((self.dim, 1))
-            # step[np.random.choice(range(4),1),0] = np.random.normal()
         thetas = (1 - self.s**2)**0.5 * self.thetaj + self.Rj@ np.random.normal(size=[self.dim, 1])
 
         thetas = utilities.check_bounds(thetas, self.range)
         
         newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-        lam = min(0, -0.25*(newpi - self.oldpi))
+        lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
         if np.log(np.random.uniform(0, 1)) < lam:
             self.accepted += 1

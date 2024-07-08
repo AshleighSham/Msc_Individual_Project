@@ -15,8 +15,9 @@ class Baby_mcmc():
         self.m0 = inp['me']*inp['mesh'][1]
         self.adpt = inp['adapt']
         self.s = inp['s']
+        self.mav = np.mean(abs(self.observations - np.mean(self.observations)))
 
-        self.FC = 500
+        self.FC = int(0.5*self.nsamples)
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
@@ -32,18 +33,17 @@ class Baby_mcmc():
         self.accepted = 0
         self.thetaj = self.initial_theta
 
-
-
     def Kalman_gain(self, j):
 
+        Y = self.Y/self.mav
         ss2 = self.m0*np.ones([np.size(self.observations, 0)])
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
-        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
+        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1)/self.mav #nel, j-1
 
-        Ctm = (self.X - mX)@(self.Y- mY).T/(j-2)
-        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
+        Ctm = (self.X - mX)@(Y - mY).T/(j-2)
+        Cmm = (Y - mY)@(Y - mY).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
@@ -57,12 +57,11 @@ class Baby_mcmc():
             
         XX = utilities.forward_model(self.thetaj, self.mesh)
         dt = KK @ (self.observations+ np.random.normal(size = np.shape(self.observations))*self.m0 - XX)
-
+        
         thetas = self.thetaj + dt
         thetas = utilities.check_bounds(thetas, self.range)
 
         newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-
         lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
         if np.log(np.random.uniform(0, 1)) < lam:
@@ -86,28 +85,29 @@ class Baby_mcmc():
         
         newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
         lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
+
         if np.log(np.random.uniform(0, 1)) < lam:
             self.accepted += 1
             self.thetaj = thetas
             self.oldpi = newpi
             self.oldvalue = newvalue
 
-        else:
-            step = np.zeros((self.dim, 1))
-            step[Inde, 0] = np.random.normal() / 4
+        # else:
+        #     step = np.zeros((self.dim, 1))
+        #     step[Inde, 0] = np.random.normal() / 4
 
-            thetas = self.thetaj + self.Rj@step
+        #     thetas = self.thetaj + self.Rj@step
 
-            thetas = utilities.check_bounds(thetas, self.range)
+        #     thetas = utilities.check_bounds(thetas, self.range)
             
-            newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-            lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
+        #     newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
+        #     lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
-            if np.log(np.random.uniform(0, 1)) < lam:
-                self.accepted += 1
-                self.thetaj = thetas
-                self.oldpi = newpi
-                self.oldvalue = newvalue
+        #     if np.log(np.random.uniform(0, 1)) < lam:
+        #         self.accepted += 1
+        #         self.thetaj = thetas
+        #         self.oldpi = newpi
+        #         self.oldvalue = newvalue
 
         self.results['values'].append(self.oldvalue)
         self.results['MCMC'][:,j] = self.thetaj.T
@@ -134,7 +134,6 @@ class Baby_mcmc():
             
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
-            print(-0.5*(newpi - self.oldpi)/self.sigma)
 
             if np.log(np.random.uniform(0, 1)) < lam:
                 self.accepted += 1
@@ -146,14 +145,12 @@ class Baby_mcmc():
         self.results['MCMC'][:,j] = self.thetaj.T
 
     def Crank_go(self, j):
-            # step = np.zeros((self.dim, 1))
-            # step[np.random.choice(range(4),1),0] = np.random.normal()
         thetas = (1 - self.s**2)**0.5 * self.thetaj + self.Rj@ np.random.normal(size=[self.dim, 1])
 
         thetas = utilities.check_bounds(thetas, self.range)
         
         newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-        lam = min(0, (newpi - self.oldpi))
+        lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
         if np.log(np.random.uniform(0, 1)) < lam:
             self.accepted += 1
@@ -214,19 +211,22 @@ class Baby_mcmc():
         R = 0
         F = True
         N = 100
-        rotation = np.array([0, 1, 2, 3])
+        rotation = np.array([0, 1, 2])
         while j < self.nsamples:
             if j % N == 0 and F == True:
                 R += 1
                 R = R % len(rotation)
             if rotation[R] == 0:
                 self.MH_go(j)
+                #print('mh', self.results['MCMC'][:,j])
             elif rotation[R] == 1:
                 self.EnKF_go(j)
+                #print('ekf', self.results['MCMC'][:,j])
             elif rotation[R] == 2:
                 self.Crank_go(j)
-            elif rotation[R] == 3:
-                self.MH_go(j)
+                #print('pcn', self.results['MCMC'][:,j])
+            # elif rotation[R] == 3:
+            #     self.MH_go(j)
 
             if self.nsamples - j <= self.FC:
                 F = False
@@ -234,6 +234,7 @@ class Baby_mcmc():
 
             if j % 100 == 0:
                 print(f'{j} Samples Completed:')
+                print('Acceptance count:', self.accepted)
                 print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][0][:j]), np.sqrt(np.var(self.results['MCMC'][0][:j]))))
                 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][1][:j]), np.sqrt(np.var(self.results['MCMC'][1][:j]))))
                 print()

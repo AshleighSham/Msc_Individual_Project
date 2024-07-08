@@ -20,7 +20,7 @@ class DRAM_algorithm():
         self.eps = 1e-5
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
-        self.Kp = 2.4/np.sqrt(self.dim)
+        self.Kp = 0.05
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
@@ -52,12 +52,10 @@ class DRAM_algorithm():
         while i < n:
             xi = np.array([x[i]])
             wsum = np.array([w[i]])
-            xmeann = xi
+            xmeann = xi.reshape(-1,1)
 
             xmean = self.MCMC_mean + np.divide(wsum,(wsum + self.ss))*(xmeann - self.MCMC_mean)
-            a = np.divide(wsum,(wsum + self.ss-np.array([1])))
-            b = np.multiply(np.divide(self.ss,(wsum + self.ss)),(xi-self.MCMC_mean).T)
-            xcov = self.MCMC_cov + np.multiply(a,(b@(xi - self.MCMC_mean) - self.MCMC_cov))
+            xcov = (((self.ss-1)*((wsum + self.ss - 1)**(-1)))*self.MCMC_cov + (wsum*self.ss*((wsum+ self.ss-1)**(-1))) * ((wsum + self.ss)**(-1)) * (np.dot((xmeann-self.MCMC_mean).reshape(p, 1), (xmeann-self.MCMC_mean).reshape(1, p))))
 
             wsum += self.ss
             self.MCMC_cov = xcov #unsure about this

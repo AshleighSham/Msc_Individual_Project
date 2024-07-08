@@ -38,7 +38,6 @@ class MH_mcmc:
             
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
-
             if np.random.uniform(0, 1) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
