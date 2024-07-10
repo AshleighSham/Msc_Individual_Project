@@ -37,13 +37,15 @@
 
   "Starting Kalman point": 300,
 
-  "Measurement error for Kalman": 1e-1,
+  "Measurement error for Kalman": 0.01,
 
-  "Measurement Noise": 0.002,
+  "Measurement Noise": 0.005,
+
+  "Noise scale": 200,
 
   "Adaption Step Size": 500,
 
-  "Mesh grid": {
+  "Mesh grid1": {
     "sf": 0.02,
     "thickness": 0.1,
     "quad": [7, 31],
@@ -95,7 +97,7 @@
     "Force Nodes": [30, 61, 92, 123, 154, 185, 216],
     "Fixed Nodes": [0, 31, 62, 93, 124, 155, 186]
   },
-  "Mesh grid1": {
+  "Mesh grid": {
     "sf": 0.02,
     "thickness": 0.1,
     "quad": [4, 4],

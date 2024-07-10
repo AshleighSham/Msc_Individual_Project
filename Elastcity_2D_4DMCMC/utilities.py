@@ -45,9 +45,6 @@ def ESS(measurements, e, ms):
             numpy.array: ESS, resulting FEM
     """
     arr = forward_model(e, ms)
-    mae = np.mean(abs(measurements - arr))
-    mav = np.mean(abs(measurements - np.mean(measurements)))
-    ss1 = mae / mav
     return np.linalg.norm(measurements - arr), arr
 
 def forward_model(args, ms):

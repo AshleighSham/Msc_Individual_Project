@@ -205,4 +205,4 @@ print()
 # data['values'] = med
 # np.save('my_fileBEAM.npy', data) 
 
-np.save('3D_chains_plas_4.npy', chains)
+#np.save('3D_chains_plas_4.npy', chains)

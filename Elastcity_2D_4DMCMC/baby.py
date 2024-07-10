@@ -12,7 +12,7 @@ class Baby_mcmc():
         self.observations = inp['measurement']
         self.K0 = inp['Kalmans']
         self.mesh = inp['mesh']
-        self.m0 = inp['me']*inp['mesh'][1]
+        self.m0 = inp['me']
         self.adpt = inp['adapt']
         self.s = inp['s']
         self.mav = np.mean(abs(self.observations - np.mean(self.observations)))

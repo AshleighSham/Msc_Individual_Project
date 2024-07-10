@@ -133,7 +133,7 @@ class Mesh():
     def force_vector(self):
         rnodes = self.forcenodes
         f = np.zeros((self.ndofs, 1))
-        f[2*rnodes + 1] = -self.force
+        f[2*rnodes] = self.force
         self.f = f[self.BC]
 
     def dispstrain_B(self, xyze,xi,eta):
@@ -232,22 +232,26 @@ class Mesh():
             plt.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False)
         plt.show()
         
-    def deformation_plot(self, label, colour, ch, ax, lines, ls):
+    def deformation_plot(self, label, colour, ch, ax, lines, ls, D = np.array([1]), non = True):
+        if len(D) == 1:
+            D = self.d
         ccc1=np.array(self.XYZ[:,0])
-        ccc2=np.array(self.d[0:len(self.d):2]).reshape(-1)
+        ccc2=np.array(D[0:len(D):2]).reshape(-1)
         ccc= np.array(ccc1+ccc2) 
 
         ddd1=np.array(self.XYZ[:,1])
-        ddd2=np.array(self.d[1:len(self.d):2]).reshape(-1)
+        ddd2=np.array(D[1:len(D):2]).reshape(-1)
         ddd= np.array(ddd1+ddd2)
 
         #figure = plt.figure()
-        ax.plot(self.XYZ[:,0], self.XYZ[:, 1],'sk', markersize='6', zorder = 1, alpha = 0.6)
-        ax.scatter(self.XYZ[:,0] + self.d[0:len(self.d):2].reshape(-1), self.XYZ[:,1] + self.d[1:len(self.d):2].reshape(-1), c = colour ,s=60, label = label, zorder = 5, alpha = ch)
+        if non == True:
+            ax.plot(self.XYZ[:,0], self.XYZ[:, 1],'sk', markersize='6', zorder = 1, alpha = 0.6)
+        ax.scatter(self.XYZ[:,0] + D[0:len(D):2].reshape(-1), self.XYZ[:,1] + D[1:len(D):2].reshape(-1), c = colour ,s=60, label = label, zorder = 5, alpha = ch)
         #plt.title(title)
 
         for i in range(len(self.CON)):
-            ax.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False, zorder = 1, alpha = 0.6)
+            if non == True:
+                ax.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False, zorder = 1, alpha = 0.6)
             ax.fill(self.XYZ[self.CON[i, :], 0] + ccc2[(self.CON[i, :])], self.XYZ[self.CON[i, :], 1] + ddd2[(self.CON[i, :])], edgecolor = colour, linestyle = ls, fill=False, zorder = 5, alpha = ch, linewidth = 3)
 
         ax.set_aspect('equal')

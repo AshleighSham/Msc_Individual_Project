@@ -9,13 +9,15 @@ from MH_DR import MH_DR_mcmc
 from mesh import Mesh
 from crank import Crank_mcmc
 from baby import Baby_mcmc
+import seaborn as sns
+sns.set_context('talk')
 import matplotlib.pyplot as plt
 
 #data = np.load('RVE_EnKF.npy', allow_pickle=True)
 #data = data.tolist()
 
-fig, ax1 = plt.subplots()
-plt.subplots_adjust(bottom = 0.1)
+fig11, (axl1, axr1) = plt.subplots(1, 2)
+plt.subplots_adjust(bottom = 0.05)
 
 inp = {}
 
@@ -45,11 +47,11 @@ inp['sigma']=config["Standard Deviation"]
 inp['Kalmans']= config['Starting Kalman point']                        
 
 # assumed measurement error for Kalman MCMC
-inp['me']=config['Measurement error for Kalman'] 
+inp['me']=config['Measurement error for Kalman']*config["Noise scale"] 
 
 #adaption setp size
 inp['adapt'] = config['Adaption Step Size']
-
+ 
 #mesh set up
 inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['sf'], 
@@ -65,21 +67,15 @@ inp['mesh'] = [config['Mesh grid']['quad'],
 ini = [config['True Material Parameters']['Youngs Modulus'][0], config['True Material Parameters']['Youngs Modulus'][1], config['True Material Parameters']['Poissons Ratio'][0],config['True Material Parameters']['Poissons Ratio'][1]]
 
 measurements=utilities.forward_model(np.array(ini), inp['mesh'])
-measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf'], size = [np.size(measurements, 0), np.size(measurements, 1)])
+measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Noise scale'], size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements1
-
-# fig2, ax2 = plt.subplots()
-
-# ax2.plot(measurements, '.')
-# ax2.plot(measurements1, '.')
-
-# plt.show()
 
 lines = []
 my_mesh = Mesh(inp['mesh'])
+
 true_displacement = my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])
-my_mesh.deformation_plot(label = f'True Deformation, E1: %.3f, E2: %.3f, v1: %.3f, v2: %.3f' % (config['True Material Parameters']['Youngs Modulus'][0], config['True Material Parameters']['Youngs Modulus'][1], config['True Material Parameters']['Poissons Ratio'][0], config['True Material Parameters']['Poissons Ratio'][1]), 
-                         colour= 'plum', ch = 1, ax = ax1, lines = lines, ls = 'solid')
+my_mesh.deformation_plot(label = '', colour= 'black', ch = 1, ax = axl1, lines = lines, ls = 'solid', D = np.array([1]), non=False)
+my_mesh.deformation_plot(label = f'Noisy Deformation', colour= 'palevioletred', ch = 0.95, ax = axl1, lines = lines, ls = (0,(5,5)), D = measurements1/1000, non=False)
 
 fig2, ax2 = plt.subplots(2, 1)
 my_mesh.contour_plot('True', fig2, ax2)
@@ -181,15 +177,19 @@ print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/-
 print()
 my_mesh = Mesh(inp['mesh'])
 my_mesh.displacement([np.median(results['MCMC'][0]),np.median(results['MCMC'][1])], [np.median(results['MCMC'][2]), np.median(results['MCMC'][3])])
-my_mesh.deformation_plot(label = f'Estimated Deformation, E1: %.3f, v1: %.3f, E2: %.3f, v2: %.3f ' % (np.median(results['MCMC'][0]), np.median(results['MCMC'][2]), np.median(results['MCMC'][1]),np.median(results['MCMC'][3])), ls =(0,(3,5)),colour = 'rebeccapurple', ch = 0.9, ax = ax1, lines = lines)
-fig3, ax3 = plt.subplots(2, 1)
-my_mesh.contour_plot('Estimated', fig3, ax3)
+my_mesh.deformation_plot(label = f'True Deformation', colour= 'black', ch = 1, ax = axr1, lines = lines, ls = 'solid', D = measurements/1000, non=False)
+my_mesh.deformation_plot(label = f'Estimated Deformation', ls =(0,(3,5)), colour = 'dodgerblue', ch = 0.9, ax = axr1, lines = lines, non=False)
+axl1.set(xlabel = 'x (m)', ylabel = 'y (m)')
+axr1.set(xlabel = 'x (m)', ylabel = 'y (m)')
+fig11.legend(loc = 'lower center', ncols=3)
+# fig3, ax3 = plt.subplots(2, 1)
+# my_mesh.contour_plot('Estimated', fig3, ax3)
 
-fig4, ax4 = plt.subplots(2, 1)
-my_mesh.error_plot(true_displacement, fig4, ax4)
+# fig4, ax4 = plt.subplots(2, 1)
+# my_mesh.error_plot(true_displacement, fig4, ax4)
 
-ax1.set_title('Deformation Plot', fontsize = 25)
-fig.legend(loc = 'lower center', ncols=2)
+# ax1.set_title('Deformation Plot', fontsize = 25)
+# fig.legend(loc = 'lower center', ncols=2)
 
 plt.show()
 
