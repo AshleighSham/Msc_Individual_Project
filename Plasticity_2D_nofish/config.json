@@ -2,8 +2,8 @@
   "s": 0.2,
   "Initial Material Parameters": {
     "Youngs Modulus": 150,
-    "Yield Stress": 0.3,
-    "Hardening Modulus": 0.2
+    "Yield Stress": 0.15,
+    "Hardening Modulus": 0.15
   },
 
   "True Material Parameters": {
@@ -20,19 +20,19 @@
 
   "Initial Variance": {
     "Youngs Modulus": 10,
-    "Yield Stress": 0.01,
+    "Yield Stress": 0.001,
     "Hardening Modulus": 0.01
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 0.01,
 
-  "Number of samples": 1500,
+  "Number of samples": 3000,
 
-  "Starting Kalman point": 300,
+  "Starting Kalman point": 1000,
 
-  "Measurement error for Kalman": 0.01,
+  "Measurement error for Kalman": 0.001,
 
-  "Measurement Noise": 0.001,
+  "Measurement Noise": 0.0005,
 
   "Noise scale": 100,
 

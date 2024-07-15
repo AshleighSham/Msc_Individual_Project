@@ -191,7 +191,10 @@ figt, axt = plt.subplots(4,1)
 axt[0].plot(range(len(results['MCMC'][0])), results['MCMC'][0])
 axt[1].plot(range(len(results['MCMC'][1])), results['MCMC'][1])
 axt[2].plot(range(len(results['MCMC'][2])), results['MCMC'][2])
-#axt[3].plot(range(len(results['MCMC'][3])), results['MCMC'][3])
+
+axt[0].axhline(config["True Material Parameters"]["Youngs Modulus"], color = 'black', linestyle = (0,(5,5)))
+axt[1].axhline(config["True Material Parameters"]["Yield Stress"], color = 'black', linestyle = (0,(5,5)))
+axt[2].axhline(config["True Material Parameters"]["Hardening Modulus"], color = 'black', linestyle = (0,(5,5)))
 
 plt.show()
 

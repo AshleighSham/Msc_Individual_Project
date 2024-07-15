@@ -3,8 +3,8 @@
   "Initial Material Parameters": {
     "Youngs Modulus": 150,
     "Poissons Ratio": 0.2,
-    "Yield Stress": 0.3,
-    "Hardening Modulus": 0.2
+    "Yield Stress": 0.15,
+    "Hardening Modulus": 0.15
   },
 
   "True Material Parameters": {
@@ -24,19 +24,19 @@
   "Initial Variance": {
     "Youngs Modulus": 10,
     "Poissons Ratio": 0.001,
-    "Yield Stress": 0.01,
-    "Hardening Modulus": 0.01
+    "Yield Stress": 0.001,
+    "Hardening Modulus": 0.001
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 0.01,
 
-  "Number of samples": 2500,
+  "Number of samples": 3000,
 
-  "Starting Kalman point": 300,
+  "Starting Kalman point": 1000,
 
-  "Measurement error for Kalman": 0.0005,
+  "Measurement error for Kalman": 0.0001,
 
-  "Measurement Noise": 0.001,
+  "Measurement Noise": 0.0005,
 
   "Noise scale": 100,
 
@@ -143,7 +143,7 @@
     "Crank": 4,
     "Ensemble Kalman Filter": 5,
     "Baby": 6,
-    "Choosen Method": 6
+    "Choosen Method": 5
   },
   "Print Chain": 0
 }

@@ -6,7 +6,7 @@ class Mesh():
     # the initialisation procedure
     def __init__(self, m):
         self.m = m
-        quad, scfa, NC, ENN, NE, FM, FN, FBCN, eID, self.th = self.m
+        quad, scfa, NC, ENN, NE, FM, FN, FBCN, self.th = self.m
         if quad != 0:
             bot = np.array([x for x in range(quad[1])])
             top = np.array([x for x in range(quad[1])])
@@ -40,7 +40,6 @@ class Mesh():
                     self.XYZ[j+i*self.nnodesx, 1] = y + left[0] # coordinate 'y' in the global coordinate system
                     
             self.XYZ = self.XYZ*scfa
-            
             # NODE NUMBERS FOR ELEMENTS 
             self.nel = nelx*nely                              # total number of elements in the domain
             self.CON = np.zeros((self.nel,4), dtype=int)           # [nel*4] array of node number for each element
@@ -50,14 +49,10 @@ class Mesh():
                     self.CON[j+i*nelx, :] = [j+i*self.nnodesx, j+i*self.nnodesx+1,j+(i+1)*self.nnodesx+1, j+(i+1)*self.nnodesx] 
 
         else:
-            self.XYZ = scfa*np.array(NC)
+            self.XYZ = np.array(NC)*scfa
             self.CON = np.array(ENN)
             self.nel = NE
             self.DOF = np.zeros((self.nel,2*4), dtype=int)
-
-        self.IDS = np.array(eID)
-
-            
 
         self.DOF = np.zeros((self.nel,2*4), dtype=int)
         for i in range(self.nel):
@@ -67,7 +62,6 @@ class Mesh():
                             self.CON[i,3]*2, self.CON[i,3]*2+1]
 
         self.ndofs = 2 * len(self.XYZ)
-
         self.force = FM
         self.forcenodes = np.array(FN)
         self.BCnodes = np.array(FBCN)
@@ -108,17 +102,18 @@ class Mesh():
         # this method terminates WITHOUT returning a value.
         # it's sole effect is to modify the state of the mesh object.
 
-    def plane_stress(self, E,nu):
+    def plane_stress(self, E, nu):
     
-        D=np.zeros((3*len(E),3))                                           #elasticity matrix - DIM: [3*element number X 3]
+        D=np.zeros((3*self.nel,3))                                           #elasticity matrix - DIM: [3*element number X 3]
         
-        for i in range(len(E)):
-            C = E[i]/(1 - nu[i]**2)
+        for i in range(self.nel):
+            C = E/(1 - nu**2)
             D[i*3][0] = C
-            D[i*3][1] = C * nu[i]
-            D[i*3 + 1][0] = C * nu[i]
-            D[i*3 + 1][1] = C
-            D[i*3 + 2][2] = C * (1 - nu[i])/2
+            D[i*3][1] = C*nu
+            D[i*3+1][0] = C*nu
+            D[i*3+1][1] = C
+            D[i*3 +2][2] = C*0.5*(1 - nu)
+            
         return D
 
     # Function which returns global DOFs given fixed nodes, and a list of internal left boundary nodes
@@ -212,9 +207,7 @@ class Mesh():
 
         self.K = K[np.ix_(self.BC,self.BC)] # Pin fixed nodes
 
-    def displacement(self, Ea, nua):
-        E = np.array([Ea[i] for i in self.IDS])
-        nu = np.array([nua[i] for i in self.IDS])
+    def displacement(self, E, nu):
         D = self.plane_stress(E, nu)
         self.BC_fun()
         self.force_vector()
@@ -223,115 +216,8 @@ class Mesh():
         d = np.zeros((self.ndofs, 1))
         d[self.BC] = dm
         self.d = d
-        return d*100
-
-    def plot_fun(self):
-        ax, fig = plt.subplots()
-        plt.plot(self.XYZ[:, 0], self.XYZ[:, 1], 'sk')
-        for i in range(len(self.CON)):
-            plt.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False)
-        plt.show()
+        return d*1000
         
-    def deformation_plot(self, label, colour, ch, ax, lines, ls, D = np.array([1]), non = True):
-        if len(D) == 1:
-            D = self.d
-        ccc1=np.array(self.XYZ[:,0])
-        ccc2=np.array(D[0:len(D):2]).reshape(-1)
-        ccc= np.array(ccc1+ccc2) 
 
-        ddd1=np.array(self.XYZ[:,1])
-        ddd2=np.array(D[1:len(D):2]).reshape(-1)
-        ddd= np.array(ddd1+ddd2)
 
-        #figure = plt.figure()
-        if non == True:
-            ax.plot(self.XYZ[:,0], self.XYZ[:, 1],'sk', markersize='6', zorder = 1, alpha = 0.6)
-        ax.scatter(self.XYZ[:,0] + D[0:len(D):2].reshape(-1), self.XYZ[:,1] + D[1:len(D):2].reshape(-1), c = colour ,s=60, label = label, zorder = 5, alpha = ch)
-        #plt.title(title)
-
-        for i in range(len(self.CON)):
-            if non == True:
-                ax.fill(self.XYZ[self.CON[i, :], 0], self.XYZ[self.CON[i, :], 1], edgecolor='k', fill=False, zorder = 1, alpha = 0.6)
-            ax.fill(self.XYZ[self.CON[i, :], 0] + ccc2[(self.CON[i, :])], self.XYZ[self.CON[i, :], 1] + ddd2[(self.CON[i, :])], edgecolor = colour, linestyle = ls, fill=False, zorder = 5, alpha = ch, linewidth = 3)
-
-        ax.set_aspect('equal')
-
-    def contour_plot(self, ver, f, a):
-        ccc2=np.array(self.d[0:len(self.d):2]).reshape(-1) #deformation x
-
-        ddd2=np.array(self.d[1:len(self.d):2]).reshape(-1) #deformation y
-
-        X, Y = [], []
-        j = self.XYZ[0][1]
-
-        while j <= self.XYZ[-1][1]:
-            x, y = [], []
-            i = 0
-            while i < len(self.XYZ):
-                if self.XYZ[i][1] == j:
-                    x.append(self.XYZ[i][0])
-                    y.append(self.XYZ[i][1])
-                elif i > 1 and self.XYZ[i - 1][1] == j:
-                    break
-                i += 1
-            X.append(x)
-            Y.append(y)
-            if i == len(self.XYZ):
-                break
-            j = self.XYZ[i][1]
-        X = np.array(X)
-        Y = np.array(Y)
-
-        a0 = a[0].contourf(X, Y, ccc2.reshape(np.shape(X)), 40)
-        a1 = a[1].contourf(X, Y, ddd2.reshape(np.shape(X)), 40)
-
-        f.colorbar(a0, ax=a[0], shrink=0.9)
-        f.colorbar(a1, ax=a[1], shrink=0.9)
-
-        a[0].set(title = f'{ver} Displacement in x direction', aspect="equal")
-        a[1].set(title = f'{ver} Displacement in y direction', aspect="equal")
-
-    def error_plot(self, Dis, f, a):
-        
-        EstimateX=np.array(self.d[0:len(self.d):2]).reshape(-1)*1 #deformation x
-
-        EstimateY=np.array(self.d[1:len(self.d):2]).reshape(-1)*1 #deformation y
-
-        TrueX = np.array(Dis[0:len(Dis):2]).reshape(-1)
-        
-        TrueY = np.array(Dis[1:len(Dis):2]).reshape(-1)
-
-        DiffX = 100*abs(np.divide(TrueX - EstimateX, TrueX + 1e-20))
-
-        DiffY = 100*abs(np.divide(TrueY - EstimateY, TrueY + 1e-20))
-
-        X, Y = [], []
-        j = self.XYZ[0][1]
-
-        while j <= self.XYZ[-1][1]:
-            x, y = [], []
-            i = 0
-            while i < len(self.XYZ):
-                if self.XYZ[i][1] == j:
-                    x.append(self.XYZ[i][0])
-                    y.append(self.XYZ[i][1])
-                elif i > 1 and self.XYZ[i - 1][1] == j:
-                    break
-                i += 1
-            X.append(x)
-            Y.append(y)
-            if i == len(self.XYZ):
-                break
-            j = self.XYZ[i][1]
-        X = np.array(X)
-        Y = np.array(Y)
-
-        a0 = a[0].contourf(X, Y, DiffX.reshape(np.shape(X)), 40)
-        a1 = a[1].contourf(X, Y, DiffY.reshape(np.shape(X)), 40)
-
-        f.colorbar(a0, ax=a[0], shrink=0.9)
-        f.colorbar(a1, ax=a[1], shrink=0.9)
-
-        a[0].set(title = f'Error in  Displacement in x direction', aspect="equal")
-        a[1].set(title = f'Error in Displacement in y direction', aspect="equal")
-
+    

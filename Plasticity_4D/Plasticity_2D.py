@@ -171,10 +171,10 @@ elif inp['Method'] == 6:
    
 print('Acceptance Rate: %.3f' % results['accepted'])
 print('Number of Samples: %.0f' % config['Number of samples'])
-print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][0]), np.sqrt(np.var(results['MCMC'][0]))))
-print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][1]), np.sqrt(np.var(results['MCMC'][1]))))
-print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][2]), np.sqrt(np.var(results['MCMC'][2]))))
-print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][3]), np.sqrt(np.var(results['MCMC'][3]))))
+print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.mean(results['MCMC'][0]), np.sqrt(np.var(results['MCMC'][0]))))
+print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.mean(results['MCMC'][1]), np.sqrt(np.var(results['MCMC'][1]))))
+print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.mean(results['MCMC'][2]), np.sqrt(np.var(results['MCMC'][2]))))
+print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.mean(results['MCMC'][3]), np.sqrt(np.var(results['MCMC'][3]))))
 print()
 
 outi =np.array([[np.median(results['MCMC'][0])], [np.median(results['MCMC'][1])], [np.median(results['MCMC'][2])], [np.median(results['MCMC'][3])]])
@@ -189,9 +189,13 @@ axd.legend()
 
 figt, axt = plt.subplots(4,1)
 axt[0].plot(range(len(results['MCMC'][0])), results['MCMC'][0])
+axt[0].axhline(config["True Material Parameters"]["Youngs Modulus"], color = 'black', linestyle = (0,(5,5)))
 axt[1].plot(range(len(results['MCMC'][1])), results['MCMC'][1])
+axt[1].axhline(config["True Material Parameters"]["Poissons Ratio"], color = 'black', linestyle = (0,(5,5)))
 axt[2].plot(range(len(results['MCMC'][2])), results['MCMC'][2])
+axt[2].axhline(config["True Material Parameters"]["Yield Stress"], color = 'black', linestyle = (0,(5,5)))
 axt[3].plot(range(len(results['MCMC'][3])), results['MCMC'][3])
+axt[3].axhline(config["True Material Parameters"]["Hardening Modulus"], color = 'black', linestyle = (0,(5,5)))
 
 plt.show()
 

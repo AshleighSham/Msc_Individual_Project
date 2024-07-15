@@ -1,5 +1,5 @@
 {
-  "s": 0.2,
+  "s": 0.05,
   "Number of Materials": 2,
   "Freeze time": 50,
   "Freeze delay": 200,
@@ -27,25 +27,25 @@
   },
 
   "Initial Variance": {
-    "Youngs Modulus": 1,
+    "Youngs Modulus": 10,
     "Poissons Ratio": 1e-3
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 0.01,
 
-  "Number of samples": 3500,
+  "Number of samples": 5000,
 
-  "Starting Kalman point": 300,
+  "Starting Kalman point": 3000,
 
-  "Measurement error for Kalman": 0.01,
+  "Measurement error for Kalman": 0.1,
 
-  "Measurement Noise": 0.005,
+  "Measurement Noise": 0.05,
 
-  "Noise scale": 200,
+  "Noise scale": 1,
 
   "Adaption Step Size": 500,
 
-  "Mesh grid1": {
+  "Mesh grid": {
     "sf": 0.02,
     "thickness": 0.1,
     "quad": [7, 31],
@@ -97,7 +97,7 @@
     "Force Nodes": [30, 61, 92, 123, 154, 185, 216],
     "Fixed Nodes": [0, 31, 62, 93, 124, 155, 186]
   },
-  "Mesh grid": {
+  "Mesh grid1": {
     "sf": 0.02,
     "thickness": 0.1,
     "quad": [4, 4],
@@ -133,7 +133,7 @@
     "Number of elements": 9,
     "Element ID": [0, 0, 0, 0, 1, 0, 0, 0, 0],
 
-    "Force Magnitude": 6e-4,
+    "Force Magnitude": 15e-4,
     "Force Nodes": [3, 7, 11, 15],
     "Fixed Nodes": [0, 4, 8, 12]
   },

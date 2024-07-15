@@ -15,9 +15,8 @@ class Baby_mcmc():
         self.m0 = inp['me']
         self.adpt = inp['adapt']
         self.s = inp['s']
-        self.mav = np.mean(abs(self.observations - np.mean(self.observations)))
 
-        self.FC = 1000
+        self.FC = 0.5*self.nsamples
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
@@ -37,15 +36,14 @@ class Baby_mcmc():
 
     def Kalman_gain(self, j):
 
-        Y = self.Y
         ss2 = self.m0*np.ones([np.size(self.observations, 0)])
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
         mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1)#nel, j-1
 
-        Ctm = (self.X - mX)@(Y - mY).T/(j-2)
-        Cmm = (Y - mY)@(Y - mY).T/(j-2)
+        Ctm = (self.X - mX)@(self.Y - mY).T/(j-2)
+        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
@@ -65,9 +63,9 @@ class Baby_mcmc():
 
         newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
 
-        lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
+        lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
-        if np.random.uniform(0, 1) < lam:
+        if np.log(np.random.uniform(0, 1)) < lam:
             self.accepted += 1
             self.thetaj = thetas
             self.oldpi = newpi
@@ -90,30 +88,30 @@ class Baby_mcmc():
         thetas = utilities.check_bounds(thetas, self.range)
         
         newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-        lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
+        lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
-        if np.random.uniform(0, 1) < lam:
+        if np.log(np.random.uniform(0, 1)) < lam:
             self.accepted += 1
             self.thetaj = thetas
             self.oldpi = newpi
             self.oldvalue = newvalue
 
-        else:
-            step = np.zeros((self.dim, 1))
-            step[Inde, 0] = np.random.normal() / 4
+        # else:
+        #     step = np.zeros((self.dim, 1))
+        #     step[Inde, 0] = np.random.normal() / 4
 
-            thetas = self.thetaj + self.Rj@step
+        #     thetas = self.thetaj + self.Rj@step
 
-            thetas = utilities.check_bounds(thetas, self.range)
+        #     thetas = utilities.check_bounds(thetas, self.range)
             
-            newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-            lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
+        #     newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
+        #     lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
 
-            if np.random.uniform(0, 1) < lam:
-                self.accepted += 1
-                self.thetaj = thetas
-                self.oldpi = newpi
-                self.oldvalue = newvalue
+        #     if np.random.uniform(0, 1) < lam:
+        #         self.accepted += 1
+                # self.thetaj = thetas
+                # self.oldpi = newpi
+                # self.oldvalue = newvalue
 
         self.results['values'].append(self.oldvalue)
         self.results['MCMC'][:,j] = self.thetaj.T
@@ -144,7 +142,7 @@ class Baby_mcmc():
             f = 2
         else: 
             f = 3
-        F = np.array([0, 1, 2, 3])
+        F = np.array([0,1,2,3])
         step = np.zeros((self.dim, 1))
 
         Rand = np.random.normal()
@@ -156,30 +154,30 @@ class Baby_mcmc():
         thetas = utilities.check_bounds(thetas, self.range)
         
         newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-        lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
+        lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
-        if np.random.uniform(0, 1) < lam:
+        if np.log(np.random.uniform(0, 1)) < lam:
             self.accepted += 1
             self.thetaj = thetas
             self.oldpi = newpi
             self.oldvalue = newvalue
 
-        else:
-            step = np.zeros((self.dim, 1))
-            step[F[f], 0] = np.random.normal() / 4
+        # else:
+            # step = np.zeros((self.dim, 1))
+            # step[F[f], 0] = np.random.normal() / 4
 
-            thetas = self.thetaj + self.Rj@step
+            # thetas = self.thetaj + self.Rj@step
 
-            thetas = utilities.check_bounds(thetas, self.range)
+            # thetas = utilities.check_bounds(thetas, self.range)
             
-            newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-            lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
+            # newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
+            # lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
 
-            if np.random.uniform(0, 1) < lam:
-                self.accepted += 1
-                self.thetaj = thetas
-                self.oldpi = newpi
-                self.oldvalue = newvalue
+            # if np.random.uniform(0, 1) < lam:
+            #     self.accepted += 1
+            #     self.thetaj = thetas
+            #     self.oldpi = newpi
+            #     self.oldvalue = newvalue
 
         self.results['values'].append(self.oldvalue)
         self.results['MCMC'][:,j] = self.thetaj.T
@@ -188,8 +186,8 @@ class Baby_mcmc():
         j = 1
         R = 0
         F = True
-        N = 100
-        rotation = np.array([0,1,2,3])
+        N = 25
+        rotation = np.array([0, 1, 2, 3])
         while j < self.nsamples:
             if j % N == 0 and F == True:
                 R += 1
@@ -207,13 +205,13 @@ class Baby_mcmc():
                 F = False
                 R = 2
 
-            if j % 100 == 0:
-                print(f'{j} Samples Completed:')
-                print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][0][:j]), np.sqrt(np.var(self.results['MCMC'][0][:j]))))
-                print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][1][:j]), np.sqrt(np.var(self.results['MCMC'][1][:j]))))
-                print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][2][:j]), np.sqrt(np.var(self.results['MCMC'][2][:j]))))
-                print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][3][:j]), np.sqrt(np.var(self.results['MCMC'][3][:j]))))
-                print()
+            # if j % 100 == 0:
+            #     print(f'{j} Samples Completed:')
+            #     print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][0][:j]), np.sqrt(np.var(self.results['MCMC'][0][:j]))))
+            #     print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][1][:j]), np.sqrt(np.var(self.results['MCMC'][1][:j]))))
+            #     print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][2][:j]), np.sqrt(np.var(self.results['MCMC'][2][:j]))))
+            #     print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.results['MCMC'][3][:j]), np.sqrt(np.var(self.results['MCMC'][3][:j]))))
+            #     print()
 
             j += 1
 

@@ -59,7 +59,7 @@ ini = np.array([[config['True Material Parameters']['Youngs Modulus']], [config[
 measurements=utilities.forward_model(ini)
 measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*100, size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements1
-
+print(measurements1)
 figd, axd = plt.subplots()
 x,y = [], []
 for i in range(len(measurements1)//2):

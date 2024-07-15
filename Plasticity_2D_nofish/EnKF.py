@@ -87,14 +87,14 @@ class EnKF_mcmc():
             self.X = tempX
             self.Y = tempY
 
-            if j % 200 == 0:
-                print(f'{j} samples completed')
-                print(f'Acceptance Count: {self.accepted}')
-                print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
-                #print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
-                print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
-                print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
-                print()
+            # if j % 200 == 0:
+            #     print(f'{j} samples completed')
+            #     print(f'Acceptance Count: {self.accepted}')
+            #     print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
+            #     #print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
+            #     print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
+            #     print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
+            #     print()
 
             j += 1
         
