@@ -1,13 +1,14 @@
 import numpy as np
 import scipy as sp
 import utilities as utilities
-import pandas as pd
+import time
 
 class DRAM_algorithm():
     def __init__(self, inp):
+
         self.range = inp['range']
 
-        self.nsamples = inp['nsamples']
+        self.nsamples = inp['nsamples']   
         self.initial_cov = inp['icov']
         self.initial_theta = inp['theta0']
         self.sigma = inp['sigma']
@@ -17,7 +18,7 @@ class DRAM_algorithm():
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
 
-        self.eps = 1e-6
+        self.eps = 1e-5
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
         self.Kp = 0.05
@@ -40,14 +41,6 @@ class DRAM_algorithm():
         self.ss = np.array([1])
         self.ii = 0
 
-        data = {0:[]}
-        data[0].append(self.thetaj)
-        data[0].append(self.oldvalue)
-
-        df = pd.DataFrame(data)
-
-        df.to_csv('EnKF.csv', mode='w', index=False)
-
     def update_cov(self, w, ind):
         x = self.MCMC[self.ii+1:ind] #100, 1
         n = np.size(x, 0) #num of rows
@@ -66,19 +59,17 @@ class DRAM_algorithm():
             xcov = (((self.ss-1)*((wsum + self.ss - 1)**(-1)))*self.MCMC_cov + (wsum*self.ss*((wsum+ self.ss-1)**(-1))) * ((wsum + self.ss)**(-1)) * (np.dot((xmeann-self.MCMC_mean).reshape(p, 1), (xmeann-self.MCMC_mean).reshape(1, p))))
 
             wsum += self.ss
-            self.MCMC_cov = xcov 
+            self.MCMC_cov = xcov #unsure about this
             self.MCMC_mean = xmean
             self.ss = wsum
-            
-            i += 1 
+
+            i += 1
 
     def DRAM_go(self):
-
+        start_time = time.perf_counter()
+        Time = [start_time]
         j = 1
         while j < self.nsamples:
-
-            data = {j:[]}
-
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
@@ -108,23 +99,23 @@ class DRAM_algorithm():
 
             self.MCMC[j, :] = self.thetaj.T
 
-            data[j].append(self.thetaj)
-            data[j].append(self.oldvalue)
-            df = pd.DataFrame(data)
-            df.to_csv('EnKF.csv', mode='a', index=False, header=False)
-
             if j % self.adpt == 0:
                 self.update_cov(1, j)
                 Ra = np.linalg.cholesky(self.MCMC_cov + np.eye(self.dim)*self.eps)
                 self.ii = j*1
                 self.Rj = Ra * self.Kp
 
+            if j % 100 == 0:
+                A = time.perf_counter()
+                Time.append(A)
+                print(j, Time[-1]- Time[-2])
+
             j += 1
 
         self.results['MCMC'] = self.MCMC.T
         self.results['accepted'] = 100*self.accepted/self.nsamples
 
-        return self.results
+        return self.results, Time
         
 
 

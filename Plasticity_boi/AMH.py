@@ -1,10 +1,10 @@
 import numpy as np
 import scipy as sp
 import utilities as utilities
-import pandas as pd
 
-class DRAM_algorithm():
+class AMH_mcmc():
     def __init__(self, inp):
+
         self.range = inp['range']
 
         self.nsamples = inp['nsamples']
@@ -16,6 +16,7 @@ class DRAM_algorithm():
         self.m0 = inp['me']
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
+        self.results ={}
 
         self.eps = 1e-6
         self.Rj = sp.linalg.cholesky(self.initial_cov)
@@ -23,33 +24,20 @@ class DRAM_algorithm():
         self.Kp = 0.05
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
-        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
+        self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta, self.mesh)
 
-        self.results = {}
-        self.results['values'] = [self.oldvalue*1]
-
-        self.R2 = self.Rj*0.2
-        self.invR = np.linalg.solve(self.Rj, np.eye(len(self.Rj[0])))
         self.accepted = 0
         self.MCMC[0,:] = self.initial_theta.T
         self.thetaj = self.initial_theta
 
-        #initiase Kalman features
+        #initialise Kalman features
         self.MCMC_cov = np.zeros_like(self.initial_cov)
         self.MCMC_mean = np.zeros_like(self.initial_theta)
         self.ss = np.array([1])
         self.ii = 0
 
-        data = {0:[]}
-        data[0].append(self.thetaj)
-        data[0].append(self.oldvalue)
-
-        df = pd.DataFrame(data)
-
-        df.to_csv('EnKF.csv', mode='w', index=False)
-
     def update_cov(self, w, ind):
-        x = self.MCMC[self.ii+1:ind] #100, 1
+        x = self.MCMC[self.ii+1:ind] #
         n = np.size(x, 0) #num of rows
         p = np.size(x, 1) #num of cols
 
@@ -63,55 +51,31 @@ class DRAM_algorithm():
             xmeann = xi.reshape(-1,1)
 
             xmean = self.MCMC_mean + np.divide(wsum,(wsum + self.ss))*(xmeann - self.MCMC_mean)
+            
+            a = np.divide(wsum,(wsum + self.ss-np.array([1])))
+            b = np.multiply(np.divide(self.ss,(wsum + self.ss)),(xi-self.MCMC_mean).T)
             xcov = (((self.ss-1)*((wsum + self.ss - 1)**(-1)))*self.MCMC_cov + (wsum*self.ss*((wsum+ self.ss-1)**(-1))) * ((wsum + self.ss)**(-1)) * (np.dot((xmeann-self.MCMC_mean).reshape(p, 1), (xmeann-self.MCMC_mean).reshape(1, p))))
 
             wsum += self.ss
-            self.MCMC_cov = xcov 
+            self.MCMC_cov = xcov #unsure about this
             self.MCMC_mean = xmean
             self.ss = wsum
-            
-            i += 1 
 
-    def DRAM_go(self):
+            i += 1
 
+    def AMH_go(self):
         j = 1
         while j < self.nsamples:
-
-            data = {j:[]}
-
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
-            newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
+            newpi, _ = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
             if np.random.uniform(0,1) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi
-                self.oldvalue = newvalue
-
-            else:
-                thetass = self.thetaj + self.R2@np.random.normal(size = [self.dim, 1])
-                thetass = utilities.check_bounds(thetass, self.range)
-
-                newss2, newvalue2 = utilities.ESS(self.observations, thetass, self.mesh)
-                k1 = min(1, np.exp(-0.5*(newpi - newss2)/self.sigma))
-                k2 = np.exp(-0.5*(newss2-self.oldpi)/self.sigma)
-                k3 = np.exp(-0.5*(np.linalg.norm(self.invR@(thetass - thetas))**2))
-                lam2 = k2*k3*(1-k1)/(1-lam)
-                if np.random.uniform(0,1) < lam2:
-                    self.accepted += 1
-                    self.thetaj = thetass
-                    self.oldpi = newss2
-                    self.oldvalue = newvalue2
-
-            self.results['values'].append(self.oldvalue)
 
             self.MCMC[j, :] = self.thetaj.T
-
-            data[j].append(self.thetaj)
-            data[j].append(self.oldvalue)
-            df = pd.DataFrame(data)
-            df.to_csv('EnKF.csv', mode='a', index=False, header=False)
 
             if j % self.adpt == 0:
                 self.update_cov(1, j)
@@ -125,7 +89,4 @@ class DRAM_algorithm():
         self.results['accepted'] = 100*self.accepted/self.nsamples
 
         return self.results
-        
-
-
-
+ 
