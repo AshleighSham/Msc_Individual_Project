@@ -79,5 +79,4 @@ class Mesh():
         self.forces = 0.174*np.array([0.5, 1, 1, 1, 1, 0.5])
 
     def meshgrid(self):
-        print(self.XYZ, self.CON + 1, self.scfa, self.th, self.BCnodes + 1, self.forcenodes + 1, self.forces) 
         return self.XYZ, self.CON + 1, self.scfa, self.th, self.BCnodes + 1, self.forcenodes + 1, self.forces
