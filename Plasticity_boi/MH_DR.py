@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as sp
 import utilities as utilities
+import pandas as pd
 
 class MH_DR_mcmc():
     def __init__(self, inp):
@@ -35,6 +36,34 @@ class MH_DR_mcmc():
         self.results = {}
         self.results['values'] = [self.oldvalue*1]
 
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\MH_DR.csv', mode='w', index=True)
+
+    def save_data(self, j):
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\MH_DR.csv', mode='a', index=True, header = False)
 
     def MH_DR_go(self):
         j = 1
@@ -70,6 +99,8 @@ class MH_DR_mcmc():
             self.results['values'].append(self.oldvalue)
             
             self.MCMC[j, :] = self.thetaj.T
+
+            self.save_data(j)
 
             j += 1
 

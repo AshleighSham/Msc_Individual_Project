@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as sp
 import utilities as utilities
+import pandas as pd
 
 class Crank_mcmc:
     def __init__(self, inp):
@@ -31,6 +32,36 @@ class Crank_mcmc:
 
         self.thetaj = self.initial_theta
 
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\CRANK.csv', mode='w', index=True)
+
+    def save_data(self, j):
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\CRANK.csv', mode='a', index=True, header = False)
+
+
     def Crank_go(self):
         j = 1
         while j < self.nsamples:
@@ -59,6 +90,9 @@ class Crank_mcmc:
                 print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[2][:j]), np.sqrt(np.var(self.MCMC.T[2][:j]))))
                 print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[3][:j]), np.sqrt(np.var(self.MCMC.T[3][:j]))))
                 print()
+            
+            self.save_data(j)
+            
             j += 1
 
         self.results['MCMC'] = self.MCMC.T

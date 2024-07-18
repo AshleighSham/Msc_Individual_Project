@@ -11,9 +11,6 @@ from mesh import Mesh
 # import numpy
 import numpy as np
 
-# import matlab plots
-import matplotlib.pyplot as plt
-
 # import common library
 from common_calcs_lib import *
 
@@ -24,7 +21,6 @@ def forward_model(params, mesh):
 
     youngs_modulus, poisson_ratio, yield_strs, hardening_modulus = params[:,0]
 
-    
     # ===================================== set up pecision ===========================================
     # increase the precision
     np.set_printoptions(precision=16)
@@ -606,10 +602,12 @@ def forward_model(params, mesh):
                     integr_pt_Cauchy_strn_plc_eqn_tp1, integr_pt_Cauchy_strs_tnr_tp1, \
                     integr_pt_Cauchy_strs_eqn_tp1, integr_pt_has_yielded_tp1, \
                     integr_pt_sufail_tp1)
+    
+    sigma_xx = Cauchy_strs_tnr_strg[:, 0]
     line = []
     for i in range(len(disp_I_strg)):
-        line.append([disp_I_strg[i]])
-        line.append([force_ext_I_strg[i]])
+        line.append([2*youngs_modulus*disp_I_strg[i]/(yield_strs*10)])
+        line.append([sigma_xx[i]/yield_strs])
     
     return np.array(line)
 # ************************************* plots ****************************************************

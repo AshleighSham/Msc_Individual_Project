@@ -10,6 +10,7 @@ from crank import Crank_mcmc
 from baby import Baby_mcmc
 import matplotlib.pyplot as plt
 
+
 inp = {}
 
 # data = np.load('RVE_EnKF2D.npy', allow_pickle=True)
@@ -52,14 +53,16 @@ inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['Force Magnitude'],
                config['Mesh grid']['Force Nodes'],
                config['Mesh grid']['Fixed Nodes'],
+               config['Mesh grid']['Element ID'],
                config['Mesh grid']['thickness']]
 
 ini = np.array([[config['True Material Parameters']['Youngs Modulus']], [config['True Material Parameters']['Poissons Ratio']], [config['True Material Parameters']['Yield Stress']],[config['True Material Parameters']['Hardening Modulus']]])
 
 measurements=utilities.forward_model(ini, inp['mesh'])
-measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*100, size = [np.size(measurements, 0), np.size(measurements, 1)])
+measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Noise scale'], size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements1
 
+print(measurements1)
 figd, axd = plt.subplots()
 x,y = [], []
 for i in range(len(measurements1)//2):
@@ -73,6 +76,7 @@ for i in range(len(measurements)//2):
 
 axd.scatter(x, y, label = 'Noisy data', s = 5, color = 'black', marker = 'x')
 axd.plot(xx, yy, label = 'True result')
+plt.show()
 
 inp['Method'] = config['Methods']['Choosen Method']
 #inp['theta0'] = np.array([np.random.choice(range(int(inp['range'][0][0]*1e6), int(inp['range'][1][0]*1e6)), 1)/1e6, np.random.choice(range(int(inp['range'][0][1]*1e6), int(inp['range'][1][1]*1e6)), 1)/1e6])

@@ -47,11 +47,29 @@ class EnKF_mcmc():
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
+    
+    def save_data(self):
+        data = {}
+
+        if self.dim == 2:
+            data['E'] = self.thetaj[0]
+            data['v'] = self.thetaj[1]
+        else:
+            data['E1'] = self.thetaj[0]
+            data['v1'] = self.thetaj[1]
+            data['E2'] = self.thetaj[2]
+            data['v2'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elasticity_2D\EnKF.csv', mode='a', index=False, header = False)
 
     def EnKF_go(self):
         j = self.K0
         while j < self.s:
-            data = {j:[]}
             KK = self.Kalman_gain(j)
             
             XX = utilities.forward_model(self.thetaj, self.mesh)
@@ -70,10 +88,7 @@ class EnKF_mcmc():
                 self.oldpi = newpi
                 self.oldvalue = newvalue
 
-            data[j].append(self.thetaj)
-            data[j].append(self.oldvalue)
-            df = pd.DataFrame(data)
-            df.to_csv('EnKF.csv', mode='a', index=False, header=False)
+            self.save_data()
 
             tempX = np.zeros([np.size(self.X,0), np.size(self.X,1) + 1])
             tempY = np.zeros([np.size(self.Y,0), np.size(self.Y,1) + 1])

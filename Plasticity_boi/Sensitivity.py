@@ -1,7 +1,6 @@
 from config import config
 import numpy as np
 from plasticity_Von_Mises_quasi_static_pst_2d import forward_model
-import utilities
 import seaborn as sns
 sns.set_context('talk')
 import matplotlib.pyplot as plt
@@ -9,9 +8,8 @@ import sympy as sym
 import pandas as pd
 import scipy.stats as st
 
-
 inp ={}
-
+ 
 inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['sf'], 
                config['Mesh grid']['Nodal Coordinates'], 
@@ -20,17 +18,18 @@ inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['Force Magnitude'],
                config['Mesh grid']['Force Nodes'],
                config['Mesh grid']['Fixed Nodes'],
-               config['Mesh grid']['Element ID']]
+               config['Mesh grid']['Element ID'],
+               config['Mesh grid']['thickness']]
 
-E = 210000
-v = 0.3
-Y = 200
-H = 300
-
-E_1 = st.norm(E, 10000)
-v_1 = st.norm(v, 0.001)
-Y_1 = st.norm(Y, 10)
-H_1 = st.norm(H, 10)
+E = 206.9
+v = 0.29
+Y = 0.45
+H = 0.2
+ 
+E_1 = st.norm(E, 10)
+v_1 = st.norm(v, 0.01)
+Y_1 = st.norm(Y, 0.01)
+H_1 = st.norm(H, 0.01)
 
 mu = [E, v, Y, H]
 variables = [E_1, v_1, Y_1, H_1]

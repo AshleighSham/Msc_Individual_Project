@@ -30,7 +30,7 @@
 
   "Standard Deviation": 0.01,
 
-  "Number of samples": 200,
+  "Number of samples": 3000,
 
   "Starting Kalman point": 100,
 
@@ -45,7 +45,7 @@
   "Mesh grid": {
     "sf": 1,
     "thickness": 1,
-    "quad": [11, 6],
+    "quad": [16, 6],
     "Nodal Coordinates": [
       [0, 0],
       [1, 0],
@@ -103,7 +103,7 @@
     "Crank": 4,
     "Ensemble Kalman Filter": 5,
     "Baby": 6,
-    "Choosen Method": 5
+    "Choosen Method": 0
   },
   "Print Chain": 0
 }

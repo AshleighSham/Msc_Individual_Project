@@ -5,6 +5,7 @@ from MH_DR import MH_DR_mcmc
 from crank import Crank_mcmc
 import utilities as utilities
 import time
+import pandas as pd
 
 class EnKF_mcmc():
     def __init__(self, inp):
@@ -24,7 +25,7 @@ class EnKF_mcmc():
         self.nsamples = self.K0 - 1
         inp['nsamples'] = self.nsamples
         A = DRAM_algorithm(inp)
-        self.results, self.Time = A.DRAM_go()
+        self.results = A.DRAM_go()
 
         self.X = self.results['MCMC'] #1 x nsamples
         print('Values before the EnKF')
@@ -38,6 +39,29 @@ class EnKF_mcmc():
 
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj, self.mesh)
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
+
+    def save_data(self, j):
+        data = {}
+
+        if self.dim == 2:
+            data['E'] = self.thetaj[0]
+            data['v'] = self.thetaj[1]
+        else:
+            data['E1'] = self.thetaj[0]
+            data['v1'] = self.thetaj[1]
+            data['E2'] = self.thetaj[2]
+            data['v2'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        dumy = self.Rj.reshape(self.dim**2)
+        for i in range(self.dim**2):
+            data[f'var{i}'] = [dumy[i]]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\EnKF.csv', mode='a', index=True, header = False)
 
     def Kalman_gain(self, j):
 
@@ -58,8 +82,8 @@ class EnKF_mcmc():
         while j < self.s:
             KK = self.Kalman_gain(j)
             
-            XX = utilities.forward_model(self.thetaj, self.mesh)
-            dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - XX)
+            #XX = utilities.forward_model(self.thetaj, self.mesh)
+            dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - self.oldvalue)
 
             thetas = self.thetaj + dt
 
@@ -86,11 +110,6 @@ class EnKF_mcmc():
             self.X = tempX
             self.Y = tempY
 
-            if j % 100 == 0:
-                A = time.perf_counter()
-                self.Time.append(A)
-                print(self.Time[-1]- self.Time[-2])
-
             if j % 200 == 0:
                 print(f'{j} samples completed')
                 print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
@@ -98,6 +117,8 @@ class EnKF_mcmc():
                 print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
                 print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[3]), np.sqrt(np.var(self.X[3]))))
                 print()
+
+            self.save_data(j)
 
             j += 1
         

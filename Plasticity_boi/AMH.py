@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as sp
 import utilities as utilities
+import pandas as pd
 
 class AMH_mcmc():
     def __init__(self, inp):
@@ -35,6 +36,44 @@ class AMH_mcmc():
         self.MCMC_mean = np.zeros_like(self.initial_theta)
         self.ss = np.array([1])
         self.ii = 0
+
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        dumy = self.Rj.reshape(self.dim**2)
+        for i in range(self.dim**2):
+            data[f'var{i}'] = [dumy[i]]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\AMH.csv', mode='w', index=True)
+
+    def save_data(self, j):
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        dumy = self.Rj.reshape(self.dim**2)
+        for i in range(self.dim**2):
+            data[f'var{i}'] = [dumy[i]]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\AMH.csv', mode='a', index=True, header = False)
+
 
     def update_cov(self, w, ind):
         x = self.MCMC[self.ii+1:ind] #
@@ -82,6 +121,8 @@ class AMH_mcmc():
                 Ra = np.linalg.cholesky(self.MCMC_cov + np.eye(self.dim)*self.eps)
                 self.ii = j*1
                 self.Rj = Ra * self.Kp
+
+            self.save_data(j)
 
             j += 1
 

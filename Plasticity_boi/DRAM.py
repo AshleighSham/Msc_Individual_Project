@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 import utilities as utilities
 import time
+import pandas as pd
 
 class DRAM_algorithm():
     def __init__(self, inp):
@@ -41,6 +42,44 @@ class DRAM_algorithm():
         self.ss = np.array([1])
         self.ii = 0
 
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        dumy = self.Rj.reshape(self.dim**2)
+        for i in range(self.dim**2):
+            data[f'var{i}'] = [dumy[i]]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\DRAM.csv', mode='w', index=True)
+
+    def save_data(self, j):
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        dumy = self.Rj.reshape(self.dim**2)
+        for i in range(self.dim**2):
+            data[f'var{i}'] = [dumy[i]]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\DRAM.csv', mode='a', index=True, header = False)
+
+
     def update_cov(self, w, ind):
         x = self.MCMC[self.ii+1:ind] #100, 1
         n = np.size(x, 0) #num of rows
@@ -66,8 +105,7 @@ class DRAM_algorithm():
             i += 1
 
     def DRAM_go(self):
-        start_time = time.perf_counter()
-        Time = [start_time]
+
         j = 1
         while j < self.nsamples:
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
@@ -105,17 +143,14 @@ class DRAM_algorithm():
                 self.ii = j*1
                 self.Rj = Ra * self.Kp
 
-            if j % 100 == 0:
-                A = time.perf_counter()
-                Time.append(A)
-                print(j, Time[-1]- Time[-2])
+            self.save_data(j)
 
             j += 1
 
         self.results['MCMC'] = self.MCMC.T
         self.results['accepted'] = 100*self.accepted/self.nsamples
 
-        return self.results, Time
+        return self.results
         
 
 

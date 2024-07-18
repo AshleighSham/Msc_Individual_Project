@@ -6,7 +6,7 @@ class Mesh():
     # the initialisation procedure
     def __init__(self, m):
         self.m = m
-        quad, self.scfa, NC, ENN, NE, FM, FN, FBCN, self.th = self.m
+        quad, self.scfa, NC, ENN, NE, FM, FN, FBCN, EID, self.th = self.m
         if quad != 0:
             bot = np.array([x for x in range(quad[1])])
             top = np.array([x for x in range(quad[1])])
@@ -79,4 +79,5 @@ class Mesh():
         self.forces = 0.174*np.array([0.5, 1, 1, 1, 1, 0.5])
 
     def meshgrid(self):
+        print(self.XYZ, self.CON + 1, self.scfa, self.th, self.BCnodes + 1, self.forcenodes + 1, self.forces) 
         return self.XYZ, self.CON + 1, self.scfa, self.th, self.BCnodes + 1, self.forcenodes + 1, self.forces

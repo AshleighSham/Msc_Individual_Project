@@ -59,8 +59,8 @@ class EnKF_mcmc():
         while j < self.s:
             KK = self.Kalman_gain(j)
             
-            XX = utilities.forward_model(self.thetaj)
-            dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - XX)
+            #XX = utilities.forward_model(self.thetaj)
+            dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - self.oldavlue)
 
             thetas = self.thetaj + dt
 
