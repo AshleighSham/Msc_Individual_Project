@@ -38,7 +38,7 @@ inp['sigma']=config["Standard Deviation"]
 inp['Kalmans']= config['Starting Kalman point']                        
 
 # assumed measurement error for Kalman MCMC
-inp['me']=config['Measurement error for Kalman']*config["Noise scale"]
+inp['me']=config['Measurement error for Kalman']
 
 #adaption setp size
 inp['adapt'] = config['Adaption Step Size']
@@ -57,8 +57,12 @@ inp['mesh'] = [config['Mesh grid']['quad'],
 ini = np.array([[config['True Material Parameters']['Youngs Modulus']], [config['True Material Parameters']['Yield Stress']],[config['True Material Parameters']['Hardening Modulus']]])
 
 measurements=utilities.forward_model(ini)
-measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config["Noise scale"], size = [np.size(measurements, 0), np.size(measurements, 1)])
-inp['measurement'] = measurements1
+Noise = np.zeros_like(measurements)
+
+Noise[0::2] = np.random.normal(0, config["Measurement Noise"]*np.var(measurements[0::2]), size = np.shape(measurements[0::2]))
+Noise[1::2] = np.random.normal(0, config["Measurement Noise"]*np.var(measurements[1::2]), size = np.shape(measurements[1::2]))
+inp['measurement'] = measurements + Noise
+measurements1 = inp['measurement']
 
 figd, axd = plt.subplots()
 x,y = [], []

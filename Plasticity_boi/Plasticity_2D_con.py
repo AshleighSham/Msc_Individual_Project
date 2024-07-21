@@ -26,7 +26,7 @@ inp['range']=np.array([[config['Imposed Limits']['Youngs Modulus'][0], config['I
 inp['s'] = config['s']                      
 
 # number of iteration in MCMC
-inp['nsamples']=config['Number of samples'] - len(past_chain_info['thetaj'][0])
+inp['nsamples']=config['Number of samples']
 
 # The starting point of the Kalman MCMC           
 inp['Kalmans']= config['Starting Kalman point']                        
@@ -63,13 +63,14 @@ inp['mesh'] = [config['Mesh grid']['quad'],
                config['Mesh grid']['Force Magnitude'],
                config['Mesh grid']['Force Nodes'],
                config['Mesh grid']['Fixed Nodes'],
+               config['Mesh grid']['Element ID'],
                config['Mesh grid']['thickness']]
 
 ini = np.array([[config['True Material Parameters']['Youngs Modulus']], [config['True Material Parameters']['Poissons Ratio']], [config['True Material Parameters']['Yield Stress']],[config['True Material Parameters']['Hardening Modulus']]])
 
-measurements=utilities.forward_model(ini, inp['mesh'])
-measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Noise scale'], size = [np.size(measurements, 0), np.size(measurements, 1)])
-inp['measurement'] = measurements1
+#measurements=utilities.forward_model(ini, inp['mesh'])
+#measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Noise scale'], size = [np.size(measurements, 0), np.size(measurements, 1)])
+inp['measurement'] = config['Mesurements']
 
 print()
 print()

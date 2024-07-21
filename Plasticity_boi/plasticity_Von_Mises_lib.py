@@ -595,7 +595,6 @@ def get_Cauchy_strs_tnr_tp1_pst_2d(Cauchy_strn_elc_trl_tnr_tp1, Cauchy_strn_plc_
         strs_xy_square = strest[2]**2
         sum_norm_shr_strs = sum_norm_strs + 6.0*strs_xy_square
         Cauchy_strs_eqn_tp1 = np.sqrt(0.5*sum_norm_shr_strs)
- 
     # return variables
     return Cauchy_strn_tnr_tp1, Cauchy_strn_elc_tnr_tp1, Cauchy_strn_plc_tnr_tp1, \
         Cauchy_strn_plc_eqn_tp1, plc_multiplier_ttp1_inc, Cauchy_strs_tnr_tp1, \

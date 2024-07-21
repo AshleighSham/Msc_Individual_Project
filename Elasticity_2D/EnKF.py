@@ -3,6 +3,7 @@ from DRAM import DRAM_algorithm
 from crank import Crank_mcmc
 import utilities as utilities
 import pandas as pd
+import time
 
 class EnKF_mcmc():
     def __init__(self, inp):
@@ -48,32 +49,33 @@ class EnKF_mcmc():
 
         return KK
     
-    def save_data(self):
-        data = {}
+    # def save_data(self):
+    #     data = {}
 
-        if self.dim == 2:
-            data['E'] = self.thetaj[0]
-            data['v'] = self.thetaj[1]
-        else:
-            data['E1'] = self.thetaj[0]
-            data['v1'] = self.thetaj[1]
-            data['E2'] = self.thetaj[2]
-            data['v2'] = self.thetaj[3]
+    #     if self.dim == 2:
+    #         data['E'] = self.thetaj[0]
+    #         data['v'] = self.thetaj[1]
+    #     else:
+    #         data['E1'] = self.thetaj[0]
+    #         data['v1'] = self.thetaj[1]
+    #         data['E2'] = self.thetaj[2]
+    #         data['v2'] = self.thetaj[3]
         
-        for i in range(len(self.oldvalue)):
-            data[i] = self.oldvalue[i]
+    #     for i in range(len(self.oldvalue)):
+    #         data[i] = self.oldvalue[i]
 
-        df = pd.DataFrame(data)
+    #     df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elasticity_2D\EnKF.csv', mode='a', index=False, header = False)
+    #     df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elasticity_2D\EnKF.csv', mode='a', index=False, header = False)
 
     def EnKF_go(self):
+        st = time.perf_counter()
         j = self.K0
         while j < self.s:
             KK = self.Kalman_gain(j)
             
-            XX = utilities.forward_model(self.thetaj, self.mesh)
-            dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - XX)
+            #XX = utilities.forward_model(self.thetaj, self.mesh)
+            dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - self.oldvalue)
             thetas = self.thetaj + dt
 
             thetas = utilities.check_bounds(thetas, self.range)
@@ -88,7 +90,7 @@ class EnKF_mcmc():
                 self.oldpi = newpi
                 self.oldvalue = newvalue
 
-            self.save_data()
+            # self.save_data()
 
             tempX = np.zeros([np.size(self.X,0), np.size(self.X,1) + 1])
             tempY = np.zeros([np.size(self.Y,0), np.size(self.Y,1) + 1])
@@ -106,6 +108,9 @@ class EnKF_mcmc():
                 print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
                 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
                 print()
+
+            if j == self.K0 + 100:
+                print(f'time: {time.perf_counter() - st}')
 
             j += 1
         

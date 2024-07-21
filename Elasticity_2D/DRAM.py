@@ -40,42 +40,42 @@ class DRAM_algorithm():
         self.ss = np.array([1])
         self.ii = 0
 
-        data = {}
+        # data = {}
 
-        if self.dim == 2:
-            data['E'] = self.thetaj[0]
-            data['v'] = self.thetaj[1]
-        else:
-            data['E1'] = self.thetaj[0]
-            data['v1'] = self.thetaj[1]
-            data['E2'] = self.thetaj[2]
-            data['v2'] = self.thetaj[3]
+        # if self.dim == 2:
+        #     data['E'] = self.thetaj[0]
+        #     data['v'] = self.thetaj[1]
+        # else:
+        #     data['E1'] = self.thetaj[0]
+        #     data['v1'] = self.thetaj[1]
+        #     data['E2'] = self.thetaj[2]
+        #     data['v2'] = self.thetaj[3]
         
-        for i in range(len(self.oldvalue)):
-            data[i] = self.oldvalue[i]
+        # for i in range(len(self.oldvalue)):
+        #     data[i] = self.oldvalue[i]
 
-        df = pd.DataFrame(data)
+        # df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elasticity_2D\EnKF.csv', mode='w', index=False)
+        # df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elasticity_2D\EnKF.csv', mode='w', index=False)
 
-    def save_data(self):
-        data = {}
+    # def save_data(self):
+    #     data = {}
 
-        if self.dim == 2:
-            data['E'] = self.thetaj[0]
-            data['v'] = self.thetaj[1]
-        else:
-            data['E1'] = self.thetaj[0]
-            data['v1'] = self.thetaj[1]
-            data['E2'] = self.thetaj[2]
-            data['v2'] = self.thetaj[3]
+    #     if self.dim == 2:
+    #         data['E'] = self.thetaj[0]
+    #         data['v'] = self.thetaj[1]
+    #     else:
+    #         data['E1'] = self.thetaj[0]
+    #         data['v1'] = self.thetaj[1]
+    #         data['E2'] = self.thetaj[2]
+    #         data['v2'] = self.thetaj[3]
         
-        for i in range(len(self.oldvalue)):
-            data[i] = self.oldvalue[i]
+    #     for i in range(len(self.oldvalue)):
+    #         data[i] = self.oldvalue[i]
 
-        df = pd.DataFrame(data)
+    #     df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elasticity_2D\EnKF.csv', mode='a', index=False, header = False)
+    #     df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elasticity_2D\EnKF.csv', mode='a', index=False, header = False)
 
     def update_cov(self, w, ind):
         x = self.MCMC[self.ii+1:ind] #100, 1
@@ -137,7 +137,7 @@ class DRAM_algorithm():
 
             self.MCMC[j, :] = self.thetaj.T
 
-            self.save_data()
+            # self.save_data()
 
             if j % self.adpt == 0:
                 self.update_cov(1, j)

@@ -43,21 +43,16 @@ class EnKF_mcmc():
     def save_data(self, j):
         data = {}
 
-        if self.dim == 2:
-            data['E'] = self.thetaj[0]
-            data['v'] = self.thetaj[1]
-        else:
-            data['E1'] = self.thetaj[0]
-            data['v1'] = self.thetaj[1]
-            data['E2'] = self.thetaj[2]
-            data['v2'] = self.thetaj[3]
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
         
         for i in range(len(self.oldvalue)):
             data[i] = self.oldvalue[i]
 
-        dumy = self.Rj.reshape(self.dim**2)
-        for i in range(self.dim**2):
-            data[f'var{i}'] = [dumy[i]]
+        # for i in range(4**2):
+        #     data[f'var{i}'] = [dumy[i]]
 
         df = pd.DataFrame(data)
 
@@ -83,7 +78,12 @@ class EnKF_mcmc():
             KK = self.Kalman_gain(j)
             
             #XX = utilities.forward_model(self.thetaj, self.mesh)
-            dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - self.oldvalue)
+            Noise = np.zeros_like(self.observations)
+
+            Noise[0::2] = np.random.normal(0, self.m0*np.var(self.observations[0::2]), size = np.shape(self.observations[0::2]))
+            Noise[1::2] = np.random.normal(0, self.m0*np.var(self.observations[1::2]), size = np.shape(self.observations[1::2]))
+            
+            dt = KK @ (self.observations + Noise - self.oldvalue)
 
             thetas = self.thetaj + dt
 
@@ -91,9 +91,9 @@ class EnKF_mcmc():
 
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
 
-            lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
+            lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
-            if np.random.uniform(0, 1) < lam:
+            if np.log(np.random.uniform(0, 1)) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi

@@ -76,7 +76,7 @@ class Mesh():
         for i in range(len(self.DOF2[0])//2):
             frn.append(self.DOF2[-1][2*i + 1])
         self.forcenodes = np.array(frn)
-        self.forces = 0.174*np.array([0.5, 1, 1, 1, 1, 0.5])
+        self.forces = np.array([0.5, 1, 1, 1, 1, 0.5])*1e-3
 
     def meshgrid(self):
         return self.XYZ, self.CON + 1, self.scfa, self.th, self.BCnodes + 1, self.forcenodes + 1, self.forces

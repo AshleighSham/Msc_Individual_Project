@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 import utilities as utilities
 import pandas as pd
+import time
 
 class MH_mcmc:
     def __init__(self, inp):
@@ -64,15 +65,14 @@ class MH_mcmc:
     def MH_go(self):
         j = 1
         while j < self.nsamples:
-            print(j)
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
 
             thetas = utilities.check_bounds(thetas, self.range)
             
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-            lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
+            lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
-            if np.random.uniform(0, 1) < lam:
+            if np.log(np.random.uniform(0, 1)) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi
@@ -84,6 +84,7 @@ class MH_mcmc:
 
             if j % 100 == 0:
                 print(f'{j} samples completed')
+                print(100*self.accepted/j)
                 print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[0][:j]), np.sqrt(np.var(self.MCMC.T[0][:j]))))
                 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[1][:j]), np.sqrt(np.var(self.MCMC.T[1][:j]))))
                 print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[2][:j]), np.sqrt(np.var(self.MCMC.T[2][:j]))))

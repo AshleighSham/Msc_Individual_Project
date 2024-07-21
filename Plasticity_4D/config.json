@@ -34,11 +34,9 @@
 
   "Starting Kalman point": 1000,
 
-  "Measurement error for Kalman": 0.0001,
+  "Measurement error for Kalman": 0.1,
 
-  "Measurement Noise": 0.0005,
-
-  "Noise scale": 100,
+  "Measurement Noise": 0.5,
 
   "Adaption Step Size": 500,
 

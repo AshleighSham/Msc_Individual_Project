@@ -2,6 +2,9 @@
 # import system
 import sys
 
+#speed?
+import jax
+
 # import operating system
 import os
 
@@ -133,7 +136,7 @@ def forward_model(params, mesh):
         # number of time steps per loading
         n_time_steps_per_loading = 100
         # max displacement target
-        disp_trgt_max = 1
+        disp_trgt_max = 0.17
         #disp_trgt_max = -0.02
         # (loading only)
         disp_trgt = np.linspace(0, disp_trgt_max, n_time_steps_per_loading+1)    
@@ -606,8 +609,13 @@ def forward_model(params, mesh):
     sigma_xx = Cauchy_strs_tnr_strg[:, 0]
     line = []
     for i in range(len(disp_I_strg)):
-        line.append([2*youngs_modulus*disp_I_strg[i]/(yield_strs*10)])
-        line.append([sigma_xx[i]/yield_strs])
+        line.append([10*disp_I_strg[i]])
+        line.append([10*sigma_xx[i]])
+
+    # normalised graph
+    # for i in range(len(disp_I_strg)):
+    #     line.append([2*youngs_modulus*disp_I_strg[i]/(yield_strs*10)])
+    #     line.append([sigma_xx[i]/yield_strs])
     
     return np.array(line)
 # ************************************* plots ****************************************************
