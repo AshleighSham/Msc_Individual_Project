@@ -82,14 +82,14 @@ class MH_mcmc:
 
             self.MCMC[j,:] = self.thetaj.T
 
-            if j % 100 == 0:
-                print(f'{j} samples completed')
-                print(100*self.accepted/j)
-                print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[0][:j]), np.sqrt(np.var(self.MCMC.T[0][:j]))))
-                print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[1][:j]), np.sqrt(np.var(self.MCMC.T[1][:j]))))
-                print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[2][:j]), np.sqrt(np.var(self.MCMC.T[2][:j]))))
-                print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[3][:j]), np.sqrt(np.var(self.MCMC.T[3][:j]))))
-                print()
+            # if j % 100 == 0:
+            #     print(f'{j} samples completed')
+            #     print(100*self.accepted/j)
+            #     print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[0][:j]), np.sqrt(np.var(self.MCMC.T[0][:j]))))
+            #     print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[1][:j]), np.sqrt(np.var(self.MCMC.T[1][:j]))))
+            #     print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[2][:j]), np.sqrt(np.var(self.MCMC.T[2][:j]))))
+            #     print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.MCMC.T[3][:j]), np.sqrt(np.var(self.MCMC.T[3][:j]))))
+            #     print()
 
             self.save_data(j)
                 

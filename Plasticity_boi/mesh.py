@@ -1,5 +1,4 @@
 import numpy as np
-import utilities as utilities
 import matplotlib.pyplot as plt
 
 class Mesh():

@@ -25,7 +25,7 @@ class AMH_mcmc():
         self.Kp = 0.05
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
-        self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta, self.mesh)
+        self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
 
         self.accepted = 0
         self.MCMC[0,:] = self.initial_theta.T
@@ -47,10 +47,6 @@ class AMH_mcmc():
         for i in range(len(self.oldvalue)):
             data[i] = self.oldvalue[i]
 
-        dumy = self.Rj.reshape(self.dim**2)
-        for i in range(self.dim**2):
-            data[f'var{i}'] = [dumy[i]]
-
         df = pd.DataFrame(data)
 
         df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\AMH.csv', mode='w', index=True)
@@ -65,10 +61,6 @@ class AMH_mcmc():
         
         for i in range(len(self.oldvalue)):
             data[i] = self.oldvalue[i]
-
-        dumy = self.Rj.reshape(self.dim**2)
-        for i in range(self.dim**2):
-            data[f'var{i}'] = [dumy[i]]
 
         df = pd.DataFrame(data)
 
@@ -107,12 +99,13 @@ class AMH_mcmc():
         while j < self.nsamples:
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
-            newpi, _ = utilities.ESS(self.observations, thetas, self.mesh)
+            newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
             lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
             if np.random.uniform(0,1) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi
+                self.oldvalue = newvalue
 
             self.MCMC[j, :] = self.thetaj.T
 

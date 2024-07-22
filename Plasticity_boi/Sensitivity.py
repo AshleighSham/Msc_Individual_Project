@@ -1,10 +1,10 @@
 from config import config
 import numpy as np
-from plasticity_Von_Mises_quasi_static_pst_2d import forward_model
 import seaborn as sns
+from mesh import Mesh
+from plasticity_Von_Mises_quasi_static_pst_2d import forward_model
 sns.set_context('talk')
 import matplotlib.pyplot as plt
-import sympy as sym
 import pandas as pd
 import scipy.stats as st
 
