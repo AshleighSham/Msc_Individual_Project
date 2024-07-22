@@ -602,10 +602,12 @@ def forward_model(params):
                     integr_pt_Cauchy_strn_plc_eqn_tp1, integr_pt_Cauchy_strs_tnr_tp1, \
                     integr_pt_Cauchy_strs_eqn_tp1, integr_pt_has_yielded_tp1, \
                     integr_pt_sufail_tp1)
+            
+    sigma_xx = Cauchy_strs_tnr_strg[:, 0]
     line = []
     for i in range(len(disp_I_strg)):
-        line.append([disp_I_strg[i]*1000])
-        line.append([force_ext_I_strg[i]*1000])
+        line.append([10*disp_I_strg[i]])
+        line.append([10*sigma_xx[i]])
     
     return np.array(line)
 # ************************************* plots ****************************************************

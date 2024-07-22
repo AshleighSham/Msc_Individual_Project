@@ -38,7 +38,7 @@ inp['sigma']=config["Standard Deviation"]
 inp['Kalmans']= config['Starting Kalman point']                        
 
 # assumed measurement error for Kalman MCMC
-inp['me']=config['Measurement error for Kalman']*config["Noise scale"]
+inp['me']=config['Measurement error for Kalman']
 
 #adaption setp size
 inp['adapt'] = config['Adaption Step Size']
@@ -63,6 +63,7 @@ Noise = np.zeros_like(measurements)
 Noise[0::2] = np.random.normal(0, config['Measurement Noise']*np.var(measurements[0::2]), size = np.shape(measurements[0::2]))
 Noise[1::2] = np.random.normal(0, config['Measurement Noise']*np.var(measurements[1::2]), size = np.shape(measurements[1::2]))
 measurements1 = measurements + Noise
+inp['measurement'] = measurements1
 
 figd, axd = plt.subplots()
 x,y = [], []
@@ -77,6 +78,8 @@ for i in range(len(measurements)//2):
 
 axd.scatter(x, y, label = 'Noisy data', s = 5, color = 'black', marker = 'x')
 axd.plot(xx, yy, label = 'True result')
+
+plt.show()
 
 inp['Method'] = config['Methods']['Choosen Method']
 #inp['theta0'] = np.array([np.random.choice(range(int(inp['range'][0][0]*1e6), int(inp['range'][1][0]*1e6)), 1)/1e6, np.random.choice(range(int(inp['range'][0][1]*1e6), int(inp['range'][1][1]*1e6)), 1)/1e6])
