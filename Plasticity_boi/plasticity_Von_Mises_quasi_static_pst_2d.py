@@ -316,9 +316,9 @@ def forward_model(params, mesh):
         # controlled displacement (displacement control only)
         disp_trgt_dof_id = force_ext_dof[-1]
         # number of time steps per loading
-        n_time_steps_per_loading = 100
+        n_time_steps_per_loading = 50
         # max displacement target
-        disp_trgt_max = 0.17
+        disp_trgt_max = 0.1
         #disp_trgt_max = -0.02
         # (loading only)
         disp_trgt = np.linspace(0, disp_trgt_max, n_time_steps_per_loading+1)    
@@ -788,16 +788,18 @@ def forward_model(params, mesh):
                     integr_pt_Cauchy_strs_eqn_tp1, integr_pt_has_yielded_tp1, \
                     integr_pt_sufail_tp1)
     
-    sigma_xx = Cauchy_strs_tnr_strg[:, 0]
+    # epsilon_xx = Cauchy_strn_tnr_strg[:, 1]
+    # sigma_xx = Cauchy_strs_tnr_strg[:, 1]
+
     line = []
     for i in range(len(disp_I_strg)):
-        line.append([10*disp_I_strg[i]])
-        line.append([10*sigma_xx[i]])
+        line.append([100*disp_I_strg[i]])
+        line.append([100*force_ext_I_strg[i]])
 
     # normalised graph
-    # for i in range(len(disp_I_strg)):
-    #     line.append([2*youngs_modulus*disp_I_strg[i]/(yield_strs*10)])
-    #     line.append([sigma_xx[i]/yield_strs])
+    # for i in range(len(epsilon_xx)):
+    #     line.append([100*epsilon_xx[i]])
+    #     line.append([100*sigma_xx[i]])
     
     return np.array(line)
 # ************************************* plots ****************************************************

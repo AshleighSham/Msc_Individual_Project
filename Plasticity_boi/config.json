@@ -28,15 +28,15 @@
     "Hardening Modulus": 0.001
   },
 
-  "Standard Deviation": 0.01,
+  "Standard Deviation": 0.05,
 
   "Number of samples": 2000,
 
   "Starting Kalman point": 1000,
 
-  "Measurement error for Kalman": 0.01,
+  "Measurement error for Kalman": 0.005,
 
-  "Measurement Noise": 0.05,
+  "Measurement Noise": 0.01,
 
   "Adaption Step Size": 500,
 
@@ -101,7 +101,7 @@
     "Crank": 4,
     "Ensemble Kalman Filter": 5,
     "Baby": 6,
-    "Choosen Method": 0
+    "Choosen Method": 1
   },
   "Print Chain": 0,
 
