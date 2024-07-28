@@ -1,6 +1,7 @@
 import utilities
 import numpy as np
 import scipy as sp
+import pandas as pd
 
 class Baby_mcmc():
     def __init__(self, inp):
@@ -17,7 +18,7 @@ class Baby_mcmc():
         self.s = inp['s']
         self.mav = np.mean(abs(self.observations - np.mean(self.observations)))
 
-        self.FC = int(0.25*self.nsamples)
+        self.FC = int(0.5*self.nsamples)
 
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
@@ -32,8 +33,35 @@ class Baby_mcmc():
 
         self.accepted = 0
         self.thetaj = self.initial_theta
+        
+        data = {}
 
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
 
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\Baby.csv', mode='w', index=True)
+
+    def save_data(self, j):
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        data['H'] = self.thetaj[3]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\Baby.csv', mode='a', index=True, header = False)
 
     def Kalman_gain(self, j):
 
@@ -72,6 +100,8 @@ class Baby_mcmc():
             self.thetaj = thetas
             self.oldpi = newpi
             self.oldvalue = newvalue
+
+        self.save_data(j)
 
         self.results['values'].append(self.oldvalue)
         self.results['MCMC'][:,j] = self.thetaj.T
@@ -113,6 +143,7 @@ class Baby_mcmc():
         #         self.thetaj = thetas
         #         self.oldpi = newpi
         #         self.oldvalue = newvalue
+        self.save_data(j)
 
         self.results['values'].append(self.oldvalue)
         self.results['MCMC'][:,j] = self.thetaj.T
@@ -130,6 +161,8 @@ class Baby_mcmc():
             self.thetaj = thetas
             self.oldpi = newpi
             self.oldvalue = newvalue
+
+        self.save_data(j)
 
         self.results['values'].append(self.oldvalue)
         self.results['MCMC'][:,j] = self.thetaj.T
@@ -179,6 +212,7 @@ class Baby_mcmc():
         #         self.thetaj = thetas
         #         self.oldpi = newpi
         #         self.oldvalue = newvalue
+        self.save_data(j)
 
         self.results['values'].append(self.oldvalue)
         self.results['MCMC'][:,j] = self.thetaj.T
