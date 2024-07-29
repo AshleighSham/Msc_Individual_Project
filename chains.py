@@ -1,48 +1,105 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 sns.set_context('talk')
 from copy import copy
 
-read_dictionary = np.load('3D_chains_plas_4_2.npy',allow_pickle='TRUE').item()
-#read_dictionary = np.load('4D_chains_RVE.npy',allow_pickle='TRUE').item()
+ # Figure width in inches, approximately A4-width - 2*1.25in margin
+plt.rcParams.update({    # 4:3 aspect ratio
+    'font.size' : 13,                   # Set font size to 11pt
+    'axes.labelsize': 15,               # -> axis labels
+    'legend.fontsize': 15,              # -> legends
+    'font.family': 'charter',
+    'text.usetex': True,
+    'text.latex.preamble': (            # LaTeX preamble
+        r'\usepackage[T1]{fontenc}'
+    ),
+    "font.weight": 'bold',
+    "axes.labelweight": 'bold',
+    'axes.titlesize' : 15
+})
+true_vals = [10, 1, 0.3, 0.3]
 
-colours = ['deepskyblue','mediumseagreen','orange','hotpink','mediumorchid','mediumvioletred', 'red']
-labels = ['MH', 'AMH', 'DR MH', 'DRAM', 'pCN', 'EnKF', 'Baby']
-fig, ax = plt.subplots(nrows = 7, ncols =4, sharex= 'col')
+read_dictionary = {0:[], 1:[], 2:[], 3:[]}
 
-for i, q in zip(read_dictionary[0], range(7)):
-    ax[q][0].plot(range(len(i)), i, alpha = 0.8, c = colours[q], label = labels[q])
-    ax[q][0].axhline(210, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
-    ax[q][0].set_ylim([150,290])
-
-for i, q in zip(read_dictionary[1], range(7)):
-    ax[q][1].plot(range(len(i)), i, alpha = 0.8, c = colours[q])
-    ax[q][1].axhline(0.3, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
-    ax[q][1].set_ylim([-0.1,0.6])
-
-for i, q in zip(read_dictionary[2],  range(7)):
-    ax[q][2].plot(range(len(i)), i,  alpha = 0.8, c = colours[q])
-    ax[q][2].axhline(0.2, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
-    ax[q][2].set_ylim([-0.1,0.6])
-
-
-for i, q in zip(read_dictionary[3],  range(7)):
-    ax[q][3].plot(range(len(i)), i,  alpha = 0.8, c = colours[q])
-    ax[q][3].axhline(0.3, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
-    ax[q][3].set_ylim([-0.1,0.6])
+labs = ['E', 'v', 'sy', 'H']
+data1 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\MH.csv')
+data2 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\AMH.csv')
+data3 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\MH_DR.csv')
+data4 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\DRAM.csv')
+data5 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\EnKF.csv')
+data6 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\Baby.csv')#
 
 
 
+for i in range(4):
+    read_dictionary[i].append(data1[labs[i]])
+    read_dictionary[i].append(data2[labs[i]])
+    read_dictionary[i].append(data3[labs[i]])
+    read_dictionary[i].append(data4[labs[i]])
+    read_dictionary[i].append(data5[labs[i]])
+    read_dictionary[i].append(data6[labs[i]])
+
+read_dictionary = np.load('4D_chains_BEAM.npy',allow_pickle='TRUE').item()
+
+for i in range(2):
+    read_dictionary[i][4] = read_dictionary[i][5]
+    read_dictionary[i][5] = read_dictionary[i][6]
+    read_dictionary[i] = read_dictionary[i][:-1]
+
+
+colours = ['deepskyblue','mediumseagreen','orange','hotpink','mediumvioletred', 'red']
+labels = ['MH', 'AMH', 'DR MH', 'DRAM', 'EnKF', 'Baby']
+fig, ax = plt.subplots(nrows = 2, ncols =6)
+
+for i, q in zip(read_dictionary[0], range(6)):
+    ax[0][q].set_title(labels[q])
+    ax[0][q].plot(range(len(i)), i, alpha = 0.8, c = colours[q])
+    ax[0][q].axhline(true_vals[0], alpha = 0.6, c = 'k', linestyle=(0,(5,5)))
+    ax[0][q].set_ylim([0,20])
+    ax[0][q].set_xticks([]) 
+    if q != 0:
+        ax[0][q].set_yticks([]) 
+
+for i, q in zip(read_dictionary[1], range(6)):
+    ax[1][q].plot(range(len(i)), i, alpha = 0.8, c = colours[q])
+    ax[1][q].axhline(true_vals[1], alpha = 0.6, c = 'k', linestyle=(0,(5,5)))
+    ax[1][q].set_ylim([-1,15])
+    ax[1][q].set_xticks([]) 
+    ax[3][q].set_xticks([2000])
+    if q != 0:
+        ax[1][q].set_yticks([]) 
+
+for i, q in zip(read_dictionary[2],  range(6)):
+    ax[2][q].plot(range(len(i)), i,  alpha = 0.8, c = colours[q])
+    ax[2][q].axhline(true_vals[2], alpha = 0.6, c = 'k', linestyle=(0,(5,5)))
+    ax[2][q].set_ylim([-0.1,0.6])
+    ax[2][q].set_xticks([]) 
+    if q != 0:
+        ax[2][q].set_yticks([]) 
+
+
+for i, q in zip(read_dictionary[3],  range(6)):
+    ax[3][q].plot(range(len(i)), i,  alpha = 0.8, c = colours[q])
+    ax[3][q].axhline(true_vals[3], alpha = 0.6, c = 'k', linestyle=(0,(5,5)))
+    ax[3][q].set_ylim([-0.1,0.6])
+    ax[3][q].set_xticks([2000])
+    if q != 0:
+        ax[3][q].set_yticks([]) 
+
+fig.text(0.50, 0.07, "Number of Samples", horizontalalignment='center',
+        fontsize = 'large')
+ax[3][q].axhline(true_vals[3], alpha = 0.5, c = 'k', linestyle=(0,(5,5)), label= 'True Value')
 #ax[0][0].axhline(10, alpha = 0.8, c = 'k', linestyle='dashed', label = 'True Value')
-ax[0][0].set_title("$E$")
-ax[0][1].set_title("$v$")
-ax[0][2].set_title(r"$\sigma_y$")
-ax[0][3].set_title("$H$")
+ax[0][0].set_ylabel("$E_I$ (GPa)")
+ax[1][0].set_ylabel("$E_M$ (GPa)")
+ax[2][0].set_ylabel(r"$\nu_I$")
+ax[3][0].set_ylabel(r"$\nu_M$")
 
 plt.tight_layout()
-plt.subplots_adjust(bottom = 0.17)
-fig.legend(loc='lower center', ncol = 8, prop={'size': 15})
+plt.subplots_adjust(wspace=0.0, top=0.91, bottom=0.15, left=0.2, right=0.8, hspace = 0.2)
+fig.legend(loc='lower center', ncol = 1)
 
 plt.show()
 # for i, j in zip(read_dictionary[0], read_dictionary[1]):
@@ -51,10 +108,10 @@ plt.show()
 #     print(np.sqrt(np.var(i)), np.sqrt(np.var(j)))
 #     print('-------')
 
-fig, ax = plt.subplots(nrows=4, ncols =1,  sharex= True)
+fig, ax = plt.subplots(nrows=4, ncols =1)
 violin_parts0 = ax[0].violinplot(read_dictionary[0], showmedians=True)
 ax[0].grid()
-ax[0].set(ylabel = '$E$')
+ax[0].set(ylabel = "$E_I$ (GPa)")
 
 
 for pc, color in zip(violin_parts0['bodies'], colours):
@@ -66,17 +123,15 @@ for partname in ('cbars','cmins','cmaxes','cmedians'):
     vp.set_facecolor(colours)
     vp.set_linewidth(2.5)
 
-ax[0].set_xticks([y + 1 for y in range(len(read_dictionary[0]))],
-                  labels=labels)
+ax[0].set_xticks([])
     #ax[0].axvline(10, c = 'k', linestyle='dashed')
-ax[0].axhline(210, alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
+ax[0].axhline(true_vals[0], alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
 violin_parts1 = ax[1].violinplot(read_dictionary[1], showmedians=True)
 ax[1].grid()
-ax[1].set(ylabel = '$v$')
-ax[1].axhline(0.3, alpha = 0.7, c = 'k', linestyle=(0,(5,5)), label = 'True Value')
+ax[1].set(ylabel = "$E_M$ (GPa)")
+ax[1].axhline(true_vals[1], alpha = 0.7, c = 'k', linestyle=(0,(5,5)), label = 'True Value')
 
-ax[1].set_xticks([y + 1 for y in range(len(read_dictionary[0]))],
-                  labels=labels)
+ax[1].set_xticks([])
 
 for pc, color in zip(violin_parts1['bodies'], colours):
     pc.set_facecolor(color)
@@ -89,7 +144,7 @@ for partname in ('cbars','cmins','cmaxes','cmedians'):
 
 violin_parts2 = ax[2].violinplot(read_dictionary[2], showmedians=True)
 ax[2].grid()
-ax[2].set(ylabel = r'$\sigma_y$')
+ax[2].set(ylabel =r"$\nu_I$")
 
 
 for pc, color in zip(violin_parts2['bodies'], colours):
@@ -101,13 +156,12 @@ for partname in ('cbars','cmins','cmaxes','cmedians'):
     vp.set_facecolor(colours)
     vp.set_linewidth(2.5)
 
-ax[2].set_xticks([y + 1 for y in range(len(read_dictionary[0]))],
-                  labels=labels)
-ax[2].axhline(0.2, alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
+ax[2].set_xticks([])
+ax[2].axhline(true_vals[2], alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
 
 violin_parts3 = ax[3].violinplot(read_dictionary[3], showmedians=True)
 ax[3].grid()
-ax[3].set(ylabel = '$H$')
+ax[3].set(ylabel = r"$\nu_M$")
 
 
 for pc, color in zip(violin_parts3['bodies'], colours):
@@ -120,9 +174,8 @@ for partname in ('cbars','cmins','cmaxes','cmedians'):
     vp.set_linewidth(2.5)
 
 ax[3].set_xticks([y + 1 for y in range(len(read_dictionary[0]))],labels=labels)
-ax[3].axhline(0.3, alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
-    
-plt.subplots_adjust(bottom = 0.17)
-fig.legend(loc='lower center', ncols = 4, prop={'size': 15})
-plt.tight_layout()
+ax[3].axhline(true_vals[3], alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
+plt.tight_layout()    
+plt.subplots_adjust(wspace=0.15, top=0.94, bottom=0.11, left=0.2, right=0.8, hspace = 0.1)
+fig.legend(loc='lower center', ncols = 1)
 plt.show()

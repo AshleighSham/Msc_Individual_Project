@@ -9,6 +9,23 @@ from MH_DR import MH_DR_mcmc
 from crank import Crank_mcmc
 from baby import Baby_mcmc
 import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_context('talk')
+
+ # Figure width in inches, approximately A4-width - 2*1.25in margin
+plt.rcParams.update({    # 4:3 aspect ratio
+    'font.size' : 13,                   # Set font size to 11pt
+    'axes.labelsize': 15,               # -> axis labels
+    'legend.fontsize': 15,              # -> legends
+    'font.family': 'charter',
+    'text.usetex': True,
+    'text.latex.preamble': (            # LaTeX preamble
+        r'\usepackage[T1]{fontenc}'
+    ),
+    "font.weight": 'bold',
+    "axes.labelweight": 'bold',
+    'axes.titlesize' : 15
+})
 
 
 inp = {}
@@ -79,8 +96,13 @@ for i in range(len(measurements)//2):
     xx.append(measurements[2*i])
     yy.append(measurements[2*i + 1])
 
-axd.scatter(a, b, label = 'Noisy Data', marker = 'x')
-axd.plot(xx, yy, label = 'True Data')
+axd.scatter(a, b, label = 'Noisy Data', s = 40, linewidth = 1.5, marker = 'x', color = 'black', zorder = 10)
+axd.plot(xx, yy, label = 'True Data', linewidth = 2)
+# axd.legend()
+# plt.grid()
+# plt.xlabel('Displacement (mm)')
+# plt.ylabel('External Force (N)')
+# plt.show()
 
 inp['Method'] = config['Methods']['Choosen Method']
 #inp['theta0'] = np.array([np.random.choice(range(int(inp['range'][0][0]*1e6), int(inp['range'][1][0]*1e6)), 1)/1e6, np.random.choice(range(int(inp['range'][0][1]*1e6), int(inp['range'][1][1]*1e6)), 1)/1e6])

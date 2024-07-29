@@ -79,7 +79,9 @@ for i in range(len(measurements)//2):
 axd.scatter(x, y, label = 'Noisy data', s = 5, color = 'black', marker = 'x')
 axd.plot(xx, yy, label = 'True result')
 
+axd.legend()
 plt.show()
+plt.grid()
 
 inp['Method'] = config['Methods']['Choosen Method']
 #inp['theta0'] = np.array([np.random.choice(range(int(inp['range'][0][0]*1e6), int(inp['range'][1][0]*1e6)), 1)/1e6, np.random.choice(range(int(inp['range'][0][1]*1e6), int(inp['range'][1][1]*1e6)), 1)/1e6])
