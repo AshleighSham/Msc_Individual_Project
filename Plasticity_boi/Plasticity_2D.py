@@ -12,6 +12,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_context('talk')
 
+# increase the precision
+np.set_printoptions(precision=16)
+from decimal import Decimal, getcontext 
+getcontext().prec = 16
+
  # Figure width in inches, approximately A4-width - 2*1.25in margin
 plt.rcParams.update({    # 4:3 aspect ratio
     'font.size' : 13,                   # Set font size to 11pt
@@ -79,8 +84,8 @@ measurements=utilities.forward_model(ini, inp['mesh'])
 
 Noise = np.zeros_like(measurements)
 
-Noise[0::2] = np.random.normal(0, config["Measurement Noise"]*np.var(measurements[0::2]), size = np.shape(measurements[0::2]))
-Noise[1::2] = np.random.normal(0, config["Measurement Noise"]*np.var(measurements[1::2]), size = np.shape(measurements[1::2]))
+Noise[0::2] = np.random.normal(0, config["Measurement Noise"]*np.sqrt(np.var(measurements[0::2])), size = np.shape(measurements[0::2]))
+Noise[1::2] = np.random.normal(0, config["Measurement Noise"]*np.sqrt(np.var(measurements[1::2])), size = np.shape(measurements[1::2]))
 #inp['measurement'] = np.array(config['Measurements'])
 inp['measurement'] = measurements + Noise
 

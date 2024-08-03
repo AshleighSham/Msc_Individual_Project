@@ -19,7 +19,7 @@ class AMH_mcmc():
         self.adpt = inp['adapt']
         self.results ={}
 
-        self.eps = 1e-6
+        self.eps = 1e-10
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
         self.Kp = 0.05
@@ -100,8 +100,8 @@ class AMH_mcmc():
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-            lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
-            if np.random.uniform(0,1) < lam:
+            lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
+            if np.log(np.random.uniform(0,1)) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi

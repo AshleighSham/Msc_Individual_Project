@@ -80,8 +80,8 @@ class EnKF_mcmc():
             #XX = utilities.forward_model(self.thetaj, self.mesh)
             Noise = np.zeros_like(self.observations)
 
-            Noise[0::2] = np.random.normal(0, self.m0*np.var(self.observations[0::2]), size = np.shape(self.observations[0::2]))
-            Noise[1::2] = np.random.normal(0, self.m0*np.var(self.observations[1::2]), size = np.shape(self.observations[1::2]))
+            Noise[0::2] = np.random.normal(0, self.m0*np.sqrt(np.var(self.observations[0::2])), size = np.shape(self.observations[0::2]))
+            Noise[1::2] = np.random.normal(0, self.m0*np.sqrt(np.var(self.observations[1::2])), size = np.shape(self.observations[1::2]))
             
             dt = KK @ (self.observations + Noise - self.oldvalue)
 

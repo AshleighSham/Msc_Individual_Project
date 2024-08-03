@@ -35,18 +35,25 @@ data6 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity
 
 for i in range(4):
     read_dictionary[i].append(data1[labs[i]])
+    print(labs[i], 'MH', np.median(data1[labs[i]][500:]), 2*np.sqrt(np.var(data1[labs[i]][500:])))    
     read_dictionary[i].append(data2[labs[i]])
+    print(labs[i], 'AMH', np.median(data2[labs[i]][500:]), 2*np.sqrt(np.var(data2[labs[i]][500:])))
     read_dictionary[i].append(data3[labs[i]])
+    print(labs[i], 'MH_DR', np.median(data3[labs[i]][500:]), 2*np.sqrt(np.var(data3[labs[i]][500:])))
     read_dictionary[i].append(data4[labs[i]])
+    print(labs[i], 'DRAM', np.median(data4[labs[i]][500:]), 2*np.sqrt(np.var(data4[labs[i]][500:])))
     read_dictionary[i].append(data5[labs[i]])
+    print(labs[i], 'eNkf', np.median(data5[labs[i]][500:]), 2*np.sqrt(np.var(data5[labs[i]][500:])))
     read_dictionary[i].append(data6[labs[i]])
+    print(labs[i], 'BAB', np.median(data6[labs[i]][500:]), 2*np.sqrt(np.var(data6[labs[i]][500:])))
 
-read_dictionary = np.load('4D_chains_BEAM.npy',allow_pickle='TRUE').item()
 
-for i in range(2):
-    read_dictionary[i][4] = read_dictionary[i][5]
-    read_dictionary[i][5] = read_dictionary[i][6]
-    read_dictionary[i] = read_dictionary[i][:-1]
+# read_dictionary = np.load('4D_chains_BEAM.npy',allow_pickle='TRUE').item()
+
+# for i in range(2):
+#     read_dictionary[i][4] = read_dictionary[i][5]
+#     read_dictionary[i][5] = read_dictionary[i][6]
+#     read_dictionary[i] = read_dictionary[i][:-1]
 
 
 colours = ['deepskyblue','mediumseagreen','orange','hotpink','mediumvioletred', 'red']

@@ -30,15 +30,15 @@
 
   "Standard Deviation": 0.05,
 
-  "Number of samples": 2000,
+  "Number of samples": 3000,
 
-  "Starting Kalman point": 1000,
+  "Starting Kalman point": 200,
 
-  "Measurement error for Kalman": 0.005,
+  "Measurement error for Kalman": 0.03,
 
-  "Measurement Noise": 0.01,
+  "Measurement Noise": 0.025,
 
-  "Adaption Step Size": 500,
+  "Adaption Step Size": 100,
 
   "Mesh grid": {
     "sf": 1,
@@ -101,7 +101,7 @@
     "Crank": 4,
     "Ensemble Kalman Filter": 5,
     "Baby": 6,
-    "Choosen Method": 6
+    "Choosen Method": 5
   },
   "Print Chain": 0,
 

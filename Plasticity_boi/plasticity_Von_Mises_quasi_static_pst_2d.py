@@ -793,14 +793,15 @@ def forward_model(params, mesh):
 
     line = []
     for i in range(len(disp_I_strg)):
-        line.append([100*disp_I_strg[i]])
-        line.append([100*force_ext_I_strg[i]])
+        line.append([1000*disp_I_strg[i]])
+        line.append([1000*force_ext_I_strg[i]])
 
     # normalised graph
     # for i in range(len(epsilon_xx)):
     #     line.append([100*epsilon_xx[i]])
     #     line.append([100*sigma_xx[i]])
     
+    #return disp_I_tp1
     return np.array(line)
 # ************************************* plots ****************************************************
 # plots

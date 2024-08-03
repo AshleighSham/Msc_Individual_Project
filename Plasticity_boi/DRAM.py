@@ -58,7 +58,7 @@ class DRAM_algorithm():
 
         df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\DRAM.csv', mode='w', index=True)
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\EnKF.csv', mode='w', index=True)
 
     def save_data(self, j):
         data = {}
@@ -77,7 +77,7 @@ class DRAM_algorithm():
 
         df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\DRAM.csv', mode='a', index=True, header = False)
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\EnKF.csv', mode='a', index=True, header = False)
 
 
     def update_cov(self, w, ind):
@@ -111,8 +111,8 @@ class DRAM_algorithm():
             thetas = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
             thetas = utilities.check_bounds(thetas, self.range)
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
-            lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
-            if np.random.uniform(0,1) < lam:
+            lam = min(0, (-0.5*(newpi - self.oldpi)/self.sigma))
+            if np.log(np.random.uniform(0,1)) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi
