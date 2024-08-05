@@ -11,6 +11,7 @@ from mesh import Mesh
 from crank import Crank_mcmc
 from baby import Baby_mcmc
 import seaborn as sns
+import time
 sns.set_context('talk')
 import matplotlib.pyplot as plt
 
@@ -96,10 +97,12 @@ for i in range(config['Number of Materials']):
     print('True Poissons Ratio %.0f: %.3f' % (i, config['True Material Parameters']['Poissons Ratio'][i]))
 print('Standard Deviation of Noise on Measurement Data: %.10f' %(config['Measurement Noise']*config['Mesh grid']['sf']))
 print()
+st = time.perf_counter()
 if inp['Method'] == 0:
     # The Metropolis-Hastings technique
     C = MH_mcmc(inp)
     results = C.MH_go()
+    print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
@@ -111,6 +114,7 @@ elif inp['Method'] == 1:
     # The AMH algorithm 
     A = AMH_mcmc(inp)
     results = A.AMH_go()
+    print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
@@ -122,6 +126,7 @@ elif inp['Method'] == 2:
     # The MH DR algorithm 
     A = MH_DR_mcmc(inp)
     results = A.MH_DR_go()
+    print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     #utilities.histogram(results['MCMC'],['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
@@ -133,6 +138,7 @@ elif inp['Method'] == 3:
     # The DRAM algorithm 
     A = DRAM_algorithm(inp)
     results = A.DRAM_go()
+    print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
@@ -144,6 +150,7 @@ elif inp['Method'] == 4:
     #The EnKF algorithm 
     B = Crank_mcmc(inp)
     results = B.Crank_go()
+    print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
@@ -155,6 +162,7 @@ elif inp['Method'] == 5:
     #The EnKF algorithm 
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()
+    print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
@@ -166,6 +174,7 @@ elif inp['Method'] == 6:
     #The Baby algorithm 
     B = Baby_mcmc(inp)
     results = B.Baby_go()
+    print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])

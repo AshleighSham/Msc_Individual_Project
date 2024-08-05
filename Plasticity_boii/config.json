@@ -3,29 +3,25 @@
   "Initial Material Parameters": {
     "Youngs Modulus": 150,
     "Poissons Ratio": 0.2,
-    "Yield Stress": 0.15,
-    "Hardening Modulus": 0.15
+    "Yield Stress": 0.15
   },
 
   "True Material Parameters": {
     "Youngs Modulus": 206.9,
     "Poissons Ratio": 0.29,
-    "Yield Stress": 0.45,
-    "Hardening Modulus": 0.2
+    "Yield Stress": 0.45
   },
 
   "Imposed Limits": {
     "Youngs Modulus": [5, 600],
     "Poissons Ratio": [1e-3, 0.4999],
-    "Yield Stress": [0.05, 0.6],
-    "Hardening Modulus": [0.05, 0.6]
+    "Yield Stress": [0.05, 0.6]
   },
 
   "Initial Variance": {
     "Youngs Modulus": 10,
     "Poissons Ratio": 0.001,
-    "Yield Stress": 0.001,
-    "Hardening Modulus": 0.001
+    "Yield Stress": 0.001
   },
 
   "Standard Deviation": 0.05,
@@ -101,7 +97,7 @@
     "Crank": 4,
     "Ensemble Kalman Filter": 5,
     "Baby": 6,
-    "Choosen Method": 5
+    "Choosen Method": 0
   },
   "Print Chain": 0,
 

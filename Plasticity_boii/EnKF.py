@@ -32,7 +32,6 @@ class EnKF_mcmc():
         print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
         print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
         print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
-        print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[3]), np.sqrt(np.var(self.X[3]))))
         print()
         self.Y = np.squeeze(self.results['values']).T #nsamples x nel
         self.thetaj = self.X[:, self.K0 - 2].reshape(-1,1)
@@ -46,7 +45,6 @@ class EnKF_mcmc():
         data['E'] = self.thetaj[0]
         data['v'] = self.thetaj[1]
         data['sy'] = self.thetaj[2]
-        data['H'] = self.thetaj[3]
         
         for i in range(len(self.oldvalue)):
             data[i] = self.oldvalue[i]
@@ -56,7 +54,7 @@ class EnKF_mcmc():
 
         df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\EnKF.csv', mode='a', index=True, header = False)
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\EnKF.csv', mode='a', index=True, header = False)
 
     def Kalman_gain(self, j):
         a = self.m0*np.sqrt(np.var(self.observations[0::2]))
@@ -120,7 +118,6 @@ class EnKF_mcmc():
                 print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
                 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
                 print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
-                print('The median of the Hardening Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[3]), np.sqrt(np.var(self.X[3]))))
                 print()
 
             self.save_data(j)
