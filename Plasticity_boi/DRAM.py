@@ -52,10 +52,6 @@ class DRAM_algorithm():
         for i in range(len(self.oldvalue)):
             data[i] = self.oldvalue[i]
 
-        # dumy = self.Rj.reshape(self.dim**2)
-        # for i in range(self.dim**2):
-        #     data[f'var{i}'] = [dumy[i]]
-
         df = pd.DataFrame(data)
 
         df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\EnKF.csv', mode='w', index=True)
@@ -70,10 +66,6 @@ class DRAM_algorithm():
         
         for i in range(len(self.oldvalue)):
             data[i] = self.oldvalue[i]
-
-        # dumy = self.Rj.reshape(self.dim**2)
-        # for i in range(self.dim**2):
-        #     data[f'var{i}'] = [dumy[i]]
 
         df = pd.DataFrame(data)
 

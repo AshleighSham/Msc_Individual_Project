@@ -1,9 +1,7 @@
 import numpy as np
 from DRAM import DRAM_algorithm
-from crank import Crank_mcmc
 import utilities as utilities
 import pandas as pd
-import time
 
 class EnKF_mcmc():
     def __init__(self, inp):
@@ -18,15 +16,12 @@ class EnKF_mcmc():
         self.m0 = inp['me']
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
-        self.mav = np.mean(abs(self.observations - np.mean(self.observations)))
 
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
         inp['nsamples'] = self.nsamples
         A = DRAM_algorithm(inp)
         self.results = A.DRAM_go()
-
-        print('Starting EnKF...')
 
         self.X = self.results['MCMC'] #1 x nsamples
         self.Y = np.squeeze(self.results['values']).T #nsamples x nel
@@ -36,15 +31,14 @@ class EnKF_mcmc():
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
     def Kalman_gain(self, j):
-        Y = self.Y
-        ss2 = self.m0*np.ones([np.size(self.observations, 0)])
+        ss2 = self.m0**2*np.ones([np.size(self.observations, 0)])
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
         mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1)#nel, j-1
 
-        Ctm = (self.X - mX)@(Y - mY).T/(j-2)
-        Cmm = (Y - mY)@(Y - mY).T/(j-2)
+        Ctm = (self.X - mX)@(self.Y - mY).T/(j-2)
+        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
@@ -69,22 +63,20 @@ class EnKF_mcmc():
     #     df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Elasticity_2D\EnKF.csv', mode='a', index=False, header = False)
 
     def EnKF_go(self):
-        st = time.perf_counter()
         j = self.K0
         while j < self.s:
             KK = self.Kalman_gain(j)
             
-            #XX = utilities.forward_model(self.thetaj, self.mesh)
-            dt = KK @ (self.observations + np.random.normal(size = np.shape(self.observations))*self.m0 - self.oldvalue)
+            dt = KK @ (self.observations + np.random.normal(0, self.m0, size = np.shape(self.observations)) - self.oldvalue)
             thetas = self.thetaj + dt
 
             thetas = utilities.check_bounds(thetas, self.range)
 
             newpi, newvalue = utilities.ESS(self.observations, thetas, self.mesh)
 
-            lam = min(1, np.exp(-0.5*(newpi - self.oldpi)/self.sigma))
+            lam = min(0, -0.5*(newpi - self.oldpi)/self.sigma)
 
-            if np.random.uniform(0, 1) < lam:
+            if np.log(np.random.uniform(0, 1)) < lam:
                 self.accepted += 1
                 self.thetaj = thetas
                 self.oldpi = newpi
@@ -102,15 +94,6 @@ class EnKF_mcmc():
 
             self.X = tempX
             self.Y = tempY
-
-            if j % 100 == 0:
-                print(f'{j} samples completed')
-                print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
-                print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
-                print()
-
-            if j == self.K0 + 100:
-                print(f'time: {time.perf_counter() - st}')
 
             j += 1
         

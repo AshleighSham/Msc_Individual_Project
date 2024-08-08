@@ -59,8 +59,8 @@ class EnKF_mcmc():
         df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\EnKF.csv', mode='a', index=True, header = False)
 
     def Kalman_gain(self, j):
-        a = self.m0*np.sqrt(np.var(self.observations[0::2]))
-        b = self.m0*np.sqrt(np.var(self.observations[1::2]))
+        a = self.m0**2*np.var(self.observations[0::2])
+        b = self.m0**2*np.var(self.observations[1::2])
         ss2 = np.ones([np.size(self.observations, 0)])
         
         ss2[0::2] = a
@@ -82,7 +82,6 @@ class EnKF_mcmc():
         while j < self.s:
             KK = self.Kalman_gain(j)
             
-            #XX = utilities.forward_model(self.thetaj, self.mesh)
             Noise = np.zeros_like(self.observations)
 
             Noise[0::2] = np.random.normal(0, self.m0*np.sqrt(np.var(self.observations[0::2])), size = np.shape(self.observations[0::2]))

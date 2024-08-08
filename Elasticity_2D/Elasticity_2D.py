@@ -62,7 +62,7 @@ inp['mesh'] = [config['Mesh grid']['quad'],
 ini = [config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio']]
 
 measurements=utilities.forward_model(np.array([[config['True Material Parameters']['Youngs Modulus']],[config['True Material Parameters']['Poissons Ratio']]]), inp['mesh'])
-measurements1 = measurements + np.random.normal(0, config['Measurement Noise']*config['Mesh grid']['sf']*1000, size = [np.size(measurements, 0), np.size(measurements, 1)])
+measurements1 = measurements + np.random.normal(0, config['Measurement Noise'], size = [np.size(measurements, 0), np.size(measurements, 1)])
 inp['measurement'] = measurements1
 
 figd, axd = plt.subplots()
@@ -70,7 +70,7 @@ figd, axd = plt.subplots()
 axd.scatter(range(len(measurements)),measurements, s =10)
 axd.scatter(range(len(measurements1)), measurements1, s= 10)
 
-# plt.show()
+plt.show()
 
 
 lines = []
@@ -89,7 +89,7 @@ print()
 print()
 print('True Youngs Modulus: %.3f' % config['True Material Parameters']['Youngs Modulus'])
 print('True Poissons Ratio: %.3f' % config['True Material Parameters']['Poissons Ratio'])
-print('Standard Deviation of Noise on Measurement Data: %f' %(config['Measurement Noise']*config['Mesh grid']['sf']*1000))
+print('Standard Deviation of Noise on Measurement Data: %f' %(config['Measurement Noise']))
 print()
 st = time.perf_counter()
 if inp['Method'] == 0:
@@ -99,8 +99,8 @@ if inp['Method'] == 0:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(2, 1)
-    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    #fig5, ax5 = plt.subplots(2, 1)
+    #utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Metropolis Hastings')
     print('----------------------------------------------')
@@ -112,8 +112,8 @@ elif inp['Method'] == 1:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(2, 1)
-    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    #fig5, ax5 = plt.subplots(2, 1)
+    #utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Adaptive Metropolis Hastings')
     print('----------------------------------------------')
@@ -125,8 +125,8 @@ elif inp['Method'] == 2:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(2, 1)
-    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    #fig5, ax5 = plt.subplots(2, 1)
+    #utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Metropolis Hastings Delayed Rejection')
     print('----------------------------------------------')
@@ -138,8 +138,8 @@ elif inp['Method'] == 3:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(2, 1)
-    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    #fig5, ax5 = plt.subplots(2, 1)
+    #utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Delayed Rejection Adaptive Metropolis Hastings')
     print('----------------------------------------------')
@@ -151,8 +151,8 @@ elif inp['Method'] == 4:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(2, 1)
-    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    #fig5, ax5 = plt.subplots(2, 1)
+    #utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Preconditioned Crank-Nicolson')
     print('----------------------------------------------')
@@ -164,8 +164,8 @@ elif inp['Method'] == 5:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(2, 1)
-    utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
+    #fig5, ax5 = plt.subplots(2, 1)
+    #utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Ensemble Kalman Filter')
     print('----------------------------------------------')
@@ -177,7 +177,7 @@ elif inp['Method'] == 6:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    fig5, ax5 = plt.subplots(2, 1)
+    #fig5, ax5 = plt.subplots(2, 1)
     #utilities.histogram(results['MCMC'], 100, ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'], fig5, ax5)
     print('----------------------------------------------')
     print('Baby')

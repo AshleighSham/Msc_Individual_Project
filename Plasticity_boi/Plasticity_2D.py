@@ -223,11 +223,13 @@ print()
 
 outi =np.array([[np.median(results['MCMC'][0])], [np.median(results['MCMC'][1])], [np.median(results['MCMC'][2])], [np.median(results['MCMC'][3])]])
 
-measurements=utilities.forward_model(outi, inp['mesh'])
+measurements2=utilities.forward_model(outi, inp['mesh'])
 X,Y = [], []
-for i in range(len(measurements)//2):
-    X.append(measurements[2*i])
-    Y.append(measurements[2*i + 1])
+for i in range(len(measurements2)//2):
+    X.append(measurements2[2*i])
+    Y.append(measurements2[2*i + 1])
+print(f'RMSE: {np.linalg.norm(measurements2/1000 - measurements/1000)/len(measurements)}')
+
 axd.plot(X, Y, label = 'MCMC result')
 axd.legend()
 

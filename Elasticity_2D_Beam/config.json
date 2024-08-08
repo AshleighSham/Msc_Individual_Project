@@ -1,0 +1,150 @@
+{
+  "s": 0.05,
+  "Number of Materials": 2,
+  "Freeze time": 50,
+  "Freeze delay": 200,
+  "Freeze loops": 3,
+
+  "Initial Material Parameters": {
+    "Youngs Modulus": [5, 5],
+    "Poissons Ratio": [0.2, 0.2]
+  },
+
+  "True Material Parameters": {
+    "Youngs Modulus": [10, 1],
+    "Poissons Ratio": [0.3, 0.3]
+  },
+
+  "Imposed Limits": {
+    "Youngs Modulus": [
+      [1e-6, 30],
+      [1e-6, 30]
+    ],
+    "Poissons Ratio": [
+      [1e-3, 0.5],
+      [1e-3, 0.5]
+    ]
+  },
+
+  "Initial Variance": {
+    "Youngs Modulus": 1,
+    "Poissons Ratio": 1e-3
+  },
+
+  "Standard Deviation": 0.05,
+
+  "Number of samples": 3000,
+
+  "Starting Kalman point": 200,
+
+  "Measurement error for Kalman": 0.07,
+
+  "Measurement Noise": 0.05,
+
+  "Adaption Step Size": 500,
+
+  "Mesh grid": {
+    "sf": 0.02,
+    "thickness": 0.1,
+    "quad": [7, 31],
+    "Nodal Coordinates": [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [3, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [0, 2],
+      [1, 2],
+      [2, 2],
+      [3, 2],
+      [0, 3],
+      [1, 3],
+      [2, 3],
+      [3, 3]
+    ],
+    "Element Node Numbers": [
+      [0, 1, 5, 4],
+      [1, 2, 6, 5],
+      [2, 3, 7, 6],
+      [4, 5, 9, 8],
+      [5, 6, 10, 9],
+      [6, 7, 11, 10],
+      [8, 9, 13, 12],
+      [9, 10, 14, 13],
+      [10, 11, 15, 14]
+    ],
+    "Number of elements": 9,
+    "Element ID": [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+      0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,
+      0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+      0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ],
+
+    "Force Magnitude": 3e-6,
+    "Force Nodes": [30, 61, 92, 123, 154, 185, 216],
+    "Fixed Nodes": [0, 31, 62, 93, 124, 155, 186]
+  },
+  "Mesh grid1": {
+    "sf": 0.02,
+    "thickness": 0.1,
+    "quad": [4, 4],
+    "Nodal Coordinates": [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [3, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [0, 2],
+      [1, 2],
+      [2, 2],
+      [3, 2],
+      [0, 3],
+      [1, 3],
+      [2, 3],
+      [3, 3]
+    ],
+    "Element Node Numbers": [
+      [0, 1, 5, 4],
+      [1, 2, 6, 5],
+      [2, 3, 7, 6],
+      [4, 5, 9, 8],
+      [5, 6, 10, 9],
+      [6, 7, 11, 10],
+      [8, 9, 13, 12],
+      [9, 10, 14, 13],
+      [10, 11, 15, 14]
+    ],
+    "Number of elements": 9,
+    "Element ID": [0, 0, 0, 0, 1, 0, 0, 0, 0],
+
+    "Force Magnitude": 15e-4,
+    "Force Nodes": [3, 7, 11, 15],
+    "Fixed Nodes": [0, 4, 8, 12]
+  },
+
+  "Methods": {
+    "Metropolis Hastings": 0,
+    "Adaptive Metropolis Hastings": 1,
+    "Metropolis Hastings Delyayed Rejection": 2,
+    "Delayed Rejection Adaptive Metropolis Hastings": 3,
+    "Crank": 4,
+    "Ensemble Kalman Filter": 5,
+    "Baby": 6,
+    "Choosen Method": 5
+  },
+  "Print Chain": 0
+}

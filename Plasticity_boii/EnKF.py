@@ -57,8 +57,8 @@ class EnKF_mcmc():
         df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\EnKF.csv', mode='a', index=True, header = False)
 
     def Kalman_gain(self, j):
-        a = self.m0*np.sqrt(np.var(self.observations[0::2]))
-        b = self.m0*np.sqrt(np.var(self.observations[1::2]))
+        a = self.m0**2*np.var(self.observations[0::2])
+        b = self.m0**2*np.var(self.observations[1::2])
         ss2 = np.ones([np.size(self.observations, 0)])
         
         ss2[0::2] = a

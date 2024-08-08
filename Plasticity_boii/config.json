@@ -32,9 +32,9 @@
 
   "Measurement error for Kalman": 0.01,
 
-  "Measurement Noise": 0.025,
+  "Measurement Noise": 0.02,
 
-  "Adaption Step Size": 100,
+  "Adaption Step Size": 500,
 
   "Mesh grid": {
     "sf": 1,

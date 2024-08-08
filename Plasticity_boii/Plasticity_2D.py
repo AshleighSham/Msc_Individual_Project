@@ -94,21 +94,21 @@ inp['measurement'] = measurements + Noise
 figd, axd = plt.subplots()
 a,b = [], []
 for i in range(len(inp['measurement'])//2):
-    a.append(inp['measurement'][2*i])
-    b.append(inp['measurement'][2*i + 1])
+    a.append(inp['measurement'][2*i]/1000)
+    b.append(inp['measurement'][2*i + 1]/1000)
 
 xx,yy = [], []
 for i in range(len(measurements)//2):
-    xx.append(measurements[2*i])
-    yy.append(measurements[2*i + 1])
+    xx.append(measurements[2*i]/1000)
+    yy.append(measurements[2*i + 1]/1000)
 
 axd.scatter(a, b, label = 'Noisy Data', s = 40, linewidth = 1.5, marker = 'x', color = 'black', zorder = 10)
 axd.plot(xx, yy, label = 'True Data', linewidth = 2)
-# axd.legend()
-# plt.grid()
-# plt.xlabel('Displacement (mm)')
-# plt.ylabel('External Force (N)')
-# plt.show()
+axd.legend()
+plt.grid()
+plt.xlabel('Displacement (mm)')
+plt.ylabel('External Force (N)')
+plt.show()
 
 inp['Method'] = config['Methods']['Choosen Method']
 #inp['theta0'] = np.array([np.random.choice(range(int(inp['range'][0][0]*1e6), int(inp['range'][1][0]*1e6)), 1)/1e6, np.random.choice(range(int(inp['range'][0][1]*1e6), int(inp['range'][1][1]*1e6)), 1)/1e6])
@@ -221,11 +221,13 @@ print()
 
 outi =np.array([[np.median(results['MCMC'][0])], [np.median(results['MCMC'][1])], [np.median(results['MCMC'][2])]])
 
-measurements=utilities.forward_model(outi, inp['mesh'])
+measurements2=utilities.forward_model(outi, inp['mesh'])
+print(f'RMSE: {np.linalg.norm(measurements2 - measurements)/len(measurements)}')
+
 X,Y = [], []
-for i in range(len(measurements)//2):
-    X.append(measurements[2*i])
-    Y.append(measurements[2*i + 1])
+for i in range(len(measurements2)//2):
+    X.append(measurements2[2*i])
+    Y.append(measurements2[2*i + 1])
 axd.plot(X, Y, label = 'MCMC result')
 axd.legend()
 
