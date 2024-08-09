@@ -106,9 +106,9 @@ axd.scatter(a, b, label = 'Noisy Data', s = 40, linewidth = 1.5, marker = 'x', c
 axd.plot(xx, yy, label = 'True Data', linewidth = 2)
 axd.legend()
 plt.grid()
-plt.xlabel('Displacement (mm)')
-plt.ylabel('External Force (N)')
-plt.show()
+# plt.xlabel('Displacement (mm)')
+# plt.ylabel('External Force (N)')
+# plt.show()
 
 inp['Method'] = config['Methods']['Choosen Method']
 #inp['theta0'] = np.array([np.random.choice(range(int(inp['range'][0][0]*1e6), int(inp['range'][1][0]*1e6)), 1)/1e6, np.random.choice(range(int(inp['range'][0][1]*1e6), int(inp['range'][1][1]*1e6)), 1)/1e6])
@@ -222,7 +222,7 @@ print()
 outi =np.array([[np.median(results['MCMC'][0])], [np.median(results['MCMC'][1])], [np.median(results['MCMC'][2])]])
 
 measurements2=utilities.forward_model(outi, inp['mesh'])
-print(f'RMSE: {np.linalg.norm(measurements2 - measurements)/len(measurements)}')
+print(f'RMSE: {np.linalg.norm(measurements2/1000 - measurements/1000)/len(measurements)}')
 
 X,Y = [], []
 for i in range(len(measurements2)//2):

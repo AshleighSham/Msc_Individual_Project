@@ -23,38 +23,38 @@ colours = ['deepskyblue','mediumseagreen','orange','hotpink','mediumvioletred']
 labels = ['MH', 'AMH', 'DR MH', 'DRAM','EnKF']
 fig, ax = plt.subplots(nrows = 5, ncols =4, sharex= 'col')
 
-# for i, q in zip(E, range(5)):
-#     ax[q][0].plot(range(len(i)), i, alpha = 0.8, c = colours[q], label = labels[q])
-#     ax[q][0].axhline(206.9, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
-#     ax[q][0].set_ylim([10,240])
+for i, q in zip(E, range(5)):
+    ax[q][0].plot(range(len(i)), i, alpha = 0.8, c = colours[q], label = labels[q])
+    ax[q][0].axhline(206.9, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
+    ax[q][0].set_ylim([10,240])
 
-# for i, q in zip(V, range(5)):
-#     ax[q][1].plot(range(len(i)), i, alpha = 0.8, c = colours[q])
-#     ax[q][1].axhline(0.29, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
-#     ax[q][1].set_ylim([-0.1,0.6])
+for i, q in zip(V, range(5)):
+    ax[q][1].plot(range(len(i)), i, alpha = 0.8, c = colours[q])
+    ax[q][1].axhline(0.29, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
+    ax[q][1].set_ylim([-0.1,0.6])
 
-# for i, q in zip(sy,  range(5)):
-#     ax[q][2].plot(range(len(i)), i,  alpha = 0.8, c = colours[q])
-#     ax[q][2].axhline(0.45, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
-#     ax[q][2].set_ylim([-0.1,0.6])
+for i, q in zip(sy,  range(5)):
+    ax[q][2].plot(range(len(i)), i,  alpha = 0.8, c = colours[q])
+    ax[q][2].axhline(0.45, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
+    ax[q][2].set_ylim([-0.1,0.6])
 
 
-# for i, q in zip(H,  range(5)):
-#     ax[q][3].plot(range(len(i)), i,  alpha = 0.8, c = colours[q])
-#     ax[q][3].axhline(0.20, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
-#     ax[q][3].set_ylim([-0.1,0.6])
+for i, q in zip(H,  range(5)):
+    ax[q][3].plot(range(len(i)), i,  alpha = 0.8, c = colours[q])
+    ax[q][3].axhline(0.20, alpha = 0.8, c = 'k', linestyle=(0,(5,5)))
+    ax[q][3].set_ylim([-0.1,0.6])
 
-# ax[0][0].axhline(206.9, alpha = 0.8, c = 'k', linestyle='dashed', label = 'True Value')
-# ax[0][0].set_title("$E$ (GPa)")
-# ax[0][1].set_title("$v$")
-# ax[0][2].set_title("$\sigma_y$ (GPa)")
-# ax[0][3].set_title("$H$ (GPa)")
+ax[0][0].axhline(206.9, alpha = 0.8, c = 'k', linestyle='dashed', label = 'True Value')
+ax[0][0].set_title("$E$ (GPa)")
+ax[0][1].set_title("$v$")
+ax[0][2].set_title("$\sigma_y$ (GPa)")
+ax[0][3].set_title("$H$ (GPa)")
 
-# plt.tight_layout()
-# plt.subplots_adjust(bottom = 0.17)
-# fig.legend(loc='lower center', ncol = 8, prop={'size': 15})
+plt.tight_layout()
+plt.subplots_adjust(bottom = 0.17)
+fig.legend(loc='lower center', ncol = 8, prop={'size': 15})
 
-# plt.show()
+plt.show()
 # for i, j in zip(read_dictionary[0], read_dictionary[1]):
 #     print('------')
 #     print(np.median(i), np.median(j))
