@@ -18,8 +18,8 @@ plt.subplots_adjust(bottom = 0.1)
 
 inp = {}
 
-# data = np.load('RVE_EnKF2D.npy', allow_pickle=True)
-# data = data.tolist()
+data = np.load('2D_chains.npy', allow_pickle=True)
+data = data.tolist()
 
 # range of the parameters based on the prior density
 inp['range']=np.array([[config['Imposed limits']['Youngs Modulus'][0], config['Imposed limits']['Poissons Ratio'][0]], 
@@ -220,10 +220,7 @@ plt.show()
 # for i in range(2):
 #     data['Initial'][i].append(inp['theta0'][i][0])
 
-# data['Median'][0].append(np.median(results['MCMC'][0]))
-# data['Median'][1].append(np.median(results['MCMC'][1]))
+data[0][-1] = results['MCMC'][0]
+data[1][-1] = results['MCMC'][1]
 
-# data['Uncertainty'][0].append(np.sqrt(np.var(results['MCMC'][0])))
-# data['Uncertainty'][1].append(np.sqrt(np.var(results['MCMC'][1])))
-
-# np.save('RVE_Baby2D.npy', data, allow_pickle=True) 
+np.save('2D_chains.npy', data, allow_pickle=True) 

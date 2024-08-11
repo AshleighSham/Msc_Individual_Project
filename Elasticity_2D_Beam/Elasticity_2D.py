@@ -74,10 +74,10 @@ inp['measurement'] = measurements1
 
 figd, axd = plt.subplots()
 
-axd.scatter(range(len(measurements)),measurements, s =10)
-axd.scatter(range(len(measurements1)), measurements1, s= 10)
+axd.scatter(range(len(measurements)),measurements/1000, s =10)
+axd.scatter(range(len(measurements1)), measurements1/1000, s= 10)
 
-plt.show()
+#plt.show()
  
 lines = []
 my_mesh = Mesh(inp['mesh'])
@@ -86,9 +86,10 @@ fig11, axl1 = plt.subplots()
 plt.subplots_adjust(bottom = 0.05)
 
 true_displacement = my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])
-my_mesh.deformation_plot(label = 'a', colour= 'black', ch = 1, ax = axl1, lines = lines, ls = 'solid', non=False)
+my_mesh.deformation_plot(label = 'a', colour= 'black', ch = 1, ax = axl1, lines = lines, ls = 'solid',  D = measurements/1000, non=False)
 my_mesh.deformation_plot(label = f'Noisy Deformation', colour= 'palevioletred', ch = 0.95, ax = axl1, lines = lines, ls = (0,(5,5)), D = measurements1/1000, non=False)
 
+#plt.show()
 # fig2, ax2 = plt.subplots(2, 1)
 # my_mesh.contour_plot('True', fig2, ax2)
 
@@ -100,8 +101,8 @@ inp['Method'] = config['Methods']['Choosen Method']
 print()
 print()
 for i in range(config['Number of Materials']):
-    print('True Youngs Modulus %.0f: %.3f' % (i, config['True Material Parameters']['Youngs Modulus'][i]))
-    print('True Poissons Ratio %.0f: %.3f' % (i, config['True Material Parameters']['Poissons Ratio'][i]))
+    print('True Youngs Modulus %.0f: %.3f' % (i+1, config['True Material Parameters']['Youngs Modulus'][i]))
+    print('True Poissons Ratio %.0f: %.3f' % (i+1, config['True Material Parameters']['Poissons Ratio'][i]))
 print('Standard Deviation of Noise on Measurement Data: %.10f' %(config['Measurement Noise']*config['Mesh grid']['sf']))
 print()
 st = time.perf_counter()
