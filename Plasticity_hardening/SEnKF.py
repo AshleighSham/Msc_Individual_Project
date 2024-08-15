@@ -1,9 +1,13 @@
 import numpy as np
 from DRAM import DRAM_algorithm
+from MH import MH_mcmc
+from MH_DR import MH_DR_mcmc
+from crank import Crank_mcmc
 import utilities as utilities
+import scipy as sp
 import pandas as pd
 
-class EnKF_mcmc():
+class S_EnKF_mcmc():
     def __init__(self, inp):
 
         self.range = inp['range']
@@ -16,6 +20,11 @@ class EnKF_mcmc():
         self.mesh = inp['mesh']
         self.m0 = inp['me']
         self.adpt = inp['adapt']
+
+        self.Rj = sp.linalg.cholesky(self.initial_cov)
+        self.dim = np.size(self.range, 1)
+        self.eps = 1e-10
+        self.Kp = 0.05
 
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
@@ -36,28 +45,76 @@ class EnKF_mcmc():
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj, self.mesh)
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
-    def Kalman_gain(self, j):
+        self.MCMC_cov = np.zeros_like(self.initial_cov)
+        self.MCMC_mean = np.zeros_like(self.initial_theta)
+        self.ss = np.array([1])
+        self.ii = 0
 
+    def save_data(self, j):
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\sEnKF.csv', mode='a', index=True, header = False)
+
+
+    def update_cov(self, w, ind):
+        x = self.X.T[self.ii+1:ind] #
+        n = np.size(x, 0) #num of rows
+        p = np.size(x, 1) #num of cols
+
+        if int(w) == w:
+            w *= np.ones(n)
+
+        i = 0
+        while i < n:
+            xi = np.array([x[i]])
+            wsum = np.array([w[i]])
+            xmeann = xi.reshape(-1,1)
+
+            xmean = self.MCMC_mean + np.divide(wsum,(wsum + self.ss))*(xmeann - self.MCMC_mean)
+            
+            a = np.divide(wsum,(wsum + self.ss-np.array([1])))
+            b = np.multiply(np.divide(self.ss,(wsum + self.ss)),(xi-self.MCMC_mean).T)
+            xcov = (((self.ss-1)*((wsum + self.ss - 1)**(-1)))*self.MCMC_cov + (wsum*self.ss*((wsum+ self.ss-1)**(-1))) * ((wsum + self.ss)**(-1)) * (np.dot((xmeann-self.MCMC_mean).reshape(p, 1), (xmeann-self.MCMC_mean).reshape(1, p))))
+
+            wsum += self.ss
+            self.MCMC_cov = xcov #unsure about this
+            self.MCMC_mean = xmean
+            self.ss = wsum
+
+            i += 1
+
+    def Kalman_gain(self, j):
         ss2 = self.m0**2*np.ones([np.size(self.observations, 0)])
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
         mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
 
-        Ctm = ((self.X - mX)@(self.Y - mY).T/(j-2))
-        Cmm = ((self.Y - mY)@(self.Y - mY).T/(j-2))
-  
+        Ctm = (self.X - mX)@(self.Y - mY).T/(j-2)
+        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
+
         return KK
 
-    def EnKF_go(self):
+    def S_EnKF_go(self):
         j = self.K0
         while j < self.s:
+            thetaj = self.thetaj + self.Rj@np.random.normal(size = [self.dim, 1])
+
             KK = self.Kalman_gain(j)
 
-            dt = KK @ (- self.oldvalue + self.observations + np.random.normal(0, self.m0, size = np.shape(self.observations)))
+            dt = KK @ (self.observations + np.random.normal(0, self.m0, size = np.shape(self.observations)) - self.oldvalue)
 
-            thetas = self.thetaj + dt
+            thetas = thetaj + dt
 
             thetas = utilities.check_bounds(thetas, self.range)
 
@@ -71,8 +128,14 @@ class EnKF_mcmc():
                 self.oldpi = newpi
                 self.oldvalue = newvalue
 
-            #self.save_data(j)
+            self.save_data(j)
 
+            if (j - self.K0 + 1) % self.adpt == 0:
+                self.update_cov(1, j)
+                Ra = np.linalg.cholesky(self.MCMC_cov + np.eye(self.dim)*self.eps)
+                self.ii = j*1
+                self.Rj = Ra * self.Kp
+            
             tempX = np.zeros([np.size(self.X,0), np.size(self.X,1) + 1])
             tempY = np.zeros([np.size(self.Y,0), np.size(self.Y,1) + 1])
             

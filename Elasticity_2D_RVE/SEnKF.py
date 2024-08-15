@@ -1,9 +1,10 @@
 import numpy as np
 from DRAM import DRAM_algorithm
 import utilities as utilities
+import scipy as sp
 import pandas as pd
 
-class EnKF_mcmc():
+class S_EnKF_mcmc():
     def __init__(self, inp):
 
         self.range = inp['range']
@@ -16,6 +17,11 @@ class EnKF_mcmc():
         self.mesh = inp['mesh']
         self.m0 = inp['me']
         self.adpt = inp['adapt']
+
+        self.Rj = sp.linalg.cholesky(self.initial_cov)
+        self.dim = np.size(self.range, 1)
+        self.eps = 1e-10
+        self.Kp = 0.05
 
         self.s = self.nsamples  #maybe need deepcopy
         self.nsamples = self.K0 - 1
@@ -36,26 +42,32 @@ class EnKF_mcmc():
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj, self.mesh)
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
-    def Kalman_gain(self, j):
+        self.MCMC_cov = np.zeros_like(self.initial_cov)
+        self.MCMC_mean = np.zeros_like(self.initial_theta)
+        self.ss = np.array([1])
+        self.ii = 0
 
+    def Kalman_gain(self, j):
         ss2 = self.m0**2*np.ones([np.size(self.observations, 0)])
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
         mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
 
+
         Ctm = ((self.X - mX)@(self.Y - mY).T/(j-2))
-        Cmm = ((self.Y - mY)@(self.Y - mY).T/(j-2))
-  
-        KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
+        Cmm = ((self.Y - mY)@(self.Y - mY).T/(j-2)).diagonal()
+        A = np.linalg.solve(np.sqrt(Cmm + RR), np.eye(np.size(RR,0))).T
+        B = np.linalg.solve(np.sqrt(Cmm + RR) + np.sqrt(RR), np.eye(np.size(RR,0)))
+        KK = Ctm @ (A @ B)
         return KK
 
-    def EnKF_go(self):
+    def S_EnKF_go(self):
         j = self.K0
         while j < self.s:
             KK = self.Kalman_gain(j)
 
-            dt = KK @ (- self.oldvalue + self.observations + np.random.normal(0, self.m0, size = np.shape(self.observations)))
+            dt = KK @ (self.observations + np.random.normal(0, self.m0, size = np.shape(self.observations)) - self.oldvalue)
 
             thetas = self.thetaj + dt
 
@@ -73,6 +85,12 @@ class EnKF_mcmc():
 
             #self.save_data(j)
 
+            # if (j - self.K0 + 1) % self.adpt == 0:
+            #     self.update_cov(1, j)
+            #     Ra = np.linalg.cholesky(self.MCMC_cov + np.eye(self.dim)*self.eps)
+            #     self.ii = j*1
+            #     self.Rj = Ra * self.Kp
+            
             tempX = np.zeros([np.size(self.X,0), np.size(self.X,1) + 1])
             tempY = np.zeros([np.size(self.Y,0), np.size(self.Y,1) + 1])
             

@@ -7,13 +7,13 @@ from DRAM import DRAM_algorithm
 from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
 from mesh import Mesh
-from crank import Crank_mcmc
-from baby import Baby_mcmc
+from SEnKF import S_EnKF_mcmc
 import matplotlib.pyplot as plt
 import seaborn as sns
 import time
 sns.set_context('talk')
 
+Dist = []
 inp = {}
 
 chains = {0:[], 1:[]}
@@ -79,6 +79,12 @@ print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %
 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsA['MCMC'][1]), np.sqrt(np.var(resultsA['MCMC'][1]))))
 print()
 
+outi = np.array([[np.median(resultsA['MCMC'][0])],[np.median(resultsA['MCMC'][1])]])
+res=utilities.forward_model(outi, inp['mesh'])
+
+print(f'RMSE: {np.linalg.norm(measurements/1000 - res/1000)/len(measurements)}')
+Dist.append(np.linalg.norm(measurements/1000 - res/1000)/len(measurements))
+
 st = time.perf_counter()
 B = AMH_mcmc(inp)
 resultsB = B.AMH_go()
@@ -93,6 +99,12 @@ print('Number of Samples: %.0f' % config['Number of samples'])
 print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsB['MCMC'][0]), np.sqrt(np.var(resultsB['MCMC'][0]))))
 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsB['MCMC'][1]), np.sqrt(np.var(resultsB['MCMC'][1]))))
 print()
+
+outi = np.array([[np.median(resultsB['MCMC'][0])],[np.median(resultsB['MCMC'][1])]])
+res=utilities.forward_model(outi, inp['mesh'])
+
+print(f'RMSE: {np.linalg.norm(measurements/1000 - res/1000)/len(measurements)}')
+Dist.append(np.linalg.norm(measurements/1000 - res/1000)/len(measurements))
 
 st = time.perf_counter()
 C = MH_DR_mcmc(inp)
@@ -109,6 +121,12 @@ print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %
 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsC['MCMC'][1]), np.sqrt(np.var(resultsC['MCMC'][1]))))
 print()
 
+outi = np.array([[np.median(resultsC['MCMC'][0])],[np.median(resultsC['MCMC'][1])]])
+res=utilities.forward_model(outi, inp['mesh'])
+
+print(f'RMSE: {np.linalg.norm(measurements/1000 - res/1000)/len(measurements)}')
+Dist.append(np.linalg.norm(measurements/1000 - res/1000)/len(measurements))
+
 st = time.perf_counter()
 D = DRAM_algorithm(inp)
 resultsD = D.DRAM_go()
@@ -123,6 +141,12 @@ print('Number of Samples: %.0f' % config['Number of samples'])
 print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsD['MCMC'][0]), np.sqrt(np.var(resultsD['MCMC'][0]))))
 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsD['MCMC'][1]), np.sqrt(np.var(resultsD['MCMC'][1]))))
 print()
+
+outi = np.array([[np.median(resultsD['MCMC'][0])],[np.median(resultsD['MCMC'][1])]])
+res=utilities.forward_model(outi, inp['mesh'])
+
+print(f'RMSE: {np.linalg.norm(measurements/1000 - res/1000)/len(measurements)}')
+Dist.append(np.linalg.norm(measurements/1000 - res/1000)/len(measurements))
 
 st = time.perf_counter()
 F = EnKF_mcmc(inp)
@@ -139,24 +163,40 @@ print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %
 print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsF['MCMC'][1]), np.sqrt(np.var(resultsF['MCMC'][1]))))
 print()
 
+outi = np.array([[np.median(resultsF['MCMC'][0])],[np.median(resultsF['MCMC'][1])]])
+res=utilities.forward_model(outi, inp['mesh'])
+
+print(f'RMSE: {np.linalg.norm(measurements/1000 - res/1000)/len(measurements)}')
+Dist.append(np.linalg.norm(measurements/1000 - res/1000)/len(measurements))
+
 # st = time.perf_counter()
 # inp['nsamples'] = config['Number of samples']
-# G = Baby_mcmc(inp)
-
-# resultsG = G.Baby_go()
+# G = S_EnKF_mcmc(inp)
+# resultsG = G.S_EnKF_go()
+# #utilities.histogram_bulk(resultsF['MCMC'], 'EnKF', [[0, 30],[0,30],[0,0.5],[0, 0.5]],Fig, Ax, 'mediumvioletred', 0.8, 3, hist)
 # times.append(time.perf_counter() - st)
 # chains[0].append(resultsG['MCMC'][0])
 # chains[1].append(resultsG['MCMC'][1])
 # print('----------------------------------------------')
-# print('Baby')
+# print('Stochastic Adaptive EnKF')
 # print('----------------------------------------------')
-# print('Acceptance Rate: %.3f' % resultsF['accepted'])
+# print('Acceptance Rate: %.3f' % resultsG['accepted'])
 # print('Number of Samples: %.0f' % config['Number of samples'])
-# print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsG['MCMC'][0]), np.sqrt(np.var(resultsG['MCMC'][0]))))
-# print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsG['MCMC'][1]), np.sqrt(np.var(resultsG['MCMC'][1]))))
+# print('The median of the E 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsG['MCMC'][0]), np.sqrt(np.var(resultsG['MCMC'][0]))))
+# print('The median of the E 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(resultsG['MCMC'][1]), np.sqrt(np.var(resultsG['MCMC'][1]))))
 # print()
 
-#plt.show()
+# outi = np.array([[np.median(resultsG['MCMC'][0])],[np.median(resultsG['MCMC'][1])]])
+# res=utilities.forward_model(outi, inp['mesh'])
+
+# print(f'RMSE: {np.linalg.norm(measurements/1000 - res/1000)/len(measurements)}')
+# Dist.append(np.linalg.norm(measurements/1000 - res/1000)/len(measurements))
+
+Fig, Ax = plt.subplots()
+
+Ax.plot(Dist)
+
+plt.show()
 
 print(times)
-np.save('2D_chains_2.npy', chains) 
+np.save('2D_chains.npy', chains) 

@@ -19,13 +19,17 @@ plt.rcParams.update({    # 4:3 aspect ratio
     "axes.labelweight": 'bold',
     'axes.titlesize' : 15
 })
-true_vals = [10, 0.3]
-graph_labs = [r'$E$ (GPa)', r'$\nu$']
-lims = [[5,11], [-0.1,0.6]]
+true_vals = [10, 1, 0.3, 0.3]
+graph_labs = [r'$E_I$ (GPa)', r'$E_M$ (GPa)', r'$\nu_I$', r'$\nu_M$']
+lims = [[4.5,15], [-1, 23], [-0.1, 0.6], [-0.1,0.6]]
+
+# true_vals = [10, 0.3]
+# graph_labs = [r'$E$ (GPa)', r'$\nu$']
+# lims = [[4.5,11], [-0.1,0.6]]
 
 #read_dictionary = {0:[], 1:[], 2:[]}
 
-labs = ['E', 'v']
+#labs = ['E', 'v']
 # data1 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\MH.csv')
 # data2 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\AMH.csv')
 # data3 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\MH_DR.csv')
@@ -47,14 +51,15 @@ labs = ['E', 'v']
 #     #print(labs[i], 'eNkf', np.median(data5[labs[i])), 2*np.sqrt(np.var(data5[labs[i]])))
 
 
-read_dictionary = np.load('2D_chains.npy',allow_pickle='TRUE').item()
+read_dictionary = np.load('4D_chains_BEAM_10000.npy',allow_pickle='TRUE').item()
+
 
 colours = ['deepskyblue','mediumseagreen','orange','hotpink','mediumvioletred']
 labels = ['MH', 'AMH', 'DR MH', 'DRAM', 'EnKF']
-fig, ax = plt.subplots(nrows = len(true_vals), ncols =5)
+fig, ax = plt.subplots(nrows = len(true_vals), ncols =len(labels))
 
 for j in range(len(true_vals)):
-    for i, q in zip(read_dictionary[j], range(5)):
+    for i, q in zip(read_dictionary[j], range(len(labels))):
         ax[j][0].set_ylabel(graph_labs[j])
         ax[0][q].set_title(labels[q])
         ax[j][q].plot(range(len(i)), i, alpha = 0.8, c = colours[q])
@@ -64,7 +69,7 @@ for j in range(len(true_vals)):
         if q != 0:
             ax[j][q].set_yticks([]) 
         if j == len(true_vals) - 1:
-            ax[j][q].set_xticks([1500])
+            ax[j][q].set_xticks([5000])
 
 # for i, q in zip(read_dictionary[1], range(5)):
 #     ax[1][q].plot(range(len(i)), i, alpha = 0.8, c = colours[q])
@@ -145,40 +150,40 @@ for partname in ('cbars','cmins','cmaxes','cmedians'):
     vp.set_linewidth(2.5)
 
 
-# violin_parts2 = ax[2].violinplot(read_dictionary[2], showmedians=True)
-# ax[2].grid()
-# ax[2].set(ylabel =graph_labs[2])
+violin_parts2 = ax[2].violinplot(read_dictionary[2], showmedians=True)
+ax[2].grid()
+ax[2].set(ylabel =graph_labs[2])
 
 
-# for pc, color in zip(violin_parts2['bodies'], colours):
-#     pc.set_facecolor(color)
+for pc, color in zip(violin_parts2['bodies'], colours):
+    pc.set_facecolor(color)
 
-# for partname in ('cbars','cmins','cmaxes','cmedians'):
-#     vp = violin_parts2[partname]
-#     vp.set_edgecolor(colours)
-#     vp.set_facecolor(colours)
-#     vp.set_linewidth(2.5)
+for partname in ('cbars','cmins','cmaxes','cmedians'):
+    vp = violin_parts2[partname]
+    vp.set_edgecolor(colours)
+    vp.set_facecolor(colours)
+    vp.set_linewidth(2.5)
 
-# ax[2].set_xticks([])
-# ax[2].axhline(true_vals[2], alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
+ax[2].set_xticks([])
+ax[2].axhline(true_vals[2], alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
 
-# violin_parts3 = ax[3].violinplot(read_dictionary[3], showmedians=True)
-# ax[3].grid()
-# ax[3].set(ylabel = graph_labs[3])
+violin_parts3 = ax[3].violinplot(read_dictionary[3], showmedians=True)
+ax[3].grid()
+ax[3].set(ylabel = graph_labs[3])
 
 
-# for pc, color in zip(violin_parts3['bodies'], colours):
-#     pc.set_facecolor(color)
+for pc, color in zip(violin_parts3['bodies'], colours):
+    pc.set_facecolor(color)
 
-# for partname in ('cbars','cmins','cmaxes','cmedians'):
-#     vp = violin_parts3[partname]
-#     vp.set_edgecolor(colours)
-#     vp.set_facecolor(colours)
-#     vp.set_linewidth(2.5)
+for partname in ('cbars','cmins','cmaxes','cmedians'):
+    vp = violin_parts3[partname]
+    vp.set_edgecolor(colours)
+    vp.set_facecolor(colours)
+    vp.set_linewidth(2.5)
 
 ax[-1].set_xticks([y + 1 for y in range(len(read_dictionary[0]))],labels=labels)
 
-ax[0].axhline(true_vals[0], alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
+ax[3].axhline(true_vals[3], alpha = 0.7, c = 'k', linestyle=(0,(5,5)))
 plt.tight_layout()    
 plt.subplots_adjust(wspace=0.15, top=0.94, bottom=0.11, left=0.2, right=0.8, hspace = 0.1)
 fig.legend(loc='lower center', ncols = 1)

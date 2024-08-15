@@ -33,13 +33,15 @@
 
   "Standard Deviation": 0.05,
 
-  "Number of samples": 3000,
+  "Number of samples": 10000,
 
-  "Starting Kalman point": 200,
+  "Starting Kalman point": 500,
 
-  "Measurement error for Kalman": 0.07,
+  "Measurement error for Kalman": 1.5,
 
-  "Measurement Noise": 0.05,
+  "Innovation error for Kalman": 0.05,
+
+  "Measurement Noise": 0.1,
 
   "Adaption Step Size": 500,
 
@@ -79,7 +81,7 @@
     "Number of elements": 9,
     "Element ID": [0, 0, 0, 0, 1, 0, 0, 0, 0],
 
-    "Force Magnitude": 15e-4,
+    "Force Magnitude": 6e-4,
     "Force Nodes": [3, 7, 11, 15],
     "Fixed Nodes": [0, 4, 8, 12]
   },
@@ -89,10 +91,9 @@
     "Adaptive Metropolis Hastings": 1,
     "Metropolis Hastings Delyayed Rejection": 2,
     "Delayed Rejection Adaptive Metropolis Hastings": 3,
-    "Crank": 4,
-    "Ensemble Kalman Filter": 5,
-    "Baby": 6,
-    "Choosen Method": 5
+    "Ensemble Kalman Filter": 4,
+    "Stochastic EnKF": 5,
+    "Choosen Method": 4
   },
   "Print Chain": 0
 }

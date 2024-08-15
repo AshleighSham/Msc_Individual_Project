@@ -86,3 +86,28 @@ def histogram_bulk(data, label, ranges, f, ax, colour, a, l, h):
         h[i].append(o)
         ax[i].grid()
         ax[i].legend()
+
+def average_jump(X):
+    T = X.shape[0]
+    return sum(np.linalg.norm(X[i,:] - X[i-1,:]) for i in range(T)[1:]) / T
+
+def autocorr(seq, lag=0):
+    assert len(seq.shape) == 1
+    assert lag >= 0
+    N = seq.shape[0]
+    seq1 = seq[0:N-lag]
+    seq2 = seq[lag:N]
+    m1 = np.average(seq1)
+    m2 = np.average(seq2)
+    seq1c = seq1 - m1 * np.ones(seq1.shape)
+    seq2c = seq2 - m2 * np.ones(seq2.shape)
+    sigma11 = np.sum(seq1c * seq1c)
+    sigma22 = np.sum(seq2c * seq2c)
+    sigma12 = np.sum(seq1c * seq2c)
+    if sigma11 == 0.0 or sigma22 == 0.0:
+        return 1.0
+    else:
+        return sigma12 / np.sqrt(sigma11 * sigma22)
+
+def effective_sample_size_ratio(seq, lags):
+    return 1.0 / (1.0 + 2.0 * np.sum([autocorr(seq, l) for l in lags if l >= 1]))

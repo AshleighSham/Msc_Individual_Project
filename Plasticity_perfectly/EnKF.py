@@ -1,6 +1,7 @@
 import numpy as np
 from DRAM import DRAM_algorithm
 import utilities as utilities
+import time
 import pandas as pd
 
 class EnKF_mcmc():
@@ -13,8 +14,8 @@ class EnKF_mcmc():
         self.sigma = inp['sigma']
         self.observations = inp['measurement']
         self.K0 = inp['Kalmans']
-        self.m0 = inp['me']
         self.mesh = inp['mesh']
+        self.m0 = inp['me']
         self.adpt = inp['adapt']
 
         self.s = self.nsamples  #maybe need deepcopy
@@ -24,18 +25,46 @@ class EnKF_mcmc():
         self.results = A.DRAM_go()
 
         self.X = self.results['MCMC'] #1 x nsamples
+        print('Values before the EnKF')
+        print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
+        print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
+        print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
+        print()
         self.Y = np.squeeze(self.results['values']).T #nsamples x nel
         self.thetaj = self.X[:, self.K0 - 2].reshape(-1,1)
 
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.thetaj, self.mesh)
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
+    def save_data(self, j):
+        data = {}
+
+        data['E'] = self.thetaj[0]
+        data['v'] = self.thetaj[1]
+        data['sy'] = self.thetaj[2]
+        
+        for i in range(len(self.oldvalue)):
+            data[i] = self.oldvalue[i]
+
+        # for i in range(4**2):
+        #     data[f'var{i}'] = [dumy[i]]
+
+        df = pd.DataFrame(data)
+
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\EnKF.csv', mode='a', index=True, header = False)
+
     def Kalman_gain(self, j):
-        ss2 = self.m0**2*np.ones([np.size(self.observations, 0)])
+        a = self.m0**2*np.var(self.observations[0::2])
+        b = self.m0**2*np.var(self.observations[1::2])
+        ss2 = np.ones([np.size(self.observations, 0)])
+        
+        ss2[0::2] = a
+        ss2[1::2] = b
+
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
-        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1)#nel, j-1
+        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
 
         Ctm = (self.X - mX)@(self.Y - mY).T/(j-2)
         Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
@@ -48,7 +77,14 @@ class EnKF_mcmc():
         while j < self.s:
             KK = self.Kalman_gain(j)
             
-            dt = KK @ (self.oldvalue - self.observations + np.random.normal(0, self.m0, size = np.shape(self.observations)))
+            #XX = utilities.forward_model(self.thetaj, self.mesh)
+            Noise = np.zeros_like(self.observations)
+
+            Noise[0::2] = np.random.normal(0, self.m0*np.sqrt(np.var(self.observations[0::2])), size = np.shape(self.observations[0::2]))
+            Noise[1::2] = np.random.normal(0, self.m0*np.sqrt(np.var(self.observations[1::2])), size = np.shape(self.observations[1::2]))
+            
+            dt = KK @ ( - self.oldvalue + self.observations + Noise)
+
             thetas = self.thetaj + dt
 
             thetas = utilities.check_bounds(thetas, self.range)
@@ -63,8 +99,6 @@ class EnKF_mcmc():
                 self.oldpi = newpi
                 self.oldvalue = newvalue
 
-            # self.save_data()
-
             tempX = np.zeros([np.size(self.X,0), np.size(self.X,1) + 1])
             tempY = np.zeros([np.size(self.Y,0), np.size(self.Y,1) + 1])
             
@@ -75,6 +109,15 @@ class EnKF_mcmc():
 
             self.X = tempX
             self.Y = tempY
+
+            if j % 200 == 0:
+                print(f'{j} samples completed')
+                print('The median of the Youngs Modulus posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
+                print('The median of the Poissons Ratio posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
+                print('The median of the Yield Stress posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
+                print()
+
+            self.save_data(j)
 
             j += 1
         

@@ -3,13 +3,11 @@ import numpy as np
 import utilities
 from MH import MH_mcmc
 from EnKF import EnKF_mcmc
-from EnKFbalnk import EnKF_mcmc2
 from DRAM import DRAM_algorithm
 from AMH import AMH_mcmc
 from MH_DR import MH_DR_mcmc
 from mesh import Mesh
-from crank import Crank_mcmc
-from baby import Baby_mcmc
+from SEnKF import S_EnKF_mcmc
 import seaborn as sns
 import time
 sns.set_context('talk')
@@ -49,6 +47,9 @@ inp['Kalmans']= config['Starting Kalman point']
 # assumed measurement error for Kalman MCMC
 inp['me']=config['Measurement error for Kalman']
 
+# assumed error for Kalman MCMC
+inp['ie']=config['Innovation error for Kalman'] 
+
 #adaption setp size
 inp['adapt'] = config['Adaption Step Size']
  
@@ -68,16 +69,17 @@ ini = [config['True Material Parameters']['Youngs Modulus'][0], config['True Mat
 
 measurements=utilities.forward_model(np.array(ini), inp['mesh'])
 measurements1 = measurements + np.random.normal(0, config['Measurement Noise'], size = np.shape(measurements))
+#measurements1[[0,1,8,9,16,17]] = measurements[[0,1,8,9,16,17]]
 inp['measurement'] = measurements1
 # print(measurements1)
 # print(measurements)
 
-figd, axd = plt.subplots()
+# figd, axd = plt.subplots()
 
-axd.scatter(range(len(measurements)),measurements, s =10)
-axd.scatter(range(len(measurements1)), measurements1, s= 10)
+# axd.scatter(range(len(measurements)),measurements, s =10)
+# axd.scatter(range(len(measurements1)), measurements1, s= 10)
 
-plt.show()
+# plt.show()
  
 lines = []
 my_mesh = Mesh(inp['mesh'])
@@ -86,9 +88,10 @@ fig11, axl1 = plt.subplots()
 plt.subplots_adjust(bottom = 0.05)
 
 true_displacement = my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])
-my_mesh.deformation_plot(label = 'a', colour= 'black', ch = 1, ax = axl1, lines = lines, ls = 'solid', non=False)
-my_mesh.deformation_plot(label = f'Noisy Deformation', colour= 'palevioletred', ch = 0.95, ax = axl1, lines = lines, ls = (0,(5,5)), D = measurements1/1000, non=False)
+# my_mesh.deformation_plot(label = 'a', colour= 'black', ch = 1, ax = axl1, lines = lines,  D = measurements/1000, ls = 'solid', non=False)
+# my_mesh.deformation_plot(label = f'Noisy Deformation', colour= 'palevioletred', ch = 0.95, ax = axl1, lines = lines, ls = (0,(5,5)), D = measurements1/1000, non=False)
 
+# plt.show()
 # fig2, ax2 = plt.subplots(2, 1)
 # my_mesh.contour_plot('True', fig2, ax2)
 
@@ -102,7 +105,7 @@ print()
 for i in range(config['Number of Materials']):
     print('True Youngs Modulus %.0f: %.3f' % (i, config['True Material Parameters']['Youngs Modulus'][i]))
     print('True Poissons Ratio %.0f: %.3f' % (i, config['True Material Parameters']['Poissons Ratio'][i]))
-print('Standard Deviation of Noise on Measurement Data: %.10f' %(config['Measurement Noise']*config['Mesh grid']['sf']))
+print('Standard Deviation of Noise on Measurement Data: %.10f' %(config['Measurement Noise']))
 print()
 st = time.perf_counter()
 if inp['Method'] == 0:
@@ -155,18 +158,6 @@ elif inp['Method'] == 3:
 
 elif inp['Method'] == 4:
     #The EnKF algorithm 
-    B = Crank_mcmc(inp)
-    results = B.Crank_go()
-    print(f'End Time: {time.perf_counter() - st}')
-    if config['Print Chain'] == 1:
-        print(results['MCMC'])
-    #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
-    print('----------------------------------------------')
-    print('Ensemble Kalman Filter')
-    print('----------------------------------------------')
-
-elif inp['Method'] == 5:
-    #The EnKF algorithm 
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()
     print(f'End Time: {time.perf_counter() - st}')
@@ -177,16 +168,16 @@ elif inp['Method'] == 5:
     # print('Ensemble Kalman Filter')
     # print('----------------------------------------------')
    
-elif inp['Method'] == 6:
+elif inp['Method'] == 5:
     #The Baby algorithm 
-    B = Baby_mcmc(inp)
-    results = B.Baby_go()
+    B = S_EnKF_mcmc(inp)
+    results = B.S_EnKF_go()
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
     #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
     print('----------------------------------------------')
-    print('Baby')
+    print('Stochastic Adapt EnKF')
     print('----------------------------------------------')
 
 print('Acceptance Rate: %.3f' % results['accepted'])
@@ -196,6 +187,12 @@ print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/-
 print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][2]), np.sqrt(np.var(results['MCMC'][2]))))
 print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][3]), np.sqrt(np.var(results['MCMC'][3]))))
 print()
+
+outi = np.array([[np.median(results['MCMC'][0])],[np.median(results['MCMC'][1])],[np.median(results['MCMC'][2])],[np.median(results['MCMC'][3])]])
+res=utilities.forward_model(outi, inp['mesh'])
+
+print(f'RMSE: {np.linalg.norm(measurements/1000 - res/1000)/len(measurements)}')
+
 
 fig, ax = plt.subplots(4,1)
 ax[0].plot(range(len(results['MCMC'][0])), results['MCMC'][0])
@@ -210,37 +207,8 @@ res = my_mesh.displacement([np.median(results['MCMC'][0]),np.median(results['MCM
 my_mesh.deformation_plot(label = f'Noisy Deformation', colour= 'palevioletred', ch = 0.95, ax = axl1, lines = lines, ls = (0,(5,5)), D = res/1000, non=False)
 plt.show()
 
-# my_mesh = Mesh(inp['mesh'])
-
-# my_mesh.displacement([np.median(results['MCMC'][0]),np.median(results['MCMC'][1])], [np.median(results['MCMC'][2]), np.median(results['MCMC'][3])])
-# my_mesh.deformation_plot(label = f'True Deformation', colour= 'black', ch = 1, ax = axr1, lines = lines, ls = 'solid', D = measurements/1000, non=False)
-# my_mesh.deformation_plot(label = f'Estimated Deformation', ls =(0,(3,5)), colour = 'dodgerblue', ch = 0.9, ax = axr1, lines = lines, non=False)
-# axl1.set(xlabel = 'x (m)', ylabel = 'y (m)')
-# axr1.set(xlabel = 'x (m)', ylabel = 'y (m)')
-# fig11.legend(loc = 'lower center', ncols=3)
-# fig3, ax3 = plt.subplots(2, 1)
-# my_mesh.contour_plot('Estimated', fig3, ax3)
-
-# fig4, ax4 = plt.subplots(2, 1)
-# my_mesh.error_plot(true_displacement, fig4, ax4)
-
-# ax1.set_title('Deformation Plot', fontsize = 25)
-# fig.legend(loc = 'lower center', ncols=2)
-
-#data = {'Initial':{0:[], 1:[], 2:[], 3:[]}, 'Median':{0:[], 1:[], 2:[], 3:[]}, 'Uncertainty':{0:[], 1:[], 2:[], 3:[]}}
-
-
-# for i in range(4):
-#     data['Initial'][i].append(inp['theta0'][i][0])
-
-# data['Median'][0].append(np.median(results['MCMC'][0][500:]))
-# data['Median'][1].append(np.median(results['MCMC'][1][500:]))
-# data['Median'][2].append(np.median(results['MCMC'][2][500:]))
-# data['Median'][3].append(np.median(results['MCMC'][3][500:]))
-
-# data['Uncertainty'][0].append(np.sqrt(np.var(results['MCMC'][0][500:])))
-# data['Uncertainty'][1].append(np.sqrt(np.var(results['MCMC'][1][500:])))
-# data['Uncertainty'][2].append(np.sqrt(np.var(results['MCMC'][2][500:])))
-# data['Uncertainty'][3].append(np.sqrt(np.var(results['MCMC'][3][500:])))
-
-# np.save('RVE_EnKF.npy', data, allow_pickle=True) 
+lags = range(0, 100, 1)
+print(f'{utilities.effective_sample_size_ratio(results['MCMC'][0], lags)}')
+print(f'{utilities.effective_sample_size_ratio(results['MCMC'][1], lags)}')
+print(f'{utilities.effective_sample_size_ratio(results['MCMC'][2], lags)}')
+print(f'{utilities.effective_sample_size_ratio(results['MCMC'][3], lags)}')

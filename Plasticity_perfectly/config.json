@@ -1,54 +1,45 @@
 {
-  "s": 0.05,
-  "Number of Materials": 2,
-  "Freeze time": 50,
-  "Freeze delay": 200,
-  "Freeze loops": 3,
-
+  "s": 0.2,
   "Initial Material Parameters": {
-    "Youngs Modulus": [5, 5],
-    "Poissons Ratio": [0.2, 0.2]
+    "Youngs Modulus": 150,
+    "Poissons Ratio": 0.2,
+    "Yield Stress": 0.15
   },
 
   "True Material Parameters": {
-    "Youngs Modulus": [10, 1],
-    "Poissons Ratio": [0.3, 0.3]
+    "Youngs Modulus": 206.9,
+    "Poissons Ratio": 0.29,
+    "Yield Stress": 0.45
   },
 
   "Imposed Limits": {
-    "Youngs Modulus": [
-      [1e-6, 30],
-      [1e-6, 30]
-    ],
-    "Poissons Ratio": [
-      [1e-3, 0.5],
-      [1e-3, 0.5]
-    ]
+    "Youngs Modulus": [5, 600],
+    "Poissons Ratio": [1e-3, 0.4999],
+    "Yield Stress": [0.05, 0.6]
   },
 
   "Initial Variance": {
-    "Youngs Modulus": 1,
-    "Poissons Ratio": 1e-3
+    "Youngs Modulus": 10,
+    "Poissons Ratio": 0.001,
+    "Yield Stress": 0.001
   },
 
   "Standard Deviation": 0.05,
 
-  "Number of samples": 10000,
+  "Number of samples": 3000,
 
-  "Starting Kalman point": 500,
+  "Starting Kalman point": 200,
 
-  "Measurement error for Kalman": 1.5,
+  "Measurement error for Kalman": 0.035,
 
-  "Innovation error for Kalman": 0.05,
-
-  "Measurement Noise": 0.1,
+  "Measurement Noise": 0.025,
 
   "Adaption Step Size": 500,
 
   "Mesh grid": {
-    "sf": 0.02,
-    "thickness": 0.1,
-    "quad": [7, 31],
+    "sf": 1,
+    "thickness": 1,
+    "quad": [16, 6],
     "Nodal Coordinates": [
       [0, 0],
       [1, 0],
@@ -104,8 +95,8 @@
     "Metropolis Hastings Delyayed Rejection": 2,
     "Delayed Rejection Adaptive Metropolis Hastings": 3,
     "Ensemble Kalman Filter": 4,
-    "Stochastic Kalman Filter": 5,
-    "Choosen Method": 6
+    "sEnKF": 5,
+    "Choosen Method": 4
   },
   "Print Chain": 0
 }

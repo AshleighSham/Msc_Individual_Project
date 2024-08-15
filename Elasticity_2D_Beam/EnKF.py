@@ -1,8 +1,5 @@
 import numpy as np
 from DRAM import DRAM_algorithm
-from MH import MH_mcmc
-from MH_DR import MH_DR_mcmc
-from crank import Crank_mcmc
 import utilities as utilities
 import pandas as pd
 
@@ -40,7 +37,6 @@ class EnKF_mcmc():
         self.accepted = np.fix(self.results['accepted']*(self.K0 - 1)/100)
 
     def Kalman_gain(self, j):
-
         ss2 = self.m0**2*np.ones([np.size(self.observations, 0)])
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
@@ -82,18 +78,10 @@ class EnKF_mcmc():
             tempX[:,:-1] = self.X*1
             tempY[:,:-1] = self.Y*1
             tempX[:,-1] = self.thetaj.T
-            tempY[:,-1] = np.squeeze(self.oldvalue) #keep an eye on this for more dims
+            tempY[:,-1] = np.squeeze(self.oldvalue) 
 
             self.X = tempX
             self.Y = tempY
-
-#            if j % 200 == 0:
-                # print(f'{j} samples completed')
-                # print('The median of the Youngs Modulus 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[0]), np.sqrt(np.var(self.X[0]))))
-                # print('The median of the Youngs Modulus 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[1]), np.sqrt(np.var(self.X[1]))))
-                # print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[2]), np.sqrt(np.var(self.X[2]))))
-                # print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(self.X[3]), np.sqrt(np.var(self.X[3]))))
-                # print()
 
             j += 1
         

@@ -1,0 +1,44 @@
+{
+  "folder-color.pathColors": [
+    {
+      "folderPath": "ES98C\\Elasticity_2D\\",
+      "color": "foldercolorizer.SpringGreen"
+    },
+    {
+      "folderPath": "ES98C\\Elasticity_2D_Beam\\",
+      "color": "foldercolorizer.LightSkyBlue"
+    },
+    {
+      "folderPath": "ES98C\\Elasticity_2D_RVE\\",
+      "color": "foldercolorizer.HotPink"
+    },
+    {
+      "folderPath": "ES98C\\Plasticity_hardening\\",
+      "color": "foldercolorizer.LightSalmon"
+    },
+    {
+      "folderPath": "ES98C\\Plasticity_perfectly\\",
+      "color": "foldercolorizer.Plum"
+    },
+    {
+      "folderPath": "ES98C\\chains.py\\",
+      "color": "foldercolorizer.PureGold"
+    },
+    {
+      "folderPath": "ES98C\\4D_chains_RVE.npy\\",
+      "color": "foldercolorizer.PureGold"
+    },
+    {
+      "folderPath": "ES98C\\4D_chains_BEAM.npy\\",
+      "color": "foldercolorizer.PureGold"
+    },
+    {
+      "folderPath": "ES98C\\2D_chains.npy\\",
+      "color": "foldercolorizer.PureGold"
+    },
+    {
+      "folderPath": "ES98C\\Elastcity_1D\\",
+      "color": "foldercolorizer.CarrotOrange"
+    }
+  ]
+}
