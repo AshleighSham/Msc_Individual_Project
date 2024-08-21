@@ -39,6 +39,10 @@
     {
       "folderPath": "ES98C\\Elastcity_1D\\",
       "color": "foldercolorizer.CarrotOrange"
+    },
+    {
+      "folderPath": "ES98C\\Plasticity_RVE_2\\",
+      "color": "foldercolorizer.DodgerBlue"
     }
   ]
 }

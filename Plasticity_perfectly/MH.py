@@ -43,7 +43,7 @@ class MH_mcmc:
 
         df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\MH.csv', mode='w', index=True)
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_perfectly\MH.csv', mode='w', index=True)
 
     def save_data(self, j):
         data = {}
@@ -57,7 +57,7 @@ class MH_mcmc:
 
         df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\MH.csv', mode='a', index=True, header = False)
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_perfectly\MH.csv', mode='a', index=True, header = False)
 
 
     def MH_go(self):

@@ -30,11 +30,11 @@ lims = [[4.5,15], [-1, 23], [-0.1, 0.6], [-0.1,0.6]]
 #read_dictionary = {0:[], 1:[], 2:[]}
 
 #labs = ['E', 'v']
-# data1 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\MH.csv')
-# data2 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\AMH.csv')
-# data3 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\MH_DR.csv')
-# data4 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\DRAM.csv')
-# data5 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\EnKF.csv')
+data1 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\MH.csv')
+data2 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\AMH.csv')
+data3 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\MH_DR.csv')
+data4 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\DRAM.csv')
+data5 = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\CURRENT_CHAINS\EnKF.csv')
 
 
 

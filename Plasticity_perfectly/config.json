@@ -24,7 +24,7 @@
     "Yield Stress": 0.001
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 2,
 
   "Number of samples": 3000,
 
@@ -96,7 +96,7 @@
     "Delayed Rejection Adaptive Metropolis Hastings": 3,
     "Ensemble Kalman Filter": 4,
     "sEnKF": 5,
-    "Choosen Method": 4
+    "Choosen Method": 3
   },
   "Print Chain": 0
 }

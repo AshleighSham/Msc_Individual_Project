@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #past_chain_info = np.load('MH.npy',allow_pickle='TRUE').item()
-data = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\MH.csv')
+data = pd.read_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_perfectly\MH.csv')
 
 
 numd = data.to_numpy()

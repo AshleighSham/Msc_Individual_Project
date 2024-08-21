@@ -19,10 +19,10 @@ class DRAM_algorithm():
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
 
-        self.eps = 1e-5
+        self.eps = 1e-15
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
-        self.Kp = 0.05
+        self.Kp = 0.5*2.38/np.sqrt(self.dim)
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
@@ -57,7 +57,7 @@ class DRAM_algorithm():
 
         df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\EnKF.csv', mode='w', index=True)
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_perfectly\DRAM.csv', mode='w', index=True)
 
     def save_data(self, j):
         data = {}
@@ -75,7 +75,7 @@ class DRAM_algorithm():
 
         df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boii\EnKF.csv', mode='a', index=True, header = False)
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_perfectly\DRAM.csv', mode='a', index=True, header = False)
 
 
     def update_cov(self, w, ind):
