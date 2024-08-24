@@ -20,15 +20,15 @@
     "Poissons Ratio": 1e-3
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 0.5,
 
   "Number of samples": 3000,
 
-  "Starting Kalman point": 500,
+  "Starting Kalman point": 200,
 
   "Measurement error for Kalman": 1.5,
 
-  "Measurement Noise": 0.1,
+  "Measurement Noise": 0.2,
 
   "Adaption Step Size": 500,
 

@@ -35,10 +35,11 @@ class EnKF_mcmc():
         RR = np.diag(ss2) #nel, nel *keep an eye on this*
 
         mX = np.repeat(np.mean(self.X, 1, keepdims = True), j-1, axis = 1) #1, j-1
-        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1)#nel, j-1
+        mY = np.repeat(np.mean(self.Y, 1, keepdims = True), j-1, axis = 1) #nel, j-1
 
-        Ctm = (self.X - mX)@(self.Y - mY).T/(j-2)
-        Cmm = (self.Y - mY)@(self.Y - mY).T/(j-2)
+        Ctm = ((self.X - mX)@(self.Y - mY).T/(j-2))
+        Cmm = ((self.Y - mY)@(self.Y - mY).T/(j-2))
+  
         KK = Ctm @ np.linalg.solve(Cmm+RR, np.eye(np.size(RR,0)))
 
         return KK
@@ -48,7 +49,8 @@ class EnKF_mcmc():
         while j < self.s:
             KK = self.Kalman_gain(j)
             
-            dt = KK @ (self.oldvalue - self.observations + np.random.normal(0, self.m0, size = np.shape(self.observations)))
+            dt = KK @ (- self.oldvalue + self.observations + np.random.normal(0, self.m0, size = np.shape(self.observations)))
+
             thetas = self.thetaj + dt
 
             thetas = utilities.check_bounds(thetas, self.range)

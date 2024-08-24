@@ -69,7 +69,7 @@ figd, axd = plt.subplots()
 axd.scatter(range(len(measurements)),measurements, s =10)
 axd.scatter(range(len(measurements1)), measurements1, s= 10)
 
-plt.show()
+# plt.show()
 
 
 lines = []

@@ -318,7 +318,7 @@ def forward_model(params, mesh):
         # number of time steps per loading
         n_time_steps_per_loading = 50
         # max displacement target
-        disp_trgt_max = 0.1
+        disp_trgt_max = 0.05
         #disp_trgt_max = -0.02
         # (loading only)
         disp_trgt = np.linspace(0, disp_trgt_max, n_time_steps_per_loading+1)    

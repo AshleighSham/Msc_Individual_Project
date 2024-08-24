@@ -18,10 +18,10 @@ class AMH_mcmc():
         self.adpt = inp['adapt']
         self.results ={}
 
-        self.eps = 1e-10
+        self.eps = 1e-15
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
-        self.Kp = 0.05
+        self.Kp = 0.5*2.38/np.sqrt(self.dim)
 
         self.MCMC = np.zeros([self.nsamples, self.dim])
         self.oldpi, _ = utilities.ESS(self.observations, self.initial_theta, self.mesh)

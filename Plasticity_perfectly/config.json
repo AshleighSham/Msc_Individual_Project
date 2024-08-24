@@ -96,7 +96,7 @@
     "Delayed Rejection Adaptive Metropolis Hastings": 3,
     "Ensemble Kalman Filter": 4,
     "sEnKF": 5,
-    "Choosen Method": 3
+    "Choosen Method": 2
   },
   "Print Chain": 0
 }

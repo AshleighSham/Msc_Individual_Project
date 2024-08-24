@@ -31,17 +31,17 @@
     "Poissons Ratio": 1e-3
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 0.5,
 
-  "Number of samples": 10000,
+  "Number of samples": 3000,
 
-  "Starting Kalman point": 500,
+  "Starting Kalman point": 200,
 
   "Measurement error for Kalman": 1.5,
 
   "Innovation error for Kalman": 0.05,
 
-  "Measurement Noise": 0.1,
+  "Measurement Noise": 0.2,
 
   "Adaption Step Size": 500,
 
@@ -105,7 +105,7 @@
     "Delayed Rejection Adaptive Metropolis Hastings": 3,
     "Ensemble Kalman Filter": 4,
     "Stochastic Kalman Filter": 5,
-    "Choosen Method": 6
+    "Choosen Method": 0
   },
   "Print Chain": 0
 }

@@ -2,7 +2,6 @@ import numpy as np
 from DRAM import DRAM_algorithm
 from MH import MH_mcmc
 from MH_DR import MH_DR_mcmc
-from crank import Crank_mcmc
 import utilities as utilities
 import scipy as sp
 import pandas as pd

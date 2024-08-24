@@ -28,7 +28,7 @@
     "Hardening Modulus": 0.001
   },
 
-  "Standard Deviation": 0.05,
+  "Standard Deviation": 2,
 
   "Number of samples": 3000,
 

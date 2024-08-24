@@ -54,7 +54,7 @@ class DRAM_algorithm():
 
         df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\sEnKF.csv', mode='w', index=True)
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_hardening\EnKF.csv', mode='w', index=True)
 
     def save_data(self, j):
         data = {}
@@ -69,7 +69,7 @@ class DRAM_algorithm():
 
         df = pd.DataFrame(data)
 
-        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_boi\sEnKF.csv', mode='a', index=True, header = False)
+        df.to_csv(r'C:\Users\ashle\Documents\GitHub\Portfolio\ES98C\Plasticity_hardening\EnKF.csv', mode='a', index=True, header = False)
 
 
     def update_cov(self, w, ind):

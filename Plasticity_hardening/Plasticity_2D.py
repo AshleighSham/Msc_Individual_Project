@@ -106,11 +106,11 @@ for i in range(len(measurements)//2):
 
 axd.scatter(a, b, label = 'Noisy Data', s = 40, linewidth = 1.5, marker = 'x', color = 'black', zorder = 10)
 axd.plot(xx, yy, label = 'True Data', linewidth = 2)
-# axd.legend()
-# plt.grid()
-# plt.xlabel('Displacement (mm)')
-# plt.ylabel('External Force (N)')
-# plt.show()
+axd.legend()
+plt.grid()
+plt.xlabel('Displacement (mm)')
+plt.ylabel('External Force (N)')
+plt.show()
 
 inp['Method'] = config['Methods']['Choosen Method']
 #inp['theta0'] = np.array([np.random.choice(range(int(inp['range'][0][0]*1e6), int(inp['range'][1][0]*1e6)), 1)/1e6, np.random.choice(range(int(inp['range'][0][1]*1e6), int(inp['range'][1][1]*1e6)), 1)/1e6])
