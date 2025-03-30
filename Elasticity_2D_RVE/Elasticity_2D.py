@@ -10,8 +10,8 @@ from mesh import Mesh
 from SEnKF import S_EnKF_mcmc
 import seaborn as sns
 import time
-sns.set_context('talk')
 import matplotlib.pyplot as plt
+sns.set_context('talk')
 
 # data = np.load('RVE_EnKF.npy', allow_pickle=True)
 # data = data.tolist()
@@ -20,56 +20,67 @@ import matplotlib.pyplot as plt
 inp = {}
 
 # range of the parameters based on the prior density
-minis = np.array([np.array(config['Imposed Limits']['Youngs Modulus'])[:,0], np.array(config['Imposed Limits']['Poissons Ratio'])[:,0]]).flatten()
-maxis = np.array([np.array(config['Imposed Limits']['Youngs Modulus'])[:,1], np.array(config['Imposed Limits']['Poissons Ratio'])[:,1]]).flatten()
-inp['range']=np.array([minis, maxis])                      
+minis = np.array([np.array(config['Imposed Limits']['Youngs Modulus'])[:, 0],
+                  np.array(config['Imposed Limits']['Poissons Ratio'])[:, 0]]).flatten()
+maxis = np.array([np.array(config['Imposed Limits']['Youngs Modulus'])[:, 1],
+                  np.array(config['Imposed Limits']['Poissons Ratio'])[:, 1]]).flatten()
+inp['range'] = np.array([minis, maxis])
 
 # number of iteration in MCMC
-inp['nsamples']=config['Number of samples']
+inp['nsamples'] = config['Number of samples']
 
-# initial covariance  
-icov = [config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Poissons Ratio'], config['Initial Variance']['Poissons Ratio']]
+# initial covariance
+icov = [config['Initial Variance']['Youngs Modulus'], config['Initial Variance']['Youngs Modulus'],
+        config['Initial Variance']['Poissons Ratio'], config['Initial Variance']['Poissons Ratio']]
 inp['icov'] = np.eye(config['Number of Materials']*2)*np.array(icov)
-inp['icov'] = np.array([[1,0,0,0],[0,1,0,0],[0,0,1e-3,0],[0,0,0,1e-3]])
+inp['icov'] = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1e-3, 0], [0, 0, 0, 1e-3]])
 
 inp['s'] = config['s']
 
 # initial guesss of the parameters based on the prior
-itheta = [[config['Initial Material Parameters']['Youngs Modulus'][0]],[config['Initial Material Parameters']['Youngs Modulus'][1]], [config['Initial Material Parameters']['Poissons Ratio'][0]],[config['Initial Material Parameters']['Poissons Ratio'][1]]]
-inp['theta0']=np.array(itheta)
+itheta = [[config['Initial Material Parameters']['Youngs Modulus'][0]],
+          [config['Initial Material Parameters']['Youngs Modulus'][1]],
+          [config['Initial Material Parameters']['Poissons Ratio'][0]],
+          [config['Initial Material Parameters']['Poissons Ratio'][1]]]
+
+inp['theta0'] = np.array(itheta)
 
 # std                               
-inp['sigma']=config["Standard Deviation"]
+inp['sigma'] = config["Standard Deviation"]
 
-# The starting point of the Kalman MCMC           
-inp['Kalmans']= config['Starting Kalman point']                        
+# The starting point of the Kalman MCMC
+inp['Kalmans'] = config['Starting Kalman point']
 
 # assumed measurement error for Kalman MCMC
-inp['me']=config['Measurement error for Kalman']
+inp['me'] = config['Measurement error for Kalman']
 
 # assumed error for Kalman MCMC
-inp['ie']=config['Innovation error for Kalman'] 
+inp['ie'] = config['Innovation error for Kalman'] 
 
-#adaption setp size
+# adaption setp size
 inp['adapt'] = config['Adaption Step Size']
  
-#mesh set up
+# mesh set up
 inp['mesh'] = [config['Mesh grid']['quad'],
-               config['Mesh grid']['sf'], 
-               config['Mesh grid']['Nodal Coordinates'], 
+               config['Mesh grid']['sf'],
+               config['Mesh grid']['Nodal Coordinates'],
                config['Mesh grid']['Element Node Numbers'],
                config['Mesh grid']['Number of elements'],
                config['Mesh grid']['Force Magnitude'],
                config['Mesh grid']['Force Nodes'],
                config['Mesh grid']['Fixed Nodes'],
-               config['Mesh grid']['Element ID'], 
+               config['Mesh grid']['Element ID'],
                config['Mesh grid']['thickness']]
 
-ini = [config['True Material Parameters']['Youngs Modulus'][0], config['True Material Parameters']['Youngs Modulus'][1], config['True Material Parameters']['Poissons Ratio'][0],config['True Material Parameters']['Poissons Ratio'][1]]
+ini = [config['True Material Parameters']['Youngs Modulus'][0],
+       config['True Material Parameters']['Youngs Modulus'][1],
+       config['True Material Parameters']['Poissons Ratio'][0],
+       config['True Material Parameters']['Poissons Ratio'][1]]
 
-measurements=utilities.forward_model(np.array(ini), inp['mesh'])
-measurements1 = measurements + np.random.normal(0, config['Measurement Noise'], size = np.shape(measurements))
-#measurements1[[0,1,8,9,16,17]] = measurements[[0,1,8,9,16,17]]
+measurements = utilities.forward_model(np.array(ini), inp['mesh'])
+measurements1 = measurements + np.random.normal(0, config['Measurement Noise'],
+                                                size=np.shape(measurements))
+# measurements1[[0,1,8,9,16,17]] = measurements[[0,1,8,9,16,17]]
 inp['measurement'] = measurements1
 # print(measurements1)
 # print(measurements)
@@ -85,9 +96,10 @@ lines = []
 my_mesh = Mesh(inp['mesh'])
 
 fig11, axl1 = plt.subplots()
-plt.subplots_adjust(bottom = 0.05)
+plt.subplots_adjust(bottom=0.05)
 
-true_displacement = my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'], config['True Material Parameters']['Poissons Ratio'])
+true_displacement = my_mesh.displacement(config['True Material Parameters']['Youngs Modulus'],
+                                         config['True Material Parameters']['Poissons Ratio'])
 # my_mesh.deformation_plot(label = 'a', colour= 'black', ch = 1, ax = axl1, lines = lines,  D = measurements/1000, ls = 'solid', non=False)
 # my_mesh.deformation_plot(label = f'Noisy Deformation', colour= 'palevioletred', ch = 0.95, ax = axl1, lines = lines, ls = (0,(5,5)), D = measurements1/1000, non=False)
 
@@ -98,7 +110,7 @@ true_displacement = my_mesh.displacement(config['True Material Parameters']['You
 inp['Method'] = config['Methods']['Choosen Method']
 
 
-#inp['theta0'] = np.array([np.random.choice(range(int(minis[0]*1e6), int(maxis[0]*1e6)), 1)/1e6, np.random.choice(range(int(minis[1]*1e6), int(maxis[1]*1e6)), 1)/1e6, np.random.choice(range(int(minis[2]*1e6), int(maxis[2]*1e6)), 1)/1e6, np.random.choice(range(int(minis[3]*1e6), int(maxis[3]*1e6)), 1)/1e6])
+# inp['theta0'] = np.array([np.random.choice(range(int(minis[0]*1e6), int(maxis[0]*1e6)), 1)/1e6, np.random.choice(range(int(minis[1]*1e6), int(maxis[1]*1e6)), 1)/1e6, np.random.choice(range(int(minis[2]*1e6), int(maxis[2]*1e6)), 1)/1e6, np.random.choice(range(int(minis[3]*1e6), int(maxis[3]*1e6)), 1)/1e6])
 
 print()
 print()
@@ -115,7 +127,7 @@ if inp['Method'] == 0:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    # utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
     print('----------------------------------------------')
     print('Metropolis Hastings')
     print('----------------------------------------------')
@@ -127,7 +139,7 @@ elif inp['Method'] == 1:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    # utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
     print('----------------------------------------------')
     print('Adaptive Metropolis Hastings')
     print('----------------------------------------------')
@@ -139,7 +151,7 @@ elif inp['Method'] == 2:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    #utilities.histogram(results['MCMC'],['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    # utilities.histogram(results['MCMC'],['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
     print('----------------------------------------------')
     print('Metropolis Hastings Delayed Rejection')
     print('----------------------------------------------')
@@ -151,31 +163,31 @@ elif inp['Method'] == 3:
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    # utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
     print('----------------------------------------------')
     print('Delayed Rejection Adaptive Metropolis Hastings')
     print('----------------------------------------------')
 
 elif inp['Method'] == 4:
-    #The EnKF algorithm 
+    # The EnKF algorithm 
     B = EnKF_mcmc(inp)
     results = B.EnKF_go()
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    # utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
     # print('----------------------------------------------')
     # print('Ensemble Kalman Filter')
     # print('----------------------------------------------')
    
 elif inp['Method'] == 5:
-    #The Baby algorithm 
+    # The Baby algorithm 
     B = S_EnKF_mcmc(inp)
     results = B.S_EnKF_go()
     print(f'End Time: {time.perf_counter() - st}')
     if config['Print Chain'] == 1:
         print(results['MCMC'])
-    #utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
+    # utilities.histogram(results['MCMC'], ['Youngs Modulus', 'Youngs Modulus','Poissons Ratio', 'Poissons Ratio'], ini, inp['range'])
     print('----------------------------------------------')
     print('Stochastic Adapt EnKF')
     print('----------------------------------------------')
@@ -188,23 +200,32 @@ print('The median of the Poissons Ratio 1 posterior is: %f, with uncertainty +/-
 print('The median of the Poissons Ratio 2 posterior is: %f, with uncertainty +/- %.5f' % (np.median(results['MCMC'][3]), np.sqrt(np.var(results['MCMC'][3]))))
 print()
 
-outi = np.array([[np.median(results['MCMC'][0])],[np.median(results['MCMC'][1])],[np.median(results['MCMC'][2])],[np.median(results['MCMC'][3])]])
-res=utilities.forward_model(outi, inp['mesh'])
+outi = np.array([[np.median(results['MCMC'][0])],
+                 [np.median(results['MCMC'][1])],
+                 [np.median(results['MCMC'][2])],
+                 [np.median(results['MCMC'][3])]])
+
+res = utilities.forward_model(outi, inp['mesh'])
 
 print(f'RMSE: {np.linalg.norm(measurements/1000 - res/1000)/len(measurements)}')
 
 
-fig, ax = plt.subplots(4,1)
+fig, ax = plt.subplots(4, 1)
 ax[0].plot(range(len(results['MCMC'][0])), results['MCMC'][0])
-ax[0].axhline(10, color = 'black')
+ax[0].axhline(10, color='black')
 ax[1].plot(range(len(results['MCMC'][1])), results['MCMC'][1])
-ax[1].axhline(1 , color = 'black')
+ax[1].axhline(1 , color='black')
 ax[2].plot(range(len(results['MCMC'][2])), results['MCMC'][2])
-ax[2].axhline(0.3, color = 'black')
+ax[2].axhline(0.3, color='black')
 ax[3].plot(range(len(results['MCMC'][3])), results['MCMC'][3])
-ax[3].axhline(0.3, color = 'black')
-res = my_mesh.displacement([np.median(results['MCMC'][0]),np.median(results['MCMC'][1])], [np.median(results['MCMC'][2]), np.median(results['MCMC'][3])])
-my_mesh.deformation_plot(label = f'Noisy Deformation', colour= 'palevioletred', ch = 0.95, ax = axl1, lines = lines, ls = (0,(5,5)), D = res/1000, non=False)
+ax[3].axhline(0.3, color='black')
+res = my_mesh.displacement([np.median(results['MCMC'][0]),
+                            np.median(results['MCMC'][1])], 
+                           [np.median(results['MCMC'][2]),
+                            np.median(results['MCMC'][3])])
+
+my_mesh.deformation_plot(label=f'Noisy Deformation', colour='palevioletred',
+                         ch=0.95, ax=axl1, lines=lines, ls=(0,(5,5)), D=res/1000, non=False)
 plt.show()
 
 lags = range(0, 100, 1)
