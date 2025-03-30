@@ -3,11 +3,12 @@ import scipy as sp
 import utilities as utilities
 import pandas as pd
 
+
 class AMH_mcmc():
     def __init__(self, inp):
 
+        # unpack variables
         self.range = inp['range']
-
         self.nsamples = inp['nsamples']
         self.initial_cov = inp['icov']
         self.initial_theta = inp['theta0']
@@ -17,21 +18,22 @@ class AMH_mcmc():
         self.m0 = inp['me']
         self.mesh = inp['mesh']
         self.adpt = inp['adapt']
-        self.results ={}
+        self.results = {}
 
+        # define variables
         self.eps = 1e-10
         self.Rj = sp.linalg.cholesky(self.initial_cov)
         self.dim = np.size(self.range, 1)
         self.Kp = 0.05
 
+        # initialise markov chain
         self.MCMC = np.zeros([self.nsamples, self.dim])
         self.oldpi, self.oldvalue = utilities.ESS(self.observations, self.initial_theta, self.mesh)
-
         self.accepted = 0
-        self.MCMC[0,:] = self.initial_theta.T
+        self.MCMC[0, :] = self.initial_theta.T
         self.thetaj = self.initial_theta
 
-        #initialise Kalman features
+        # initialise Kalman features
         self.MCMC_cov = np.zeros_like(self.initial_cov)
         self.MCMC_mean = np.zeros_like(self.initial_theta)
         self.ss = np.array([1])

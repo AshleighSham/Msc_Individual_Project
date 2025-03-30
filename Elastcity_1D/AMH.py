@@ -88,7 +88,7 @@ class AMH_mcmc():
             # append to chain
             self.MCMC[j, :] = self.thetaj*1
 
-            # adpation check
+            # adaption check
             if j % self.adpt == 0:
                 self.update_cov(1, j)
                 Ra = np.linalg.cholesky(self.MCMC_cov + np.eye(self.dim)*self.eps)
